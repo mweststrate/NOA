@@ -2,7 +2,9 @@
   "name": "node-example",
   "version": "0.0.1",
   "dependencies": {
-    "express": "2.5.x"
+    "express": "latest",
+    "requirejs": "latest",
+    "sqlite3" : "latest"
   },
   "engines": {
     "node": "0.8.x",
