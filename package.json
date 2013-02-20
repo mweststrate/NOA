@@ -2,12 +2,18 @@
   "name": "node-example",
   "version": "0.0.1",
   "dependencies": {
-    "express": "latest",
+    "express"  : "latest",
     "requirejs": "latest",
-    "sqlite3" : "latest"
+    "sqlite3"  : "latest",
+    "mocha"    : "latest", 
+    "request"  : "latest",
+    "should"   : "latest"
   },
   "engines": {
     "node": "0.8.x",
     "npm": "1.1.x"
+  },
+  "scripts" : {
+    "test" : "make test"
   }
 }

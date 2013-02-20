@@ -34,14 +34,17 @@ function startHttp(callback) {
 			}
 			else if (res == null)
 				res.send(404);
-			else
+			else {
+				res.header({"Content-Type":"application/json"})//TODO: needed?
 				res.json(result);
+			}
 		})
 	})
 	
 	app.put('/data/:id', function(req, res) {
 		//TODO: validate req.params.id, content-type
 		var data = req.body
+		assert(data._id === undefined || data._id == req.params.id)
 		data._id = req.params.id
 		core.update(data, function(err) {
 			if (err) {

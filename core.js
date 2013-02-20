@@ -14,7 +14,10 @@ function recordsToObject(records) {
 	console.dir(records);
 	if (records.length == 0)
 		return null;
+	
 	var res = {};
+	var curarr = null;	
+
 	for(var i = 0; i < records.length; i++) {
 		var record = records[i];
 		var value;
@@ -25,10 +28,24 @@ function recordsToObject(records) {
 			case 'r': 
 				value = { _id : record.v_str };
 				break;
-			default: 
+			case 'b':
+				value = 'true' === record.v_str;
+				break;
+			case 's':
 				value = record.v_str;
+				break;
+			default: 
+				throw "Unsupported type: " + record.type;
 		}
-		res[record.key] = value;
+
+		if (record.pos < 0)
+			res[record.key] = value;
+		else if (record.pos == 0) {
+			res[record.key] = curarr = [];
+			curarr.push(value);
+		}
+		else
+			curarr.push(value); //not interested in real index.
 	}
 	return res;
 }
@@ -36,16 +53,42 @@ function recordsToObject(records) {
 function objectToRecords(object) {
 	var res = [];
 	var id = object._id;
-	for(var key in object) {
 
-		var type = typeof(object[key]);
-		//TODO: array
-		var tvalue = type == 'boolean' ? 'b' : type == 'number' ? 'n' : type == 'object' ? 'r' : 's';
-		var nvalue = tvalue == 'n' ? object[key] : null;
-		var svalue = tvalue == 'r' ? object[key]._id : "" + object[key];
+	function writeValue(key, idx, value) {
+		var type = typeof(value);
+		switch(type) {
+			case 'object':
+				if (Array.isArray(value)) {
+					if (idx != -1)
+						throw "Nested arrays are not supported";
+					for(var i = 0; i < value.length; i++)
+						writeValue(key, i, value[i])
+				}
 
-		res.push([id, key, 0, tvalue, svalue, nvalue, ""]);
+				else { //reference
+					if (!value._id)
+						throw "Unreferrable object: " + JSON.stringify(value);
+					res.push([id, key, idx, 'r', value._id, null, ""])
+				}
+				break;
+			case 'boolean':
+				res.push([id, key, idx, 'b', !!value ? "true" : "false", null, ""]);
+				break;
+			case 'number':
+				res.push([id, key, idx, 'n', null, value, ""]);
+				break;
+			case 'string':
+				res.push([id, key, idx, 's', value, null, ""]);
+				break;
+			default:
+				throw "Unsupported type: " + type;
+		}
 	}
+
+	console.dir(object);
+
+	for(var key in object) 
+		writeValue(key, -1, object[key]);
 	return res;
 }
 
@@ -64,7 +107,7 @@ exports.startDB = function(cb) {
 }
 
 exports.getById = function(id, cb) {
-	db.select("SELECT * FROM items WHERE id = ?", [id], function(err, result) {
+	db.select("SELECT * FROM items WHERE id = ? ORDER BY key ASC, pos ASC", [id], function(err, result) {
 		console.log("Lookup for " + id + " -> " + JSON.stringify(err) + "," +JSON.stringify(result));
 
 		if (err) 
@@ -91,15 +134,16 @@ exports.update = function(data, cb) {
 				txcb(err)
 			else {
 				var recs = objectToRecords(data);
-				//TODO:
-				console.log("Inserting " + recs);
-				for(var i = 0; i < recs.length; i++) {
-					//if (!
-					db.update("INSERT INTO items VALUES (?, ?, ?, ?, ?, ?, ?) ", recs[i])
-					//){
-					//	txcb("Failed to update " + recs[i]);
-					//	return;
-					//}
+
+				try {
+					console.dir(recs);	
+					for(var i = 0; i < recs.length; i++) 
+					//TODO: see https://github.com/developmentseed/node-sqlite3/blob/master/examples/simple-chaining.js for reusing insert statement
+						db.update("INSERT INTO items VALUES (?, ?, ?, ?, ?, ?, ?) ", recs[i])
+				}
+				catch(e) {
+					txcb(e);
+					return;
 				}
 				txcb(null);	
 			}
