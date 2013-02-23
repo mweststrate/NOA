@@ -1,1 +1,20 @@
-hoi
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Noa WS test</title>
+    <script src="/socket.io/socket.io.js" />
+    <script src="scripts/jquery.1.9.1.min.js" />
+<script>
+
+var socket = io.connect('http://localhost');
+
+socket.on('news', function (data) {
+	console.log(data);
+	socket.emit('my other event', { my: 'data' });
+});
+
+</script>
+  </head>
+  <body>
+  </body>
+</html>
