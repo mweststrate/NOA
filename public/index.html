@@ -2,17 +2,133 @@
 <html>
   <head>
     <title>Noa WS test</title>
+	<script src='noa/noa.js' ></script>
+    <script src="scripts/jquery-1.9.1.min.js" ></script >
+    <!--
     <script src="/socket.io/socket.io.js" />
-    <script src="scripts/jquery.1.9.1.min.js" />
-<script>
+	<script>
 
-var socket = io.connect('http://localhost');
+	var socket = io.connect('http://localhost');
 
-socket.on('news', function (data) {
-	console.log(data);
-	socket.emit('my other event', { my: 'data' });
-});
+	socket.on('news', function (data) {
+		console.log(data);
+		socket.emit('my other event', { my: 'data' });
+	});
 
+	</script>-->
+
+
+<script type="text/javascript">
+
+jQuery(function($) {
+	NOA.require("NOA.core","NOA.util", function() {
+
+
+		NOA.declare("NOA.RecordRenderer", NOA.core.Base, {
+
+			record : null, 
+			node : null,
+			table : null,
+
+			init : function(parentNode, record) {
+				this.record = record.live();
+				this.node = $("<div class='noa-record'></div>").data('widget', this).appendTo(parentNode);
+				this.table = $("<table></table>").appendTo(this.node);
+
+				var keys = record.keys.toArray();
+				NOA.each(keys, function(key, i) {
+					this.renderKeyValue(i, key)
+				}, this)
+				
+				this.listenTo(record.keys, 'insert', function(index, newkey) {
+					//create a new row somewhere in the middle? (add is done by renderKeyValue automatically)
+					if (index < this.getRowCount()) 
+						this.createRow().insertBefore(".noa-key-row:eq(" + index + ")", this.table);
+
+					this.renderKeyValue(index, newkey);
+				});
+
+				this.listenTo(record.keys, 'remove', function(index) {
+					//TODO: cleanup sub widgets?
+					this.getRow(index).remove();
+				});
+
+				this.listenTo(record.keys, 'move', function(from, to) {
+					var rto = move > to ? to : to - 1;
+					var row = this.getRow(from);
+
+					//move within dom
+					row.detach().insertBefore(this.getRow(rto))
+				});
+
+				//NOTE: list.set is never triggered for record.keys
+			},
+
+			getRow : function(index) {
+				return $(".noa-key-row:eq(" + index + ")", this.table);
+			},
+
+			getRowCount : function() {
+				return this.table.prop('rows').length;
+			},
+
+			createRow : function() {
+				return $("<tr class='noa-key-row'><td class='noa-key'></td><td class='noa-value'></td></tr>")
+			},
+
+			renderKeyValue : function(pos, key) {
+				if (pos > this.getRowCount())
+					throw "out of bounds!"
+
+				var row;
+				if (pos == this.getRowCount()) 
+					row = this.createRow().appendTo(this.table);
+				else
+					row = this.getRow(pos);
+				
+				$(".noa-key", row).text(key);
+				var valuecell = $(".noa-value");
+				
+				render(valuecell, this.record.get(key, this, function(newvalue) {
+					render(valuecell, newvalue); 
+					//TODO if null, remove
+				}))
+
+			},
+
+			free : function() {
+				this.record.die();
+				this.node.remove();
+			}
+
+		});
+
+
+		var rootRecord = new NOA.Record();
+
+		rootRecord.set("hello", "world");
+		rootRecord.set("koffie", "bar");
+
+		render($(document.body), rootRecord);
+
+		rootRecord.set("foo", "bar");
+		rootRecord.set("hello", "the universe!");
+
+		rootRecord.remove("koffie");
+
+		function render(node, item) {
+			//TODO: clean up any existing widget for node
+
+			/** Item */
+			if (NOA.Record.isA(item)) 
+				new NOA.RecordRenderer(node, item);
+
+			else
+				node.text(item);
+		}
+
+	})
+})
 </script>
   </head>
   <body>

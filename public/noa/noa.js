@@ -250,6 +250,10 @@ NOA.declare = function(name, properties /* and more properties.. */) {
     }
   };
 
+  NOA.warn = function() {
+    console.warn.apply(console, arguments);
+  }
+
   /**
     assert the value argument to be true, throws an exception otherwise
   */
@@ -280,18 +284,18 @@ NOA.each = function(ar, cb, scope, flags) {
     flags = scope; 
     scope = flags; //undefined probably..
   }
-  scope |= window;
-  flags |= "";
+  scope = scope || window;
+  flags = flags || "";
 
   //valid flags are (m)ap, (f)filter, (s)parse, (r)everse
   //sparse skips the callback for non-values
   //reverse calls the callbacks in reverse order for arrays, which is useful while modifying the array while iterating
-  var map     = flags.test(/m/),
-      filter  = flags.test(/f/),
-      sparse  = flags.test(/s/),
-      isArray = NOA.type(ar.length) === "number",
-      reverse = flags.test(/r/), 
-      result  = filter  || map      ? (isArray ? [] : {}): undefined,
+  var map     = flags.match(/m/),
+      filter  = flags.match(/f/),
+      sparse  = flags.match(/s/),
+      isArray = NOA.type(ar.length) === "number", //no real array, but array like
+      reverse = flags.match(/r/), 
+      res     = isArray ? [] : {},
       start   = reverse && isArray  ? ar.length -1 : 0,
       delta   = reverse             ? -1 : 1,
       end     = reverse || !isArray ? -1 : ar.length;

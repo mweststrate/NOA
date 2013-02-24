@@ -92,8 +92,13 @@ NOA.declare("NOA.core.Base", {
    			scope = f;
    		f = a.shift();
    		
-   		return new NOA.util.Binding(event, this, scope, f, a);
+   		return new NOA.core.Binding(event, this, scope, f, a);
    	},
+
+    on : function() {
+      //TODO: remove onEvent
+      this.onEvent.apply(this, arguments);
+    },
 
     /*
      Listen to an event in another object. Free the listener upon destruction

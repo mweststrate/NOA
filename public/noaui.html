@@ -49,36 +49,7 @@ jQuery(function($) {
 
 		init: function() {
 			this.node = $(".noa-content").eq(0);
-			this.connect(this.node, 'click', function(e) {
-				var n = $(e.target);
-				var pos = n.offset();
-				var dim = { 
-					h: n.outerHeight(),
-					w: n.outerWidth()
-				}
-				var wdim = {
-					h : $(window).height(),
-					w : $(window).width()
-				}
-
-				var d = {
-					t : pos.top - ((wdim.h - dim.h) / 2),
-					l : pos.left - ((wdim.w - dim.w) / 2)
-				}
-
-				var node = this.node; //$(".noa-content");
-				var cur = {
-					left : node.css('left'),
-					top  : node.css('top')
-				};
-
-				node.css({
-					left : (cur.left == "auto" ? 0 : cur.left.replace("px",""))  - d.l + $(window).scrollLeft(),
-					top  : (cur.top == "auto" ? 0 : cur.top.replace("px","")) - d.t + $(window).scrollTop(),
-					position : 'relative'
-				});
-
-			});
+			
 		},
 
 		free : function() {

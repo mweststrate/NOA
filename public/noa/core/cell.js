@@ -80,8 +80,10 @@ NOA.declare("NOA.core.Cell",  NOA.core.Base, {
     },
     
     get : function(scope, onchange) {
-    	if (scope && onchange)
+        if (!!scope && !!onchange)
     		this.onChange(scope, onchange);
+        else if (scope)
+            this.onChange(null, scope);
 
         return this.value;
     },

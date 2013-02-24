@@ -17,8 +17,8 @@ NOA.declare("NOA.Record", NOA.core.Base, {
 	set : function(key, value) {
 		var has = this.has(key);
 		if (!has) { //add key value set
-			this.keys.add(key);
 			this.data[key] = new NOA.core.Cell(this, key, value);
+			this.keys.add(key); //TODO: mwe, swapped with above line, does not trigger error?
 			this.fire('put',key, value);
 		}
 		
@@ -47,9 +47,9 @@ NOA.declare("NOA.Record", NOA.core.Base, {
     },
 	
 	get : function(key, scope, onchange) {
-		//if (!this.has(key))
+		if (!this.has(key))
+			throw "Value for '" + key + "' is not yet defined!"
 		//	return null;
-		//MWE: maybe, if not has, create the call so we can listen to changes in the future?		
 		return this.data[key].get(scope, onchange);		
 	},
 	
