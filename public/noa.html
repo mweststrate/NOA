@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+<link rel="stylesheet" href="noa.css">
+<script src = 'jquery-1.6.4.js' type = 'text/javascript'></script>
+<script src = 'noa.js' type = 'text/javascript'></script>
+<script type="text/javascript">
+//TODO:
+//
+//
+//1) scopes
+//2) expressions
+//
+jQuery(function() {
+	NOA.require("cell.js", "list.js","record.js", "apply.js", "listview.js", function() {
+
+	var x = new NOA.list();
+
+	
+	NOA.ui.render(x, jQuery("#x"));
+
+
+	//base set
+	x.add(3); 
+	x.add(2);  
+	x.add(4);
+
+	//mutations
+	
+	x.insert(2,7);
+	x.remove(1);
+	x.cell(2).set(1);
+	x.move(1,0);
+
+	var z = NOA.fromJS({     
+		"firstName": "John",
+		"lastName" : "Smith",
+		"age"      : 25,
+		"address"  : {
+			"streetAddress": "21 2nd Street",
+			"city"         : "New York",
+			"state"        : "NY",
+			"postalCode"   : "10021"
+		},
+		"phoneNumber":[{
+			"type"  : "home",
+			"number": "212 555-1234"
+			},{
+			"type"  : "fax",
+			"number": "646 555-4567"
+			}]
+	});
+
+	NOA.ui.render(z, jQuery("#z"));
+
+})});
+</script>
+</head>
+<body>
+	Hello, world
+	X:
+	<div id="x"></div>
+	Z:
+	<div id="z"></div>
+</body>
+</html>
