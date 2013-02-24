@@ -2,7 +2,7 @@
 <html>
 	<head>
 <link rel="stylesheet" href="noaui.css">
-<script src = 'jquery-1.6.4.js' type = 'text/javascript'></script>
+<script src = 'scripts/jquery-1.9.1.min.js' type = 'text/javascript'></script>
 <script src = 'noa/noa.js' type = 'text/javascript'></script>
 <script type="text/javascript">
 
@@ -23,7 +23,7 @@ jQuery(function($) {
 		},
 
 		connect : function(node, event, handler) {
-			var n = $(n)
+			var n = $(node)
 			var f = $.proxy(handler, this);
 			var b = [n,	event, f]
 			this._bindings.push(b);
