@@ -1,9 +1,8 @@
-//var sqlite3 = require('./build/Debug/sqlite3_bindings');
 var sqlite3 = require('sqlite3');
 var self = {};
 
 exports.openConnection = function(cb) {
-	self.db = new sqlite3.Database("items.db", function(err) {
+	self.db = new sqlite3.Database("data/items.db", function(err) {
 		cb(err);
 	})
 }

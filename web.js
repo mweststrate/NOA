@@ -1,5 +1,7 @@
 var express = require('express');
-var core = require('./core.js')
+var core = require('./server/core.js')
+var assert = require('assert')
+var ws = require('./server/ws.js')
 
 core.startDB(function (err) {
 	if (err)
@@ -68,6 +70,10 @@ function startHttp(callback) {
 	  //console.log("Registered routes: ");
 	  //console.dir(app.routes);
 
+	  ws.start(app)
+
 	  callback && callback();
 	});
+
+
 }

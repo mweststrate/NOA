@@ -7,13 +7,14 @@
     "sqlite3"  : "latest",
     "mocha"    : "latest", 
     "request"  : "latest",
-    "should"   : "latest"
+    "should"   : "latest",
+    "socket.io": "latest"
   },
   "engines": {
     "node": "0.8.x",
     "npm": "1.1.x"
   },
   "scripts" : {
-    "test" : "make test"
+    "test" : "scripts/make test"
   }
 }

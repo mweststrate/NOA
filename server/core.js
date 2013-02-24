@@ -124,7 +124,7 @@ exports.remove = function(id, cb) {
 	});	
 }
 
-exports.update = function(data, cb) {
+exports.update = function(data, cb) { //TODO: rename to put
 	db.inTransaction(function(txcb) {
 		console.log("started transaction, removign: ");
 		console.dir(data)
