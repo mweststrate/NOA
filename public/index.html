@@ -23,8 +23,35 @@
 jQuery(function($) {
 	NOA.require("NOA.core","NOA.util", function() {
 
+		NOA.declare("NOA.ui.CellRenderer", NOA.core.Base, {
+			cell : null,
+			node : null,
+			input : null,
 
-		NOA.declare("NOA.RecordRenderer", NOA.core.Base, {
+			init : function(parentNode, cell) {
+				this.cell = cell.live();
+				this.node = $("<div class='noa-cell'></div>").data('widget', this).appendTo(parentNode);
+				this.input = $("<input></input>").appendTo(this.node);
+				this.input.on('change', $.proxy(this.onInput, this)); //TODO: off in destructor
+
+				this.renderValue(cell.get(this, this.renderValue)); //Render and listen
+			},
+
+			renderValue : function(newvalue) {
+				this.input.prop('value', newvalue);
+			},
+
+			onInput : function() {
+				this.cell.set(this.input.prop('value')) //Note, fires back to renderValue
+			},
+
+			free : function() {
+				this.cell.die();
+				this.node.remove();
+			}
+		})
+
+		NOA.declare("NOA.ui.RecordRenderer", NOA.core.Base, {
 
 			record : null, 
 			node : null,
@@ -34,6 +61,9 @@ jQuery(function($) {
 				this.record = record.live();
 				this.node = $("<div class='noa-record'></div>").data('widget', this).appendTo(parentNode);
 				this.table = $("<table></table>").appendTo(this.node);
+				this.newKeyInput = $("<input class='record-new-key'></input>")
+					.appendTo(this.node)
+					.on('change', $.proxy(this.onNewKey, this)) //TODO off() in free.
 
 				var keys = record.keys.toArray();
 				NOA.each(keys, function(key, i) {
@@ -64,6 +94,14 @@ jQuery(function($) {
 				//NOTE: list.set is never triggered for record.keys
 			},
 
+			onNewKey : function() {
+				var val = this.newKeyInput.prop('value');
+				if (val != '') {
+					this.record.set(val, ''); //TODO: get focus there..
+					this.newKeyInput.prop('value', '');
+				}
+			},
+
 			getRow : function(index) {
 				return $(".noa-key-row:eq(" + index + ")", this.table);
 			},
@@ -87,12 +125,7 @@ jQuery(function($) {
 					row = this.getRow(pos);
 				
 				$(".noa-key", row).text(key);
-				var valuecell = $(".noa-value");
-				
-				render(valuecell, this.record.get(key, this, function(newvalue) {
-					render(valuecell, newvalue); 
-					//TODO if null, remove
-				}))
+				render($(".noa-value", row), this.record.cell(key));
 
 			},
 
@@ -116,15 +149,17 @@ jQuery(function($) {
 
 		rootRecord.remove("koffie");
 
-		function render(node, item) {
+		function render(node, value) {
 			//TODO: clean up any existing widget for node
 
-			/** Item */
-			if (NOA.Record.isA(item)) 
-				new NOA.RecordRenderer(node, item);
+			if (NOA.Record.isA(value)) 
+				new NOA.ui.RecordRenderer(node, value);
+
+			else if (NOA.core.Cell.isA(value))
+				new NOA.ui.CellRenderer(node, value);
 
 			else
-				node.text(item);
+				node.text(value);
 		}
 
 	})
