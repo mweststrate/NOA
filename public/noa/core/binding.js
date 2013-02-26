@@ -1,6 +1,8 @@
 
 NOA.declare("NOA.core.Binding", {
 	init : function(event, source, dest, callback, args) {
+		if (!callback)
+			throw this.toString() + ": no callback provided!";
 		this.event = event;
 
 		this.source = source;
