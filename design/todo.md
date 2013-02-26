@@ -1,0 +1,14 @@
+# Noa Todo
+
+1. Add list viewer
+1. Add button bar
+1. create global events for List and Record
+1. sync with server trough socket io
+2. fetch on demand from server
+5. Use requireJS
+8. Introduce PostgreSQL support
+6. Use server side object model
+7. search widget
+7. Add expression editor
+7. FInish expression
+8. keyboard support

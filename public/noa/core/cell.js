@@ -11,6 +11,15 @@ NOA.declare("NOA.core.Cell",  NOA.core.Base, {
         this.initialized = true;
     },
     
+    remove : function() {
+        if (this.parent && NOA.Record.isA(this.parent))
+            this.parent.remove(this.index);
+        else if (this.parent && NOA.List.isA(this.parent))
+            this.parent.remove(this.index);
+        else
+            throw "Cell.Remove can only be invoked for cells owned by a list or record!";
+    },
+
     set : function(newvalue) {
         if (this.destroyed) //if changed after being removed; stop updating
             return;
@@ -34,7 +43,7 @@ NOA.declare("NOA.core.Cell",  NOA.core.Base, {
             }
 
             //if (NOA.core.Base.isA(newvalue))
-            if (newvalue.live)
+            if (newvalue && newvalue.live)
                 newvalue.live();
 
             if (NOA.core.Expression.isA(newvalue) || NOA.core.Cell.isA(newvalue)) {

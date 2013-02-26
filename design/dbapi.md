@@ -38,3 +38,6 @@ Swaps the specified values from array
 
 ## GET/PUT data/:id/:key/meta
 Returns the specified key meta data
+
+#POST data/:id/renameto/:id ?
+Updates id of object an all references to it if target id does not yet exist
