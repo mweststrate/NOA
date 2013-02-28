@@ -1,6 +1,9 @@
 # Noa Todo
 
-1. Add list viewer
+1. -Add list viewer-
+1. Require
+2. Junit test
+3. data sync
 1. Add button bar
 1. create global events for List and Record
 1. sync with server trough socket io

@@ -45,9 +45,9 @@ if (!window.NOA) {
         var attempts = 30;
         var check = function() {
           attempts -= 1;
-          if (attemps == 0)
+          if (attempts == 0)
             throw "NOA.require(plain): failed to load '" + url + "'";
-          if (NOA.util.exist(thing)) //TODO: find object more intelligently
+          if (NOA.exists(thing)) //TODO: find object more intelligently
             cb();
           else
             setTimeout(check, 100);

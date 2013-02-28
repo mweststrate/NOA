@@ -1,3 +1,5 @@
+NOA.require("NOA.core.Base")
+
 NOA.declare("NOA.core.Cell",  NOA.core.Base, {
     parent : null,
     value : undefined,
