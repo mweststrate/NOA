@@ -15,3 +15,10 @@
 7. Add expression editor
 7. FInish expression
 8. keyboard support
+
+NOA.incoming
+put noa functions in noa
+onInsert... etc. 
+keys() -> lazy function?
+get("$keys")
+get("$reverse")

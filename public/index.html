@@ -21,9 +21,11 @@
 <script type="text/javascript">
 
 jQuery(function($) {
-	NOA.require("NOA.core","NOA.util", "NOA.core.Base", function() {
+	NOA(["noa/util", "noa/base", "noa/record", "noa/list", "noa/cell"], function(util, base, record, list, cell, NOA) {
 
-		NOA.declare("NOA.ui.CellRenderer", NOA.core.Base, {
+		NOA.ui = {};
+
+		var cellrenderer = NOA.declare("noa/ui/cellrenderer", base, {
 			cell : null,
 			node : null,
 			input : null,
@@ -63,7 +65,7 @@ jQuery(function($) {
 					this.input.appendTo(this.valueNode).prop('value', newvalue);
 				else if (newvalue == null) 
 					this.typeSelector.appendTo(this.valueNode);
-				else //if (NOA.Record.isA(newvalue)) or List
+				else //if (record.isA(newvalue)) or List
 					render(this.valueNode, newvalue)
 			},
 
@@ -77,10 +79,10 @@ jQuery(function($) {
 						this.cell.set("");
 						break;
 					case 'Object':
-						this.cell.set(new NOA.Record());
+						this.cell.set(new record());
 						break;
 					case 'List':
-						this.cell.set(new NOA.List());
+						this.cell.set(new list());
 						break;
 				}
 			},
@@ -91,7 +93,7 @@ jQuery(function($) {
 			}
 		})
 
-		NOA.declare("NOA.ui.ListRenderer", NOA.core.Base, {
+		NOA.declare("listrenderer", base, {
 			list : null,
 			node : null,
 			listNode : null,
@@ -141,7 +143,7 @@ jQuery(function($) {
 			}
 		})
 
-		NOA.declare("NOA.ui.RecordRenderer", NOA.core.Base, {
+		NOA.declare("recordrenderer", base, {
 
 			record : null, 
 			node : null,
@@ -229,7 +231,7 @@ jQuery(function($) {
 					thing.insertBefore(c.eq(index))
 		}
 
-		var rootRecord = new NOA.Record();
+		var rootRecord = new record();
 
 		rootRecord.set("hello", "world");
 		rootRecord.set("koffie", "bar");
@@ -245,14 +247,14 @@ jQuery(function($) {
 		function render(node, value) {
 			//TODO: clean up any existing widget for node
 
-			if (NOA.Record.isA(value)) 
-				new NOA.ui.RecordRenderer(node, value);
+			if (record.isA(value)) 
+				new recordrenderer(node, value);
 
-			else if (NOA.core.Cell.isA(value))
-				new NOA.ui.CellRenderer(node, value);
+			else if (cell.isA(value))
+				new cellrenderer(node, value);
 
-			else if (NOA.List.isA(value))
-				new NOA.ui.ListRenderer(node, value);
+			else if (list.isA(value))
+				new listrenderer(node, value);
 
 			else
 				node.text(value);
