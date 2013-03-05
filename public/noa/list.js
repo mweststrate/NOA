@@ -1,3 +1,5 @@
+NOA.require(["NOA.core.Base"], function() {
+
 NOA.declare("NOA.List", NOA.core.Base, {
     
     parent : null,
@@ -686,3 +688,4 @@ NOA.declare("NOA.List", NOA.core.Base, {
 
 });
 
+});

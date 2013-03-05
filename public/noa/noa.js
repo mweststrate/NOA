@@ -1,90 +1,94 @@
-if (!window.NOA) {
-  window.NOA = {
-        basepath : window.location.href.substring(0, 1 + window.location.href.lastIndexOf('/'))
-          //.replace("file:///", "file://") //MWE: XXX need in chrome?!
-  };
-}
 
 /**
- REQUIRE
- */
+REQUIRE
+*/
 (function() {
-	var reqs = {};
 
-  function loadScriptJQ(url, cb) {
-    jQuery.ajax({
-      url : url,
-      isLocal : window.location.protocol.indexOf("file:") == 0,
-      dataType : "script",
-      async : false,//TODO: async or not async?
-      error : function(jqXHR, textStatus, errorThrown) {
-        throw "NOA.require(jQuery): failed to load " + url + ". Error: " + textStatus + ": " + errorThrown;
-      },
-      success : cb
-    });
-  };
+var isNodeJS = typeof(exports) != "undefined";
 
-  function loadScriptPlain(url, check, cb) {
-    document.write("<script type='text/javascript' src='" + url + "'></script>");
-  };
+var NOA = {};
 
-  function loadScript(thing, url, cb) {
-    if (NOA.exists(thing))
-      cb();
+var pendingModules = NOA.pending = {};
+
+function resolve(name, cb) {
+  //loaded
+  if (NOA.exists(name, NOA))
+    cb.call(null, NOA.ensureObject(name, NOA));
+  
+  //not loading yet
+  else if (!pendingModules[name]) {
+    pendingModules[name] = [cb];
+    var filename = (name.replace(/\./g,"/") + ".js").toLowerCase();
+    if (isNodeJS)
+      require(filename);
     else {
-      if (jQuery) {
-        loadScriptJQ(url, function() {
-          if (!NOA.exists(thing)) //post condition; thing should be available
-            throw "NOA.require(jQuery): failed to load " + url + ". The file loaded correctly but '" + thing + "' has not been found";
-          cb();
-        });
-      }
-      else {
-        loadScriptPlain(url);
-        
-        var attempts = 30;
-        var check = function() {
-          attempts -= 1;
-          if (attempts == 0)
-            throw "NOA.require(plain): failed to load '" + url + "'";
-          if (NOA.exists(thing)) //TODO: find object more intelligently
-            cb();
-          else
-            setTimeout(check, 100);
-        };
-        check();
-      }
+      var s = document.createElement("script");
+      s.src = filename;
+      document.body.appendChild(s);
     }
-  };
-	
-  NOA.require = function() {
-  		var l = arguments.length;
-  		
-  		var callback = jQuery.isFunction(arguments[l - 1]) ? arguments[l - 1] : jQuery.noop;
-  		
-  		if (jQuery.isFunction(arguments[l-1]))
-  			l -= 1;
-  			
-      var left = l;
-  		for(var i = 0; i < l; i++) {
-  			var thing = arguments[i];
-  			if (!reqs[thing]) {
-  				reqs[thing] = true;
-          loadScript(thing, NOA.basepath + thing.replace(/\./g,"/").toLowerCase() + ".js", function() {
-						left--;   
-						if (left == 0)
-							callback();
-  				});
-  			}
-        else {
-          left--;
-  			
-    			if (left == 0) //we had everything already
-    				callback();
-        } 
-  		}
+    //else
+    //  document.write("<script type='text/javascript' src='" + filename + "'></script>");
   }
-})();
+
+  //being loaded
+  else
+    pendingModules[name].push(cb);
+}
+
+function define(name, value) {
+  if (NOA.exists(name, NOA))
+    throw "NOA.define: already defined: " + name;
+
+  var path = name.split(".");
+  var key  = path.pop();
+  NOA.ensureObject(path)[key] =  value;
+
+  if (pendingModules[name])
+    while(cb = pendingModules[name].shift())
+      cb.call(null, value);
+
+  delete pendingModules[name];
+
+  return value;
+}
+
+function require(thing, cb) {
+  if (NOA.isFunction(thing))
+    //thing(NOA)
+    thing();
+  else if (!NOA.isFunction(cb))
+    throw "NOA.require: second argument should be function. Found: " + cb;
+  else if (!NOA.isArray(thing)) {
+    resolve(thing, function(resolved) {
+      cb();//.call(null, resolved, NOA)
+    })
+    setTimeout(10*1000, function() {
+      if (!modules[thing])
+        throw "Failed to resolve '" + thing + "' in 10 seconds"
+    })
+  }
+  else if (NOA.isArray(thing)) {
+    var res = [];
+    var requirements = arguments[0];
+    var left = requirements.length;
+    res[left] = NOA; //always pass NOA Core as last argument
+    for(var i = 0; i < requirements.length; i++) {
+      (function(idx) {
+        require(requirements[idx], function(resolved){
+          res[idx] = resolved;
+          left -= 1;
+          if (left == 0)
+            //cb.apply(null, res);
+            cb();
+        })
+      })(i)
+    }
+  }
+  else
+    throw "unexpected required thing : " + thing;
+}
+
+
 
 /** DECLARE */
    
@@ -92,25 +96,27 @@ NOA.declare = function(name, properties /* and more properties.. */) {
     //setup the namespace
     var parts = name.split("."), i = 0;
     var typename = parts.pop();
+    
     var scope = NOA.ensureObject(parts);  
+    //var typename = name;
     var noaid = 0;
 
     //setup the prototype
     var implementsAr = [];
-    var mixins = jQuery.makeArray(arguments);
+    var mixins = jQuery.makeArray(arguments); //todo: UTIL.MAKEARRAY
     mixins.shift(); //remove first argument from array
     for(var i = 0; i < mixins.length; i++) {
-      if (jQuery.isFunction(mixins[i])) {
+      if (NOA.isFunction(mixins[i])) {
         mixins[i] = mixins[i].prototype; //From the mixins, if it a constructor, take the prototype
         if (mixins[i].interfaces)
           implementsAr = mixins[i].interfaces().concat(implementsAr); //ImplementsAr: this thing implements everything our mixins implements
+      }
     }
-  }
-  implementsAr.unshift(name);
+    implementsAr.unshift(name);
     
     //constructor    
     var constructor = scope[typename] = function() {
-        if (this == scope || this == window) {
+        if (this == scope || this == window || this == null) { //TODO: what is default scope in NODE js?
             NOA.warn("[NOA.util.declare] Constructor '" + name +"' called without new keyword");
             return arguments.callee.apply({}, arguments); //TODO: does empty object even if there are prototypes?
         }
@@ -121,6 +127,7 @@ NOA.declare = function(name, properties /* and more properties.. */) {
     };
     
     var proto = constructor.prototype = {}; //start with empty prototype
+
     
     //set toString on beforehand, so it can be overridden.  
     proto.toString = function() {
@@ -188,7 +195,10 @@ NOA.declare = function(name, properties /* and more properties.. */) {
     
     proto.interfaces = function() {
       return implementsAr;
-    };    
+    };  
+
+    NOA.define(name, constructor);
+    return constructor;  
 };
 
 /**
@@ -391,18 +401,33 @@ NOA.isFunction = function(thing) {
   return NOA.type(thing) === "function";
 };
 
-NOA.type = function() {
-  if (jQuery)
-    NOA.type = jQuery.type;
+NOA.isArray = function(thing) {
+  return Object.prototype.toString.call( thing ) === '[object Array]'
+}
+
+NOA.type = function(obj) {
+  if (obj == null)
+    return String(obj);
   else {
-    NOA.type = function(obj) {
-      if (obj == null)
-        return String(obj);
-      else {
-        //8 = length of "[object "
-        return Object.prototype.toString.call(obj).substring(8).replace(/\]$/,"").toLowerCase();
-      }
-    }
+    //8 = length of "[object "
+    return Object.prototype.toString.call(obj).substring(8).replace(/\]$/,"").toLowerCase();
   }
-  return NOA.type.apply(NOA.util, arguments);
-};
+}
+
+/** Export */
+
+/* Node jS */
+if (isNodeJS)
+  exports = NOA; //TODO: wut?
+else if (window)
+  window.NOA = NOA;
+else
+  throw "Unrecognized environment! No NodeJS. No browser. Noa is lost"
+
+/** Declare noa core itself */
+NOA.require = require;
+NOA.define = define;
+NOA.define("NOA", NOA);
+
+
+})();

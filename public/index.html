@@ -18,10 +18,12 @@
 	</script>-->
 
 
+  </head>
+  <body>
 <script type="text/javascript">
 
 jQuery(function($) {
-	NOA.require("NOA.core","NOA.util", "NOA.core.Base", function() {
+	NOA.require(["NOA.util", "NOA.core.Base", "NOA.Record", "NOA.List", "NOA.core.Cell"], function() {
 
 		NOA.declare("NOA.ui.CellRenderer", NOA.core.Base, {
 			cell : null,
@@ -234,7 +236,7 @@ jQuery(function($) {
 		rootRecord.set("hello", "world");
 		rootRecord.set("koffie", "bar");
 
-		render($(document.body), rootRecord);
+		render($("body"), rootRecord);
 
 		rootRecord.set("foo", "bar");
 		rootRecord.set("hello", "the universe!");
@@ -243,6 +245,8 @@ jQuery(function($) {
 
 
 		function render(node, value) {
+			if (node == null)
+				throw "node is null!"
 			//TODO: clean up any existing widget for node
 
 			if (NOA.Record.isA(value)) 
@@ -261,7 +265,5 @@ jQuery(function($) {
 	})
 })
 </script>
-  </head>
-  <body>
   </body>
 </html>

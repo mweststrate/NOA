@@ -1,12 +1,10 @@
-NOA.core = {};
+NOA.require(["NOA.util", "NOA.Record", "NOA.List", "NOA.core.Cell", "NOA.core.Expression"], function() {
 
-NOA.require("NOA.util", "NOA.Record", "NOA.List", "NOA.core.Cell", "NOA.core.Expression");
-
-
+var core = NOA.exists("NOA.core") ? NOA.core : NOA.define("NOA.core", {})
 /**
 	accepts a string value and returns a NOA object structure, consisting of lists and records
 */
-NOA.fromJson = function(value) {
+core.fromJson = function(value) {
   return NOA.fromJS(jQuery.fromJSON(value));
 };
 
@@ -21,7 +19,7 @@ NOA.fromJson = function(value) {
   	objects map to NOA.Record,
   	primitive values map to primitive values
   */
-  NOA.fromJS = function(value) {
+  core.fromJS = function(value) {
     if (value === null || value === undefined)
       return null;
 
@@ -44,3 +42,5 @@ NOA.fromJson = function(value) {
     }
   };
 })();
+
+});

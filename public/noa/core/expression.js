@@ -1,3 +1,5 @@
+NOA.require(["NOA.core.Base"], function(){
+
 NOA.ensureObject("NOA.impl");
 
 NOA.impl.SCOPE = [{}]; //empty start scope
@@ -175,4 +177,6 @@ NOA.declare("NOA.core.Expression",  NOA.core.Base, {
                 this.params[key].die();
         this.debug("freeing apply " + this.noaid);
     }
+});
+
 });

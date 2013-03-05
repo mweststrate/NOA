@@ -3,6 +3,7 @@
  */
 
 //NOA.require("NOA.List");
+NOA.require(["NOA.core.Base", "NOA.core.Cell"], function() {
 
 NOA.declare("NOA.Record", NOA.core.Base, {
 	data : null,
@@ -81,3 +82,5 @@ NOA.declare("NOA.Record", NOA.core.Base, {
 
 	}
 });
+
+}); //require

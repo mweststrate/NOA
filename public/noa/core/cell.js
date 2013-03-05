@@ -1,4 +1,4 @@
-NOA.require("NOA.core.Base")
+NOA.require(["NOA.core.Base",  "NOA.core.Expression"], function(){
 
 NOA.declare("NOA.core.Cell",  NOA.core.Base, {
     parent : null,
@@ -151,5 +151,7 @@ NOA.declare("NOA.core.Cell",  NOA.core.Base, {
             (this.parent ? this.parent.debugName() + "." + this.index : "Cell " + this.noaid)
             + ":" + this.value);
     }
+
+});
 
 });

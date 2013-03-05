@@ -1,23 +1,16 @@
-NOA.util = {};
+NOA.require(["NOA.core.Base", "NOA.core.Binding"], function(){
 
-NOA.require("NOA.core.Base", "NOA.core.Binding");
+  var util = {};
+  NOA.define("NOA.util", util);
 
 
-
-NOA.util.makeArray = function() {
-  if (jQuery)
-    NOA.util.makeArray = jQuery.makeArray;
-  else {
-    NOA.util.makeArray = function(ar) {
-      var res = [];
-      var i = ar.length;
-      for(;i;i--)
-        res[i] = ar[i];
-      return res;
-    }
+  util.makeArray = function(ar) {
+    var res = [];
+    var i = ar.length;
+    for(;i;i--)
+      res[i] = ar[i];
+    return res;
   }
-  return NOA.util.makeArray.apply(NOA.util, arguments);
-}
 
 /**
  * binarySearch returns the first index of an object greater than needle.
@@ -27,7 +20,7 @@ NOA.util.makeArray = function() {
  
  * returnvalue in 0..list.length
  */
-NOA.util.binarySearch = function(list, needle, comperator) {
+util.binarySearch = function(list, needle, comperator) {
   var l = list.length - 1;
   var lower = 0;
   var upper = l;
@@ -55,9 +48,11 @@ NOA.util.binarySearch = function(list, needle, comperator) {
   return upper;
 };
 
-NOA.util.identity = function(_) { return _; };
-NOA.util.noop = function() {};
+util.identity = function(_) { return _; };
+util.noop = function() {};
 
-NOA.util.randomUUID = function() {
+util.randomUUID = function() {
   return "todo";
 };
+
+});
