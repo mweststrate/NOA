@@ -4,13 +4,6 @@ NOA.require(["NOA.core.Base", "NOA.core.Binding"], function(){
   NOA.define("NOA.util", util);
 
 
-  util.makeArray = function(ar) {
-    var res = [];
-    var i = ar.length;
-    for(;i;i--)
-      res[i] = ar[i];
-    return res;
-  }
 
 /**
  * binarySearch returns the first index of an object greater than needle.

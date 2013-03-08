@@ -2,13 +2,25 @@
 /**
 REQUIRE
 */
-(function() {
+(function(nodejsrequire) {
 
-var isNodeJS = typeof(exports) != "undefined";
 
 var NOA = {};
 
+NOA.isNodeJS = function() {
+  return typeof(exports) != "undefined";
+}
+
+var GLOBALSCOPE = NOA.isNodeJS() ? exports : window;
+
 var pendingModules = NOA.pending = {};
+
+var basepath = "";
+
+NOA.basepath = function(newbase) {
+  basepath = newbase;
+  return this;
+}
 
 function resolve(name, cb) {
   //loaded
@@ -18,9 +30,9 @@ function resolve(name, cb) {
   //not loading yet
   else if (!pendingModules[name]) {
     pendingModules[name] = [cb];
-    var filename = (name.replace(/\./g,"/") + ".js").toLowerCase();
-    if (isNodeJS)
-      require(filename);
+    var filename = basepath + (name.replace(/\./g,"/") + ".js").toLowerCase();
+    if (NOA.isNodeJS())
+      nodejsrequire(filename);
     else {
       var s = document.createElement("script");
       s.src = filename;
@@ -36,6 +48,8 @@ function resolve(name, cb) {
 }
 
 function define(name, value) {
+  var cb; 
+
   if (NOA.exists(name, NOA))
     throw "NOA.define: already defined: " + name;
 
@@ -56,8 +70,10 @@ function require(thing, cb) {
   if (NOA.isFunction(thing))
     //thing(NOA)
     thing();
-  else if (!NOA.isFunction(cb))
-    throw "NOA.require: second argument should be function. Found: " + cb;
+  else if (!NOA.isFunction(cb)) {
+    console.trace();
+    throw "NOA.require: second argument should be function. Found: " + JSON.stringify(arguments);
+  }
   else if (!NOA.isArray(thing)) {
     resolve(thing, function(resolved) {
       cb();//.call(null, resolved, NOA)
@@ -103,7 +119,7 @@ NOA.declare = function(name, properties /* and more properties.. */) {
 
     //setup the prototype
     var implementsAr = [];
-    var mixins = jQuery.makeArray(arguments); //todo: UTIL.MAKEARRAY
+    var mixins = NOA.makeArray(arguments); //todo: UTIL.MAKEARRAY
     mixins.shift(); //remove first argument from array
     for(var i = 0; i < mixins.length; i++) {
       if (NOA.isFunction(mixins[i])) {
@@ -116,7 +132,7 @@ NOA.declare = function(name, properties /* and more properties.. */) {
     
     //constructor    
     var constructor = scope[typename] = function() {
-        if (this == scope || this == window || this == null) { //TODO: what is default scope in NODE js?
+        if (this == scope || this == GLOBALSCOPE || this == null) { //TODO: what is default scope in NODE js?
             NOA.warn("[NOA.util.declare] Constructor '" + name +"' called without new keyword");
             return arguments.callee.apply({}, arguments); //TODO: does empty object even if there are prototypes?
         }
@@ -140,7 +156,7 @@ NOA.declare = function(name, properties /* and more properties.. */) {
           (function() { //Function to capture thing in scope
             
               var thing = mixins[j][propname];
-              if (jQuery.isFunction(thing) && jQuery.isFunction(proto[propname])) {
+              if (NOA.isFunction(thing) && NOA.isFunction(proto[propname])) {
                         if (propname == "init") {
                             //already exists, lets monkey patch...
                             var base = proto[propname];
@@ -294,7 +310,7 @@ NOA.each = function(ar, cb, scope, flags) {
     flags = scope; 
     scope = flags; //undefined probably..
   }
-  scope = scope || window;
+  scope = scope || GLOBALSCOPE;
   flags = flags || "";
 
   //valid flags are (m)ap, (f)filter, (s)parse, (r)everse
@@ -368,7 +384,7 @@ NOA.ensureObject = function(path, scope) {
         parts = path.split(".");
     
     if (scope == undefined)
-        scope = window;
+        scope = GLOBALSCOPE;
     
     for(var i = 0; i < parts.length; i++) {
         if (!scope[parts[i]]) 
@@ -387,7 +403,7 @@ NOA.exists = function(path, scope) {
         parts = path.split(".");
     
     if (scope == undefined)
-        scope = window;
+        scope = GLOBALSCOPE;
     
     for(var i = 0; i < parts.length; i++) {
         if (!scope[parts[i]]) 
@@ -414,20 +430,27 @@ NOA.type = function(obj) {
   }
 }
 
-/** Export */
+NOA.makeArray = function(ar) {
+    var res = [];
+    var i = ar.length;
+    for(;i;i--)
+      res[i] = ar[i];
+    return res;
+  }
+
 
 /* Node jS */
-if (isNodeJS)
+/*(if (NOA.isNodeJS())
   exports = NOA; //TODO: wut?
-else if (window)
-  window.NOA = NOA;
+else if (typeof(window) != "undefined") 
+  GLOBALSCOPE.NOA = NOA;
 else
   throw "Unrecognized environment! No NodeJS. No browser. Noa is lost"
-
+*/
 /** Declare noa core itself */
 NOA.require = require;
 NOA.define = define;
 NOA.define("NOA", NOA);
 
 
-})();
+})(typeof(require) != "undefined" ? require : null); //save pointer to nodejs require if possible
