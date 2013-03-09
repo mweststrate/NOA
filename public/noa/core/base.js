@@ -1,6 +1,8 @@
 /** basic class with init, events etc */
 NOA.declare("NOA.core.Base", {
     init : function() {
+      if (!this.constructor.count)
+        this.constructor.count = 0;
       this.constructor.count += 1;
 
       /* Disabled, useful for debugging but a (potiential) 
@@ -23,7 +25,7 @@ NOA.declare("NOA.core.Base", {
      	- all arguments are passed to the onChange handlers
      */
     changed : function(/* args */) {
-    	var a = jQuery.makeArray(arguments);
+    	var a = NOA.makeArray(arguments);
     	a.unshift('changed');
     	return this.fire.apply(this, a);
         
@@ -36,7 +38,7 @@ NOA.declare("NOA.core.Base", {
      * - bound arguments
      */
    	onChange : function(scope, callback /*hitchargs*/) {
-   		var a = jQuery.makeArray(arguments);
+   		var a = NOA.makeArray(arguments);
     	a.unshift('changed');
     	return this.onEvent.apply(this, a);
    	},
@@ -50,7 +52,7 @@ NOA.declare("NOA.core.Base", {
    	fire : function(event /*args */) {
    		if (this.destroyed)
         return this;
-      var a = jQuery.makeArray(arguments);
+      var a = NOA.makeArray(arguments);
    		a.shift();
    		
    		var listeners = this.noabase.events[event];
@@ -83,7 +85,7 @@ NOA.declare("NOA.core.Base", {
    	 */
    	onEvent : function(ev, sc /*? */, callback, hitchargs) {
    		
-   		var a = jQuery.makeArray(arguments);
+   		var a = NOA.makeArray(arguments);
                 var event = a.shift();
                 var f = a.shift();
    		var scope = this;
@@ -110,7 +112,7 @@ NOA.declare("NOA.core.Base", {
      returns this
     */
     listenTo : function() {
-        var a = jQuery.makeArray(arguments);
+        var a = NOA.makeArray(arguments);
         var other = a.shift();
         a.splice(1,0, this); //set scope args to this
         
@@ -136,7 +138,7 @@ NOA.declare("NOA.core.Base", {
       if (this.noabase.refcount > 0)
         throw this.debugName() + " refuses to destruct: It is kept alive by something else.";
         
-      var a = jQuery.makeArray(arguments);
+      var a = NOA.makeArray(arguments);
       a.unshift('free');
       this.fire.apply(this, a);
       
@@ -163,7 +165,7 @@ NOA.declare("NOA.core.Base", {
    	 * See onChange, but triggers on the 'free' event. 
    	 */
    	onFree : function(scope, callback /*hitchargs*/) {
-   		var a = jQuery.makeArray(arguments);
+   		var a = NOA.makeArray(arguments);
     	a.unshift('free');
     	return this.onEvent.apply(this, a);
    	},
@@ -174,7 +176,7 @@ NOA.declare("NOA.core.Base", {
    	 * - arguments
    	 */
    	exec : function(func /*args*/) {
-   		var a = jQuery.makeArray(arguments);
+   		var a = NOA.makeArray(arguments);
    		var f = a.shift(); //the function
    		return f.apply(this, a);
                 
@@ -187,11 +189,11 @@ NOA.declare("NOA.core.Base", {
    	 */
    	bind : function(func /*hitchargs*/) {
    		var self = this;
-   		var captured = jQuery.makeArray(arguments);
+   		var captured = NOA.makeArray(arguments);
    		var f = captured.shift();
    		
    		return function() {
-   			var a = jQuery.makeArray(arguments);
+   			var a = NOA.makeArray(arguments);
                         if (jQuery.isFunction(f))
                             return f.apply(self, captured.concat(a));
                         else
@@ -244,11 +246,11 @@ NOA.declare("NOA.core.Base", {
     },
 
     debug : function() {
-      NOA.debug.apply(NOA, [this].concat(jQuery.makeArray(arguments)));
+      NOA.debug.apply(NOA, [this].concat(NOA.makeArray(arguments)));
     },
 
     debugIn : function() {
-      NOA.debugIn.apply(NOA, [this].concat(jQuery.makeArray(arguments)));
+      NOA.debugIn.apply(NOA, [this].concat(NOA.makeArray(arguments)));
     },
 
     debugOut : function() {

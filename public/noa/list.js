@@ -671,6 +671,7 @@ NOA.declare("NOA.List", NOA.core.Base, {
     },
 
     free : function() {
+        console.log("freeing " + this.cells.length)
         for (var i = this.cells.length -1; i >= 0; i--)
             this.cells[i].free();
 

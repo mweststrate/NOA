@@ -24,11 +24,14 @@ NOA.basepath = function(newbase) {
 
 function resolve(name, cb) {
   //loaded
-  if (NOA.exists(name, NOA))
-    cb.call(null, NOA.ensureObject(name, NOA));
+  if (NOA.exists(name))
+    cb.call(null, NOA.ensureObject(name));
   
   //not loading yet
   else if (!pendingModules[name]) {
+
+    console.log("Loading " + name)
+
     pendingModules[name] = [cb];
     var filename = basepath + (name.replace(/\./g,"/") + ".js").toLowerCase();
     if (NOA.isNodeJS())
@@ -48,6 +51,7 @@ function resolve(name, cb) {
 }
 
 function define(name, value) {
+  console.log("defining " + name);
   var cb; 
 
   if (NOA.exists(name, NOA))
@@ -78,10 +82,10 @@ function require(thing, cb) {
     resolve(thing, function(resolved) {
       cb();//.call(null, resolved, NOA)
     })
-    setTimeout(10*1000, function() {
+    /*TODO: check if script call returns. setTimeout(10*1000, function() {
       if (!modules[thing])
         throw "Failed to resolve '" + thing + "' in 10 seconds"
-    })
+    })*/
   }
   else if (NOA.isArray(thing)) {
     var res = [];
@@ -139,11 +143,12 @@ NOA.declare = function(name, properties /* and more properties.. */) {
         noaid += 1;
         this.noaid = noaid;
         this.init.apply(this, arguments);
+        //arguments.callee.count = arguments.callee.count ? 1 + arguments.callee.count : 1;
+        console.log("created" + typename);
         return this; //avoid warning
     };
     
     var proto = constructor.prototype = {}; //start with empty prototype
-
     
     //set toString on beforehand, so it can be overridden.  
     proto.toString = function() {
@@ -197,8 +202,11 @@ NOA.declare = function(name, properties /* and more properties.. */) {
       return !!(thing && thing.interfaces && jQuery.inArray(this.classname, thing.interfaces()) > -1);
     }
 
-    constructor.count = 0;
-    
+    /*proto.free = function() {
+      console.log("freed " + typename);
+      scope[typename].count -= 1;
+    }*/
+
     //Some general functions
     proto.inherited = function() { 
         var f = args.callee;

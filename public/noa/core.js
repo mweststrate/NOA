@@ -1,6 +1,9 @@
+
 NOA.require(["NOA.util", "NOA.Record", "NOA.List", "NOA.core.Cell", "NOA.core.Expression"], function() {
 
-var core = NOA.exists("NOA.core") ? NOA.core : NOA.define("NOA.core", {})
+var core = NOA.exists("NOA.core") 
+  ? NOA.define("NOA.core", NOA.core)  //weird construction
+  : NOA.define("NOA.core", {})
 /**
 	accepts a string value and returns a NOA object structure, consisting of lists and records
 */
@@ -10,8 +13,8 @@ core.fromJson = function(value) {
 
 (function() {
 
-  primitivetypes = { boolean : 1, number : 1, string : 1, date : 1};
-  strangetypes = { function : 1, regexp : 1 };
+  var primitivetypes = { boolean : 1, number : 1, string : 1, date : 1};
+  var strangetypes = { function : 1, regexp : 1 };
 
   /**
   	converts a javascript object/ value into a NOA object/ value
