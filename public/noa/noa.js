@@ -199,7 +199,7 @@ NOA.declare = function(name, properties /* and more properties.. */) {
     proto.constructor = constructor; //store the constructor type to find the type back
     
     constructor.isA = function(thing) {
-      return !!(thing && thing.interfaces && jQuery.inArray(this.classname, thing.interfaces()) > -1);
+      return !!(thing && thing.interfaces && NOA.inArray(this.classname, thing.interfaces()) > -1);
     }
 
     /*proto.free = function() {
@@ -429,6 +429,15 @@ NOA.isArray = function(thing) {
   return Object.prototype.toString.call( thing ) === '[object Array]'
 }
 
+NOA.inArray = function(thing, array) {
+  if (!NOA.isArray(array))
+    throw "Second argument should be array";
+  for (var i = 0; i < array.length; i++)
+    if (array[i] == thing)
+      return true;
+  return false;
+}
+
 NOA.type = function(obj) {
   if (obj == null)
     return String(obj);
@@ -442,7 +451,7 @@ NOA.makeArray = function(ar) {
     var res = [];
     var i = ar.length;
     for(;i;i--)
-      res[i] = ar[i];
+      res[i-1] = ar[i-1];
     return res;
   }
 

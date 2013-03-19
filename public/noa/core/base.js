@@ -90,7 +90,7 @@ NOA.declare("NOA.core.Base", {
                 var f = a.shift();
    		var scope = this;
                 
-                if (!jQuery.isFunction(f)) //Nope, its the scope...
+      if (!NOA.isFunction(f)) //Nope, its the scope...
    			scope = f;
    		f = a.shift();
    		
@@ -116,13 +116,13 @@ NOA.declare("NOA.core.Base", {
         var other = a.shift();
         a.splice(1,0, this); //set scope args to this
         
-        var handler = other.onEvent.apply(other, a);
+        var handler = other.on.apply(other, a);
         return this;
     },
 
     unlistenTo : function(thing, event){
       if (!this.destroyed && !this.freeing) {
-        var ar = this.noabase.handlers; l = ar.length;
+        var ar = this.noabase.handlers, l = ar.length;
         for(var i = 0; i < l; i++)
           if (ar[i] && ar[i].source == thing && ar[i].event == event)
             ar[i].free();

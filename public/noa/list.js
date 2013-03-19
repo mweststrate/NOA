@@ -15,6 +15,7 @@ NOA.declare("NOA.List", NOA.core.Base, {
         this.sublists = [];
 
         if (parentlist) {
+            NOA.debug("New lit with parent:  "+ parentlist);
             this.uses(parentlist); 
             this.listenTo(parentlist, 'free', this.free);
         }

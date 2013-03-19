@@ -32,7 +32,7 @@ NOA.declare("NOA.core.Binding", {
     }
 		this._firing = true;
 		
-		var a = jQuery.makeArray(arguments);
+		var a = NOA.makeArray(arguments);
 		
 		//console.info("Firing: " + this.source + " -> " +  this.event + " -> " + (this.dest ? this.dest : "(unknown)"));
 		try {
