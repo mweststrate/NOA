@@ -434,8 +434,8 @@ NOA.inArray = function(thing, array) {
     throw "Second argument should be array";
   for (var i = 0; i < array.length; i++)
     if (array[i] == thing)
-      return true;
-  return false;
+      return i;
+  return -1;
 }
 
 NOA.type = function(obj) {
