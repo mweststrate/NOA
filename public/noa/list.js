@@ -144,8 +144,16 @@ NOA.declare("NOA.List", NOA.core.Base, {
             var source = this.parent.cell(index);
             var scope = NOA.impl.newScope(basescope);
             scope[name] = source;
-            
-            var a = new NOA.core.Expression(null, func, scope, this, source); //source will be both available as this.variable('name') or as the first arg in 'func'. 
+
+            //new way
+            var a;
+            if (NOA.isFunction(func))
+                a = new NOA.core.Expression(func, scope)
+            else if (NOA.core.Expression.isA(func))
+                a = func;
+            else
+                throw "Map function should be JS function or expression"
+            //var a = new NOA.core.Expression(null, func, scope, this, source); //source will be both available as this.variable('name') or as the first arg in 'func'.
   //TODO:?          a = a.listenTo(source, 'free', a.die or free); //destruct on free ASAP, othwerise unnecesary applications will be triggered.
 
             //first create the new cell with the value, then start listening (otherwise a temp cell would create unecessary events)

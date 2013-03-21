@@ -260,6 +260,7 @@ describe("NOA test 1", function() {
             o.set("a", 10);
             o.set("b", 7);
             //TODO: will fail as changin a and b does not fire the application; this is not changed. There should be a NOA.get which is used inside the operation?
+            //Probably shoulde be like: Expression(o.cell("c"), ["this", "this.a", "this.b"], function(a, b) { return a + b }, null, o)
             should.equal(o.get("c"), '17');
 
             f.die();
