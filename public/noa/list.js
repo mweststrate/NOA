@@ -580,6 +580,7 @@ NOA.declare("NOA.List", NOA.core.Base, {
             else { //list
                 lmap.splice(index, 0, [start, 0]);
                 setupSublist(index, value);
+ //               value.live();
             }
         }
 
@@ -590,6 +591,7 @@ NOA.declare("NOA.List", NOA.core.Base, {
                 list.unlistenTo(value, 'set');
                 list.unlistenTo(value, 'remove');
                 list.unlistenTo(value, 'move');
+ //               value.die();
             }
 
             var size = lmap[index][1];

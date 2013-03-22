@@ -109,8 +109,42 @@ describe("NOA test 1", function() {
         });
     });
 
+    it("NOA test list join", function(done) {
+        NOA.require(["NOA.core", "NOA.List", "NOA.core.Cell", "NOA.core.Expression"], function() {
+            var x = new NOA.List().live().debugName("x");
+            x.add(1);
+            x.add(2);
+
+            var y = new NOA.List().live();
+            y.add(3);
+            y.add(4);
+
+            var z = new NOA.List();
+            z.add(x).add(y);
+
+            var a = z.join().live();
+
+            should.deepEqual(a.toArray(), [1,2,3,4]);
+
+            a.die(); //should kill z
+            //z.live().die();
+            x.die();
+            y.die();
+
+            should.equal(a.destroyed, true);
+            should.equal(z.destroyed, true);
+            should.equal(x.destroyed, true);
+            should.equal(y.destroyed, true);
+
+            should.equal(NOA.List.count, 0);
+            should.equal(NOA.core.Cell.count, 0);
+
+            done()
+        });
+    });
+
     it("NOA test 1.4", function(done) {
-        NOA.require(["NOA.core", "NOA.List"], function() {
+        NOA.require(["NOA.core", "NOA.List", "NOA.core.Cell", "NOA.core.Expression"], function() {
             var start = (+ new Date);
 
             var x = new NOA.List().live().debugName("x");;
@@ -176,9 +210,9 @@ describe("NOA test 1", function() {
             d.die();
             e.die();
 
-            should.equal(NOA.List.count, 0);
-            should.equal(NOA.core.Cell.count, 0);
-            should.equal(NOA.core.Expression.count, 0);
+            should.equal(!!NOA.List.count, false);
+            should.equal(!!NOA.core.Expression.count, false);
+            should.equal(!!NOA.core.Cell.count, false);
 
             done();
         });

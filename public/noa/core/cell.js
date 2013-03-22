@@ -49,6 +49,8 @@ NOA.require(["NOA.core.Base",  "NOA.core.Expression"], function(){
                 //if (NOA.core.Base.isA(newvalue))
                 if (newvalue && newvalue.live)
                     newvalue.live();
+                if (orig && orig.die)
+                    orig.die();
 
                 if (NOA.core.Expression.isA(newvalue) || NOA.core.Cell.isA(newvalue)) {
                     this.debug("now following",newvalue);

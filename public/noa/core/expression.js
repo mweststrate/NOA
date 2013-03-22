@@ -89,7 +89,7 @@ NOA.require(["NOA.core.Base"], function(){
                         var cell = reads[noaid];
                         this.params[cell.noaid] = cell;
                         cell.live();
-                        this.debug("Added expression dependency: " + noaid);
+                        this.debug("Added expression dependency: " + cell.debugName());
                         this.listenTo(cell, "changed", this._apply);
                     }
                 }
@@ -103,7 +103,7 @@ NOA.require(["NOA.core.Base"], function(){
         variable : function(name) {
             var thing = NOA.impl.getFromScope(name);
             NOA.assert(!thing.destroyed);
-            return thing;
+            return thing.get(); //TODO: could registered values being read here instead of in cell?
             /*
 
             this.debug("retrieve from scope ", ": " , thing);
