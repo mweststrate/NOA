@@ -6,7 +6,6 @@ NOA.require(["NOA.core.Base",  "NOA.core.Expression"], function(){
         parent : null,
         value : undefined,
         index : -1,
-        expression : null,
 
         init : function(parent, index, value) {
             this.parent = parent;
@@ -14,6 +13,9 @@ NOA.require(["NOA.core.Base",  "NOA.core.Expression"], function(){
             this._store(value);
             this.initialized = true;
         },
+
+        //TODO: remove or set should be triggered here and not forwarded to the parent. Fire events from here. 
+        // Remove: why?!
 
         remove : function() {
             if (this.parent && NOA.Record.isA(this.parent))
@@ -38,23 +40,29 @@ NOA.require(["NOA.core.Base",  "NOA.core.Expression"], function(){
             this.debugOut();
         },
 
+        hasExpression : function() {
+            return NOA.core.Expression.isA(this.value) || Noa.core.Cell.isA(this.value);
+        },
+
         _store : function(newvalue) {
             var orig = this.value;
-            if (this.expression && newvalue != this.expression || !this.expression && newvalue != orig) {
-                if (this.expression) {
-                    this.unlistenTo(this.expression, 'changed'); //TODO: is this the proper event?
-                    this.expression.die();
+            if (newvalue != orig) {
+                if (this.hasExpression()) {
+                    this.unlistenTo(orig, 'changed');
                 }
 
-                //if (NOA.core.Base.isA(newvalue))
+                //TODO: if (NOA.core.Base.isA(newvalue))
                 if (newvalue && newvalue.live)
                     newvalue.live();
                 if (orig && orig.die)
                     orig.die();
 
-                if (NOA.core.Expression.isA(newvalue) || NOA.core.Cell.isA(newvalue)) {
+                this.value = newvalue;
+
+                if (this.hasExpression()) {
                     this.debug("now following",newvalue);
-                    this.expression = newvalue;
+                    sdfjklsdfjkl //TODO: get link trough to cell
+
                     this.expressionChanged(newvalue.get(this, this.expressionChanged), null);
                 }
                 else {
@@ -73,6 +81,7 @@ NOA.require(["NOA.core.Base",  "NOA.core.Expression"], function(){
             if (NOA.core.Cell.isA(newvalue) || NOA.core.Expression.isA(newvalue))
                 throw "Assigning cells or expressions as result of an expression is not supported yet"; //MWE: maybe it will work correctly, but it becomes a bit fuzzy...
 
+//TODO: value should not live or die, already owned by the original owner (cell or expression)
             if (newvalue && newvalue.live)
                 newvalue.live();
 

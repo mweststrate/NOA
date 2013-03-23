@@ -210,9 +210,9 @@ describe("NOA test 1", function() {
             d.die();
             e.die();
 
-            should.equal(!!NOA.List.count, false);
-            should.equal(!!NOA.core.Expression.count, false);
-            should.equal(!!NOA.core.Cell.count, false);
+            should.equal(NOA.core.Expression.count, 0);
+            should.equal(NOA.core.Cell.count, 0);
+            should.equal(NOA.List.count, 0);
 
             done();
         });

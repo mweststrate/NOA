@@ -63,7 +63,7 @@ NOA.declare("NOA.Record", NOA.core.Base, {
 	},
 	
 	replaySets : function(scope, handler) {
-		for(var key in this.data)
+		for(var key in this.data) //TODO: use this.keys, to preserve order
 			handler.call(scope, key, this.get(key));	
 	},
 
