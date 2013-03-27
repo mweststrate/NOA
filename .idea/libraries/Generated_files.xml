@@ -2,11 +2,13 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/public/noa/core/cell.js" />
+        <item url="file://$PROJECT_DIR$/public/noa/base.js" />
+        <item url="file://$PROJECT_DIR$/public/noa/cell.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/public/noa/core/cell.js" />
+      <root url="file://$PROJECT_DIR$/public/noa/base.js" />
+      <root url="file://$PROJECT_DIR$/public/noa/cell.js" />
     </CLASSES>
     <SOURCES />
   </library>
