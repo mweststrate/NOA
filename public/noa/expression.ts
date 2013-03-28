@@ -1,16 +1,15 @@
-NOA.require(["NOA.core.Base"], function(){
+module NOA {
 
-    NOA.ensureObject("NOA.impl");
+    class Scope {
+        private static SCOPE = [{}];
 
-    NOA.impl.SCOPE = [{}]; //empty start scope
-
-    NOA.impl.getCurrentScope = function() {
-        return NOA.impl.SCOPE[0];
+    static getCurrentScope () {
+        return SCOPE[0];
     };
 
 
-    NOA.impl.getFromScope = function(name) {
-        var s = NOA.impl.getCurrentScope();
+        static getFromScope (name) {
+        var s = getCurrentScope();
 
         while (s != null) {
             if (name in s)
@@ -18,59 +17,53 @@ NOA.require(["NOA.core.Base"], function(){
             s = s.$PARENTSCOPE$;
         }
 
+
         throw "NOA: Undefined variable: " + name;
     };
 
 
-    NOA.impl.newScope = function(basescope) {
+    static newScope (basescope) {
         return {
             $PARENTSCOPE$ : basescope //MWE: lets hope nobody ever names his variable '$PARENTSCOPE$'...
         }
+        }
+
+
+    static pushScope (scope) {
+        SCOPE.unshift(scope);
     };
 
-
-    NOA.impl.pushScope = function(scope) {
-        NOA.impl.SCOPE.unshift(scope);
+    static popScope () {
+        SCOPE.shift();
     };
 
-    NOA.impl.popScope = function() {
-        NOA.impl.SCOPE.shift();
-    };
+    }
 
-    /**
-     * @author Michel
-     */
-//TODO: rename apply, dangerous name...
-    NOA.declare("NOA.core.Expression",  NOA.core.Base, {
-        func : null,
-        scope : null,
-        value : undefined,
-        params : null, //map NOAID -> cell
+    export class Expression extends NOA.ValueContainer {
+        func : Function;
+        scope : Object;
+        value : any ;
+                params = {}; //contains bound value containers
 
 
-        init : function(func, scope) {
-            this.params = {};
+        constructor (func, scope) {
+            super();
             this.func = func;
             this.scope = scope; //TODO: if scope is null then create empty scope. If record, start scope with 'this' as record
 
             this._apply();
-        },
+        };
 
-        get : function(scope, onchange) {
-            if (scope && onchange)
-                this.onChange(scope, onchange);
 
-            return this.value;
-        },
 
-        _apply : function() {
+        _apply () {
             if (this.destroyed)
                 return;
             try {
-                NOA.impl.pushScope(this.scope);
+                Scope.pushScope(this.scope);
 
                 var reads = {};
-                NOA.core.Cell.trackReads(reads)
+                NOA.Cell.trackReads(reads)
 
                 var origvalue = this.value;
                 this.value = this.func.apply(this);
@@ -84,6 +77,7 @@ NOA.require(["NOA.core.Base"], function(){
                         this.unlistenTo(cell, "changed");
                         cell.die();
                     }
+                //register new parents
                 for(var noaid in reads) {
                     if (!this.params[noaid]) {
                         var cell = reads[noaid];
@@ -95,13 +89,13 @@ NOA.require(["NOA.core.Base"], function(){
                 }
             }
             finally {
-                NOA.core.Cell.untrackReads();
-                NOA.impl.popScope();
+                NOA.Cell.untrackReads();
+                Scope.popScope();
             }
-        },
+        };
 
-        variable : function(name) {
-            var thing = NOA.impl.getFromScope(name);
+        variable (name) {
+            var thing = Scope.getFromScope(name);
             NOA.assert(!thing.destroyed);
             return thing.get(); //TODO: could registered values being read here instead of in cell?
             /*
@@ -124,16 +118,17 @@ NOA.require(["NOA.core.Base"], function(){
                 return this.params[name] =  thing;
             */
 
-        },
+        };
 
-        free : function() {
-            for(var key in this.params) {
+        free() {
+        this.debug("freeing expression " + this.noaid);
+        for(var key in this.params) {
                 var cell = this.params[key]
                 this.unlistenTo(cell, "changed");
                 cell.die();
             }
-            this.debug("freeing apply " + this.noaid);
+            super.free();
         }
-    });
+    }
 
-});
+}

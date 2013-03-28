@@ -1,18 +1,42 @@
 module NOA {
 
 
-    class CellOwner extends NOA.Base {
-        fireCellChanged(any, any, any);
+    export class CellContainer extends NOA.Base {
+        fireCellChanged(index: any, newvalue: any, oldvalue: any);
+        cell (index: any) : Cell;
     }
 
-    class Cell extends NOA.Base {
+    export class ValueContainer extends NOA.Base {
+        public value : any; //TODO: private / protected?
 
-        private parent : CellOwner;
-        private value  : any = undefined;
+        public get(onChange? : (newvalue : any, oldvalue: any) => void) {
+            if (onChange)
+                this.onChange(onChange);
+
+            return this.value;
+        };
+
+        public changed (/* args */) {
+            var a = NOA.makeArray(arguments);
+            a.unshift('changed');
+            this.fire.apply(this, a);
+            return this;
+        }
+
+        onChange (callback : (newvalue : any, oldvalue: any) => void) {
+            return this.on('changed', callback);
+
+        }
+    }
+
+    export class Cell extends ValueContainer {
+
+        private parent : CellContainer;
         private index  : any = -1; //int or string
         private initialized : bool = false;
 
-        constructor (parent : CellOwner, index, value) {
+        constructor (parent : CellContainer, index, value) {
+            super();
             this.parent = parent;
             this.index = index;
             this.set(value);
@@ -33,6 +57,7 @@ module NOA {
         hasExpression () {
             return this.value instanceof NOA.Expression;
         }
+
         set(newvalue) {
             if(this.destroyed)
                 return;
@@ -79,11 +104,12 @@ module NOA {
             if(readTracker.length > 0) {
                 readTracker[0][this.noaid] = this;
             }
-            if(onchange)
-                this.onChange(onchange);
+
+            var res = super.onChange(onchange)
+
             if (this.hasExpression)
-                return this.value.get();
-            return this.value;
+                return res.get();
+            return res;
         }
 
         live () {
@@ -110,6 +136,7 @@ module NOA {
                 this.value.die();
 
             this.changed(undefined); //or fireChanged?
+            super.free();
         }
 
         toString() : string {
@@ -117,7 +144,7 @@ module NOA {
         }
 
 
-        public static trackReads (list : Array) {
+        public static trackReads (list : Object) {
             readTracker.unshift(list);
         }
 

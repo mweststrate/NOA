@@ -27,25 +27,6 @@ module NOA {
 			}
 		}
 
-		/* Fire all handlers registered in the onChange handler
-		 - all arguments are passed to the onChange handlers
-		 */
-		public changed (/* args */) {
-			var a = NOA.makeArray(arguments);
-			a.unshift('changed');
-			this.fire.apply(this, a);
-			return this;
-		}
-
-		/*
-		 * Registers an onchange handler
-		 * - scope?
-		 * - callback
-		 * - bound arguments
-		 */
-		onChange (callback : Function) {
-			return this.on('changed', callback);
-		}
 
 		/*
 		 * fires an event, invoking all registered callbacks (see onEvent)
