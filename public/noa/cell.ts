@@ -6,25 +6,26 @@ module NOA {
         cell (index: any) : Cell;
     }
 
-    export class ValueContainer extends NOA.Base {
+		export class ValueContainer extends NOA.Base {
         public value : any; //TODO: private / protected?
 
-        public get(onChange? : (newvalue : any, oldvalue: any) => void) {
+				public get();
+        public get(caller: NOA.Base, onChange: (newvalue : any, oldvalue: any) => void) {
             if (onChange)
-                this.onChange(onChange);
+                this.onChange(caller, onChange);
 
             return this.value;
         };
 
-        public changed (/* args */) {
+        public changed (newvalue, oldvalue) {
             var a = NOA.makeArray(arguments);
             a.unshift('changed');
             this.fire.apply(this, a);
             return this;
         }
 
-        onChange (callback : (newvalue : any, oldvalue: any) => void) {
-            return this.on('changed', callback);
+        onChange (caller: NOA.Base, callback : (newvalue : any, oldvalue: any) => void) {
+            return this.on('changed', caller, callback);
 
         }
     }
@@ -32,7 +33,7 @@ module NOA {
     export class Cell extends ValueContainer {
 
         private parent : CellContainer;
-        private index  : any = -1; //int or string
+        index  : any = -1; //int or string
         private initialized : bool = false;
 
         constructor (parent : CellContainer, index, value) {
@@ -55,7 +56,7 @@ module NOA {
 
 
         hasExpression () {
-            return this.value instanceof NOA.Expression;
+            return this.value instanceof NOA.ValueContainer;
         }
 
         set(newvalue) {
@@ -70,7 +71,7 @@ module NOA {
                 var oldvalue = orig;
                 if(this.hasExpression()) {
                     oldvalue = orig.get();
-                    this.unlistenTo(orig, 'changed');
+                    this.unlisten(orig, 'changed');
                 }
 
                 if(newvalue instanceof NOA.Base)
@@ -100,12 +101,12 @@ module NOA {
             this.changed(newv, oldv);
         }
 
-        get (onchange? : (any, any) => void) : any {
+        get (caller: NOA.Base, onchange? : (any, any) => void) : any {
             if(readTracker.length > 0) {
                 readTracker[0][this.noaid] = this;
             }
 
-            var res = super.onChange(onchange)
+            var res = this.onChange(caller, onchange)
 
             if (this.hasExpression)
                 return res.get();
@@ -130,7 +131,7 @@ module NOA {
 
         free () {
             if(this.hasExpression())
-                this.unlistenTo(this.value, 'changed');
+                this.unlisten(this.value, 'changed');
 
             if(this.value instanceof NOA.Base)
                 this.value.die();

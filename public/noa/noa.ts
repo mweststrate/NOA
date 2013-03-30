@@ -1,11 +1,6 @@
 
 module NOA {
 
-    export function isNodeJS () : bool {
-        return typeof(exports) != "undefined";
-    }
-
-
     //MWE: todo proper syntax for private members?
     export var depth = 0
     export var count = 0
@@ -81,7 +76,7 @@ module NOA {
      * @param  {[type]} expected [the expected value]
      * @return {[type]}
      */
-    export function test(test : any, expected: any) {
+    export function test(test : any, expected: any) : void {
         testnr += 1;
         if (('' + test) != ('' + expected)) {
             var msg = "Test #" + testnr + " failed: '" + test + "' expected '" + expected + "'";
@@ -244,7 +239,7 @@ module NOA {
 
 	 * returnvalue in 0..list.length
 	 */
-	export function binarySearch (list : any[], needle : Object, comperator : (any, any) => number) : number {
+	export function binarySearch (list : any[], needle : Object, comperator : (left: any, right: any) => number) : number {
 		var l = list.length - 1;
 		var lower = 0;
 		var upper = l;

@@ -1,30 +1,30 @@
 /** basic class with init, events etc */
 module NOA {
 
+	export class BaseData {
+		events = {};
+		handlers = [];
+		debugname : string = null;
+		refcount = 0;
+	}
+
 	export class Base {
 
 		static noaid : number = 0;
 
 		public  noaid : number;
-		public  noabase: Object;
+		public  noabase: BaseData = new BaseData();
 		public  destroyed : bool = false;
 		private freeing : bool = false;
 
 		//TODO:? static count : number = 0;
 
 		constructor () {
-			this.noaid = NOA.Base.noaid += 1;
+			this.noaid = Base.noaid += 1;
 			var x = this['prototype']; //work around for webstorm typescript
 			if (!x.count)
 				x.count = 0;
 			x.count += 1;
-
-			this.noabase = {
-				events : {},
-				handlers : [],
-				debugname : null,
-				refcount : 0
-			}
 		}
 
 
@@ -67,8 +67,8 @@ module NOA {
 		 *
 		 * Returns object, including a free method to destroy the listener (on both sides)
 		 */
-		on(ev : string, callback : Function) {
-
+		on(ev : string, caller : NOA.Base, callback : Function) {
+            //TODO: revise this method. Is it ever freed from the other side? introduce second argument owner?
 			var a = NOA.makeArray(arguments);
 			var event = a.shift();
 			var f = a.shift();
@@ -78,7 +78,7 @@ module NOA {
 				scope = f;
 			f = a.shift();
 
-			return new NOA.core.Binding(event, this, scope, f, a);
+			return new NOA.Binding( event, this, caller, f);
 		}
 
 
@@ -91,16 +91,16 @@ module NOA {
 
 		 returns this
 		 */
-		listenTo (other: NOA.Base, event: string, callback: Function) {
-			other.on(event, callback)
+		listen (other: NOA.Base, event: string, callback: Function) {
+			other.on(event, this, callback)
 			return this;
 		}
 
-		unlistenTo (thing, event){
+		unlisten (other: NOA.Base, event: string){
 			if (!this.destroyed && !this.freeing) {
 				var ar = this.noabase.handlers, l = ar.length;
 				for(var i = 0; i < l; i++)
-					if (ar[i] && ar[i].source == thing && ar[i].event == event)
+					if (ar[i] && ar[i].source == other && ar[i].event == event)
 						ar[i].free();
 			}
 			return this;
@@ -138,8 +138,8 @@ module NOA {
 		/*
 		 * See onChange, but triggers on the 'free' event.
 		 */
-		onFree (callback: Function) {
-			this.on('free', callback);
+		onFree (caller: Base, callback: Function) {
+			this.on('free', caller, callback);
 			return this;
 		}
 
@@ -170,7 +170,7 @@ module NOA {
 		uses (that) {
 			if (that) {
 				that.live();
-				this.onFree(() => that.die());
+				this.onFree(this, () => that.die());
 			}
 			return this;
 		}

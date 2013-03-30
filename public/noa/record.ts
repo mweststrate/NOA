@@ -32,11 +32,12 @@ module NOA{
             return this.data[key];
         }
 
-        get(key : string,  onchange? : (newvalue, oldvalue) => void) {
+				get(key : string);
+        get(key : string, caller: NOA.Base, onchange? : (newvalue, oldvalue) => void) {
             if (!this.has(key))
                 throw "Value for '" + key + "' is not yet defined!"
             //	return null;
-            return this.data[key].get(onchange);
+            return this.data[key].get(caller, onchange);
         }
 
         has (key: string): bool {
@@ -52,15 +53,15 @@ module NOA{
                 handler.call(key, this.get(key));
         }
 
-        onPut (callback: (key : string,  newvalue : any, oldvalue : any)) {
-            return this.on('put', callback);
+        onPut (caller: NOA.Base, callback: (key : string,  newvalue : any, oldvalue : any) => void) {
+            return this.on('put', caller, callback);
         }
 
-        onRemove (callback: (key : string)) {
-            return this.on('remove', callback);
+        onRemove (caller: NOA.Base, callback: (key : string)=>void) {
+            return this.on('remove', caller, callback);
         }
 
-        toObject (): object {
+        toObject (recurse?: bool): object { //TODO: implement recurse
             var res = {};
             for(var key in this.data)
                 res[key] = this.get(key);

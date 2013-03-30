@@ -24,7 +24,7 @@ module NOA {
 			this.dest = dest instanceof Base ? dest : null;
 			if (this.dest){
 				this.didx = dest.noabase.handlers.length;
-				dest.noabase.handlers.push(this);
+				dest.noabase.handlers.push(this); //TODO: make handlers object, generate nr for this binding and delete by key to reduce memory print
 			}
 
 			//console.info("Listening: " + this.source + " -> " +  this.event + " -> " + (this.dest ? this.dest : "(unknown)"));
