@@ -1,11 +1,54 @@
+///<reference path='noa.ts'/>
+
 /** basic class with init, events etc */
 module NOA {
 
 	export class BaseData {
-		events = {};
-		handlers = [];
-		debugname : string = null;
-		refcount = 0;
+		private events : Object = {}; //map of string -> Binding[] with listeners
+		private subscriptions: Object = {}; //map of string -> Binding with listening to..
+
+		public debugname : string = null;
+		public refcount = 0;
+
+
+		public removeSubscription(binding: Binding) {
+		    delete this.subscriptions[binding.id];
+		}
+
+		public addSubscription(binding: Binding) {
+		    this.subscriptions[binding.id] = binding;
+		}
+
+		public getSubscriptions(): Binding[] {
+		    var res = [];
+		    for (var key in this.subscriptions)
+		        res.push(this.subscriptions[key]);
+		    return res;
+		}
+
+		public getListeners(eventname: string): Binding[]{
+            if (this.events[eventname])
+                return this.events[eventname];
+            return [];
+		}
+
+		public addEventListener(binding: Binding) {
+		    var eventname = binding.event;
+		    if (!this.events[eventname])
+		        this.events[eventname] = {};
+		    this.events[eventname][binding.id] = binding;
+		}
+
+		public removeEventListener(binding: Binding) {
+		    delete this.events[binding.event][binding.id];
+		}
+
+		public free() {
+		    NOA.each(this.events, listeners =>
+                NOA.each(listeners, listener => listener.free())); //Does JS behave as expected under concurrent modifications?
+
+		    NOA.each(this.subscriptions, h => h.free());
+		}
 	}
 
 	export class Base {
@@ -13,13 +56,14 @@ module NOA {
 		static noaid : number = 0;
 
 		public  noaid : number;
-		public  noabase: BaseData = new BaseData();
+		public  noabase: BaseData;
 		public  destroyed : bool = false;
 		private freeing : bool = false;
 
 		//TODO:? static count : number = 0;
 
-		constructor () {
+		constructor() {
+		    this.noabase = new BaseData();
 			this.noaid = Base.noaid += 1;
 			var x = this['prototype']; //work around for webstorm typescript
 			if (!x.count)
@@ -33,25 +77,23 @@ module NOA {
 		 * - eventsource (this)
 		 * - eventname
 		 */
-		fire (event : String /*args*/) {
+		fire (event : string, ...args : any[]) {
 			if (this.destroyed)
 				return this;
 			var a = NOA.makeArray(arguments);
 			a.shift();
 
-			var listeners = this.noabase.events[event];
-			if (listeners) {
-				var l = listeners.length;
+			var listeners = this.noabase.getListeners(event);
+			var l = listeners.length;
 
-				if (l > 0) {
-					NOA.debugIn(this,"fires",event,":",a);
+			if (l > 0) {
+				NOA.debugIn(this,"fires",event,":",a);
 
-					for(var i = 0 ; i < l; i++)
-						if (listeners[i])
-							listeners[i].fire.apply(listeners[i], a); //Note, event name is included in the call
+				for(var i = 0 ; i < l; i++)
+					if (listeners[i])
+						listeners[i].fire.apply(listeners[i], a); //Note, event name is included in the call
 
-					NOA.debugOut();
-				}
+				NOA.debugOut();
 			}
 			return this;
 		}
@@ -67,7 +109,7 @@ module NOA {
 		 *
 		 * Returns object, including a free method to destroy the listener (on both sides)
 		 */
-		on(ev : string, caller : NOA.Base, callback : Function) {
+		on(ev : string, caller : Base, callback : Function) : Binding {
             //TODO: revise this method. Is it ever freed from the other side? introduce second argument owner?
 			var a = NOA.makeArray(arguments);
 			var event = a.shift();
@@ -78,7 +120,7 @@ module NOA {
 				scope = f;
 			f = a.shift();
 
-			return new NOA.Binding( event, this, caller, f);
+			return new Binding( event, this, caller, f);
 		}
 
 
@@ -91,14 +133,14 @@ module NOA {
 
 		 returns this
 		 */
-		listen (other: NOA.Base, event: string, callback: Function) {
+		listen (other: Base, event: string, callback: Function) {
 			other.on(event, this, callback)
 			return this;
 		}
 
-		unlisten (other: NOA.Base, event: string){
+		unlisten (other: Base, event: string){
 			if (!this.destroyed && !this.freeing) {
-				var ar = this.noabase.handlers, l = ar.length;
+				var ar = this.noabase.getSubscriptions(), l = ar.length;
 				for(var i = 0; i < l; i++)
 					if (ar[i] && ar[i].source == other && ar[i].event == event)
 						ar[i].free();
@@ -116,17 +158,7 @@ module NOA {
 
 			this.fire('free')
 
-			for(var event in this.noabase.events) {
-				var ar = this.noabase.events[event], l = ar.length;
-				for(var i = 0; i < l; i++)
-					if (ar[i])
-						ar[i].free();
-			}
-
-			var ar = this.noabase.handlers; l = ar.length;
-			for(var i = 0; i < l; i++)
-				if (ar[i])
-					ar[i].free();
+			this.noabase.free();
 
 			//delete this.constructor.instances[this.noaid];
 			this.destroyed = true;
@@ -167,7 +199,7 @@ module NOA {
 			return this;
 		}
 
-		uses (that) {
+		uses (that: Base) : Base{
 			if (that) {
 				that.live();
 				this.onFree(this, () => that.die());
@@ -175,7 +207,7 @@ module NOA {
 			return this;
 		}
 
-		debugName (newname) {
+		debugName (newname? : string) : string {
 			if (newname === undefined) {
 				if (this.noabase && this.noabase.debugname)
 					return this.noabase.debugname;
@@ -183,24 +215,49 @@ module NOA {
 			}
 			else {
 				this.noabase.debugname = newname;
-				return this;
+				return this.toString();
 			}
 		}
 
-		debug () {
+		debug (...args : any[]) {
 			NOA.debug.apply(NOA, [this].concat(NOA.makeArray(arguments)));
 		}
 
-		debugIn () {
+		debugIn(...args: any[]) {
 			NOA.debugIn.apply(NOA, [this].concat(NOA.makeArray(arguments)));
 		}
 
-		debugOut () {
+		debugOut(...args: any[]) {
 			NOA.debugOut();
 		}
 
-		toString() : String {
+		toString() : string {
 			return this['prototype'].toString.apply(this);
 		}
+	}
+
+	export var Events : GlobalEvents = new GlobalEvents();
+
+	export class GlobalEvents extends Base {
+
+	    onListMove() { }
+
+	    onListSet() { }
+
+	    onListInsert() { }
+
+	    onListRemove() { }
+
+	    onRecordPut() { }
+
+	    fireListMove() { }
+
+	    fireListSet() { }
+
+	    fireListRemove() { }
+
+	    fireListInsert() { }
+
+	    fireRecordPut() { }
 	}
 }

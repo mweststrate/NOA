@@ -1,21 +1,29 @@
+///<reference path='base.ts'/>
+///<reference path='binding.ts'/>
+///<reference path='cell.ts'/>
+///<reference path='expression.ts'/>
+///<reference path='list.ts'/>
+///<reference path='record.ts'/>
+///<reference path='transformations.ts'/>
 
 module NOA {
+export class NOA {
 
     //MWE: todo proper syntax for private members?
-    export var depth = 0
-    export var count = 0
-    export var testnr = 0
-    export var GLOBALSCOPE = (function() { return this; })() //MWE: TODO: proper?
+    static depth = 0;
+    static count = 0;
+    static testnr = 0;
+    static GLOBALSCOPE = (function() { return this; })(); //MWE: TODO: proper?
 
     /**
      if debugbreakon is set, the debugger will pause when entering the provided debug line
      */
-    export var debugbreakon = -1
+    static  debugbreakon = -1;
 
     /**
      writes debug data to the console (see NOA.debug) and increases the indentation depth before doing so
      */
-    export function debugIn () {
+    static debugIn(...args: any[]) {
         depth += 1;
         NOA.debug.apply(NOA, arguments);
     };
@@ -23,14 +31,14 @@ module NOA {
     /**
      reduces the debug indentation depth (see debugIn)
      */
-    export function debugOut() {
+    static debugOut(...args: any[]) {
         depth = Math.max(depth - 1, 0);
     };
 
     /**
      accepts an arbitrary list of things and prints them to the console
      */
-    export function debug () {
+    static debug(...args: any[]) {
         count += 1;
         var p = '';
         for(var i = depth; i >= 0; i--, p+=' ')
@@ -58,14 +66,14 @@ module NOA {
         }
     };
 
-    export function warn() {
+    static warn(...args: any[]) {
         console.warn.apply(console, arguments);
     }
 
     /**
      assert the value argument to be true, throws an exception otherwise
      */
-    export function assert (value : any) {
+    static assert (value : any) {
         if (!value)
             throw "NOA assertion failed!";
     };
@@ -76,7 +84,7 @@ module NOA {
      * @param  {[type]} expected [the expected value]
      * @return {[type]}
      */
-    export function test(test : any, expected: any) : void {
+    static test(test : any, expected: any) : void {
         testnr += 1;
         if (('' + test) != ('' + expected)) {
             var msg = "Test #" + testnr + " failed: '" + test + "' expected '" + expected + "'";
@@ -85,7 +93,7 @@ module NOA {
         }
     }
 
-    export function each (ar : any, cb : (any, int /*, any, Object*/) => bool, scope? : Object, flags? : string) : any {
+    static each (ar : any, cb : (any, int /*, any, Object*/) => bool, scope? : Object, flags? : string) : any {
         scope = scope || GLOBALSCOPE;
         flags = flags || "";
 
@@ -159,7 +167,7 @@ module NOA {
      *
      *  returns the most inner object
      */
-    export function ensureObject (path : string, scope? : Object) : Object {
+    static ensureObject (path : string, scope? : Object) : Object {
         var parts;
         if (NOA.type(path) == "array")
             parts = path;
@@ -178,7 +186,7 @@ module NOA {
         return scope;
     };
 
-    export function exists(path : string, scope? : Object) : bool {
+    static exists(path : string, scope? : Object) : bool {
         var parts;
         if (NOA.isArray(path))
             parts = path;
@@ -196,15 +204,15 @@ module NOA {
         return true;
     };
 
-    export function isFunction (thing : any) : bool {
+    static isFunction (thing : any) : bool {
         return NOA.type(thing) === "function";
     };
 
-    export function isArray (thing : any) : bool {
+    static isArray (thing : any) : bool {
         return Object.prototype.toString.call( thing ) === '[object Array]'
     }
 
-    export function inArray (thing : any, array : any[]) {
+    static inArray (thing : any, array : any[]) {
         if (!NOA.isArray(array))
             throw "Second argument should be array";
         for (var i = 0; i < array.length; i++)
@@ -213,7 +221,7 @@ module NOA {
         return -1;
     }
 
-    export function type (obj : any) {
+    static type (obj : any) {
         if (obj == null)
             return String(obj);
         else {
@@ -222,7 +230,7 @@ module NOA {
         }
     }
 
-    export function makeArray (ar : any) : any[] {
+    static makeArray (ar : any) : any[] {
         var res = [];
         var i = ar.length;
         for(;i;i--)
@@ -239,7 +247,7 @@ module NOA {
 
 	 * returnvalue in 0..list.length
 	 */
-	export function binarySearch (list : any[], needle : Object, comperator : (left: any, right: any) => number) : number {
+	static binarySearch (list : any[], needle : Object, comperator : (left: any, right: any) => number) : number {
 		var l = list.length - 1;
 		var lower = 0;
 		var upper = l;
@@ -267,11 +275,12 @@ module NOA {
 		return upper;
 	};
 
-	export function identity (x) => x;
-	export function noop (x) => undefined;
+	static identity (x) { return x };
+	static noop () {};
+	public static notImplemented() { throw "Not implemented. This function is TODO or supposed to be abstract"}
 
-	export function randomUUID () {
+	static randomUUID () {
 		return "todo";
 	};
-
+}
 }

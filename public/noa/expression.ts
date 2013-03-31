@@ -1,3 +1,5 @@
+///<reference path='noa.ts'/>
+
 module NOA {
 
 	export class Scope {
@@ -14,7 +16,7 @@ module NOA {
 			while (s != null) {
 				if (name in s)
 					return s[name];
-				s = s.$PARENTSCOPE$;
+				s = s['$PARENTSCOPE$'];
 			}
 
 
@@ -39,7 +41,7 @@ module NOA {
 
 	}
 
-	export class Expression extends NOA.ValueContainer {
+	export class Expression extends ValueContainer {
 		func : Function;
 		scope : Object;
 		value : any ;
@@ -63,7 +65,7 @@ module NOA {
 				Scope.pushScope(this.scope);
 
 				var reads = {};
-				NOA.Cell.trackReads(reads)
+				Cell.trackReads(reads)
 
 				var origvalue = this.value;
 				this.value = this.func.apply(this);
@@ -89,7 +91,7 @@ module NOA {
 				}
 			}
 			finally {
-				NOA.Cell.untrackReads();
+				Cell.untrackReads();
 				Scope.popScope();
 			}
 		};

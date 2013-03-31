@@ -1,31 +1,31 @@
+///<reference path='noa.ts'/>
+
 module NOA {
 
 	export class Binding {
+        static bindingcount = 0;
 
-		private event : String;
-		private source : Base;
-		private sidx : number;
+		event : string;
+		source : Base;
+        
+        public id : string; //MWE: should be number, but number is not supported as object index
 		private dest : Base;
-		private didx : number;
 		private callback : Function;
 		private _firing : bool = false;
 
 		constructor (event: string, source: Base, dest : Base, callback : Function) {
 			if (!callback)
 				throw this.toString() + ": no callback provided!";
+
+            this.id = "" + (++Binding.bindingcount);
 			this.event = event;
 
 			this.source = source;
-			if (!source.noabase.events[event])
-				source.noabase.events[event] = [];
-			this.sidx = source.noabase.events[event].length;
-			source.noabase.events[event].push(this);
+			source.noabase.addEventListener(this);
 
 			this.dest = dest instanceof Base ? dest : null;
-			if (this.dest){
-				this.didx = dest.noabase.handlers.length;
-				dest.noabase.handlers.push(this); //TODO: make handlers object, generate nr for this binding and delete by key to reduce memory print
-			}
+			if (this.dest)
+                this.dest.noabase.addSubscription(this);
 
 			//console.info("Listening: " + this.source + " -> " +  this.event + " -> " + (this.dest ? this.dest : "(unknown)"));
 
@@ -51,8 +51,8 @@ module NOA {
 
 		free (){
 			if (this.dest)
-				this.dest.noabase.handlers[this.didx] =  null;
-			this.source.noabase.events[this.event][this.sidx] = null;
+				this.dest.noabase.removeSubscription(this);
+			this.source.noabase.removeEventListener(this); 
 		};
 
 		toString () {
