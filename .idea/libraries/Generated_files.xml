@@ -2,25 +2,27 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/public/noa/cell.js" />
-        <item url="file://$PROJECT_DIR$/public/noa/list.js" />
-        <item url="file://$PROJECT_DIR$/public/noa/record.js" />
         <item url="file://$PROJECT_DIR$/public/noa/expression.js" />
-        <item url="file://$PROJECT_DIR$/public/noa/noa.js" />
+        <item url="file://$PROJECT_DIR$/public/noa/list.js" />
+        <item url="file://$PROJECT_DIR$/public/noa/aggregations.js" />
         <item url="file://$PROJECT_DIR$/public/noa/base.js" />
-        <item url="file://$PROJECT_DIR$/public/noa/binding.js" />
         <item url="file://$PROJECT_DIR$/public/noa/transformations.js" />
+        <item url="file://$PROJECT_DIR$/public/noa/record.js" />
+        <item url="file://$PROJECT_DIR$/public/noa/binding.js" />
+        <item url="file://$PROJECT_DIR$/public/noa/noa.js" />
+        <item url="file://$PROJECT_DIR$/public/noa/cell.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/public/noa/cell.js" />
-      <root url="file://$PROJECT_DIR$/public/noa/list.js" />
-      <root url="file://$PROJECT_DIR$/public/noa/record.js" />
       <root url="file://$PROJECT_DIR$/public/noa/expression.js" />
+      <root url="file://$PROJECT_DIR$/public/noa/aggregations.js" />
+      <root url="file://$PROJECT_DIR$/public/noa/list.js" />
       <root url="file://$PROJECT_DIR$/public/noa/base.js" />
+      <root url="file://$PROJECT_DIR$/public/noa/transformations.js" />
+      <root url="file://$PROJECT_DIR$/public/noa/record.js" />
       <root url="file://$PROJECT_DIR$/public/noa/noa.js" />
       <root url="file://$PROJECT_DIR$/public/noa/binding.js" />
-      <root url="file://$PROJECT_DIR$/public/noa/transformations.js" />
+      <root url="file://$PROJECT_DIR$/public/noa/cell.js" />
     </CLASSES>
     <SOURCES />
   </library>

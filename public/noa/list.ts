@@ -184,9 +184,7 @@ module NOA {
 
 		/** aggregate */
 
-
-
-			sum () {
+		sum () {
 
 		}
 
@@ -238,8 +236,9 @@ module NOA {
 		    return a.get(onchange);
 		}
 
-		get (index : number, caller?: Base, onchange? : (newvalue, oldvalue)=>void) {
-			return this.cells[index].get(caller, onchange);
+		//TODO: if caller & onchange, should it follow the cell or follow the value at the specified index?!
+		get (index : number /*, caller?: Base, onchange? : (newvalue, oldvalue)=>void*/) {
+			return this.cells[index].get(/*caller, onchange*/);
 		}
 
 		toArray (recurse? : bool) { //TODO: implement recurse
