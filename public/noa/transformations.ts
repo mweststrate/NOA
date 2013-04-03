@@ -542,13 +542,14 @@ module NOA {
 	}
 
 
-	//TOOD: this one can perfectly be memoized
+	//TODO: this one can perfectly be memoized
+	//TODO: very similar to SubList?
     export class ListTail extends ListTransformation {
     	start : number; //sublist from
 
         constructor(source: List, start? : number) {
             super(source);
-            if (from === undefined)
+            if (start === undefined)
             	this.start = 1;
             this.start = start;
         }
@@ -572,7 +573,7 @@ module NOA {
         }
 
         onSourceMove(from: number, to: number) { 
-        	if (from >= this.start 0 && to >= this.start)
+        	if (from >= this.start && to >= this.start)
         		this.move(from - this.start, to - this.start) 
         	else {
         		if (from >= this.start)

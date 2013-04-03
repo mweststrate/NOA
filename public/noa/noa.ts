@@ -5,6 +5,7 @@
 ///<reference path='list.ts'/>
 ///<reference path='record.ts'/>
 ///<reference path='transformations.ts'/>
+///<reference path='aggregations.ts'/>
 
 module NOA {
 export class NOA {
@@ -207,6 +208,11 @@ export class NOA {
     static isFunction (thing : any) : bool {
         return NOA.type(thing) === "function";
     };
+
+
+    static isNumber(thing: any): bool {
+        return type(thing) == "number";
+    }
 
     static isArray (thing : any) : bool {
         return Object.prototype.toString.call( thing ) === '[object Array]'

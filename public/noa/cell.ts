@@ -8,7 +8,7 @@ module NOA {
         cell(index: any): Cell { NOA.notImplemented(); return null; };
     }
 
-		export class ValueContainer extends Base {
+	export class ValueContainer extends Base {
         public value : any; //TODO: private / protected?
 
         public get(caller?: Base, onChange?: (newvalue : any, oldvalue: any) => void) {
@@ -31,6 +31,12 @@ module NOA {
         }
     }
 
+    /**
+        TODO: make cell not depend on parent, than it can be reused among multiple parents, and be passed around 
+        in, for example, sublist, reverse, count, summ, aggregations and such
+
+        replayInserts should have an variant which does not care about ordering
+    */
     export class Cell extends ValueContainer {
 
         private parent : CellContainer;

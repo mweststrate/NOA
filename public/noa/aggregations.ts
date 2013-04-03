@@ -29,7 +29,7 @@ module NOA {
 
         onSourceMove(from: number, to: number) { }
 
-        onSourceSet(index: number, oldvalue) { }
+        onSourceSet(index: number, newvalue, oldvalue) { }
 
         updateValue(newvalue) {
             if (newvalue != this.value) {
@@ -174,7 +174,7 @@ module NOA {
         findNewMax () {
             var max = -1 * (1/0); // -INF
 
-            NOA.each(source.cells, cell => {
+            NOA.each(this.source.cells, cell => {
                 var v = cell.get();
                 if (NOA.isNumber(v))
                     if (v > max)
@@ -213,7 +213,7 @@ module NOA {
         findNewMin () {
             var min = 1 * (1/0); // +NF
 
-            NOA.each(source.cells, cell => {
+            NOA.each(this.source.cells, cell => {
                 var v = cell.get();
                 if (NOA.isNumber(v))
                     if (v < min)
@@ -273,7 +273,7 @@ module NOA {
         }
 
         onSourceMove(from: number, to: number) { 
-            if (from == this.realindex || to == realthis.index)
+            if (from == this.realindex || to == this.realindex)
                 this.update();
         }
 
@@ -294,6 +294,4 @@ module NOA {
             super(source, -1);
         }
     }
-
-
 }

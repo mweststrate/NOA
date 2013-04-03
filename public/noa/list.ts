@@ -101,7 +101,7 @@ module NOA {
 			return this;
 		}
 
-		onSet(caller: Base, cb : (index : number, value) => void) : List{
+		onSet(caller: Base, cb : (index : number, newvalue, oldvalue) => void) : List{
 			this.on('set', caller, cb);
 			return this;
 		}
@@ -274,9 +274,5 @@ module NOA {
 		 */
 
 	}
-
-
-
-
 
 }
