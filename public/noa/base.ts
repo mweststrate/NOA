@@ -65,7 +65,7 @@ module NOA {
 		constructor() {
 		    this.noabase = new BaseData();
 			this.noaid = Base.noaid += 1;
-			var x = this['prototype']; //work around for webstorm typescript
+			var x = this['__proto__']; //work around for webstorm typescript
 			if (!x.count)
 				x.count = 0;
 			x.count += 1;
@@ -236,8 +236,6 @@ module NOA {
 		}
 	}
 
-	export var Events : GlobalEvents = new GlobalEvents();
-
 	export class GlobalEvents extends Base {
 
 	    onListMove() { }
@@ -260,4 +258,7 @@ module NOA {
 
 	    fireRecordPut() { }
 	}
+
+	export var Events : GlobalEvents = new GlobalEvents();
+
 }

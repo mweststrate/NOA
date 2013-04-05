@@ -128,7 +128,67 @@ module NOA {
 				cb(i, this.get(i));
 		}
 
-		/** child functions */
+
+                /** util functions */
+
+		add(value) {
+		    this.insert(this.cells.length, value);
+		    //return this.cells.length - 1;
+		    return this;
+		}
+
+		aggregate(index: string, caller?: Base, onchange?: (newvalue, oldvalue) => void ) {
+		    if (this.aggregates[index])
+		        return this.aggregates[index].get(caller, onchange)
+
+		    //check if index is a known aggregate class?
+		    if (!(NOA[index] && NOA[index].prototype == ListAggregation))
+		        throw "Unknown aggregate: " + index;
+
+		    var a = this.aggregates[index] = this[index](); //invokes aggregation
+		    return a.get(onchange);
+		}
+
+        //TODO: if caller & onchange, should it follow the cell or follow the value at the specified index?!
+        //Todo should it follow atIndex?
+		get (index: number /*, caller?: Base, onchange? : (newvalue, oldvalue)=>void*/) {
+		    return this.cells[index].get(/*caller, onchange*/);
+		}
+
+		toArray(recurse?: bool) { //TODO: implement recurse
+		    var res = [];
+		    var l = this.cells.length;
+		    for (var i = 0; i < l; i++)
+		        res.push(this.get(i));
+		    return res;
+		}
+
+		removeAll(value) {
+		    for (var i = this.cells.length - 1 ; i >= 0; i--) {
+		        if (this.get(i) == value)
+		            this.remove(i);
+		    }
+		}
+
+		free() {
+		    console.log("freeing " + this.cells.length)
+		    for (var i = this.cells.length - 1; i >= 0; i--)
+		        this.cells[i].free();
+
+		    //TODO: free aggregates
+		}
+
+        /* toString : function() {
+		 var res = [];
+		 var l = this.cells.length;
+		 for(var i = 0; i < l; i++)
+		 res.push(this.get(i));
+		 return "[" + res.join(",") + "]";
+		 }
+		 */
+
+
+		/** transform functions */
 
 		map(name: string, func: any /*funciton or Expression */): List {
 		    return new MappedList(this, name, func);
@@ -146,9 +206,6 @@ module NOA {
 		    return new FilteredList(this, name, func)
 		}
 
-		
-
-
         /**
 		 *
 		 *
@@ -158,21 +215,27 @@ module NOA {
 		 * @param  {[type]} end   [description]
 		 * @return {[type]}       [description]
 		 */
-		subset(begin: number, end: number): List {
-		    return new SubSetList(this, begin, end);
+		subset(begin: number, end?: number): List {
+            if (end === undefined)
+		        return new SubSetList(this, begin, end);
+		    return new ListTail(this, begin);
 		}
-			
+
+		tail() {
+		    return new ListTail(this, 1);
+		}
+
+		last() {
+		    return new ListTail(this, -1);
+		}
+
 		reverse(): List {
 		    return new ReversedList(this);
 		}
 
-		
-
 		sort(comperator): List { 
 		    return new SortedList(this, comperator);
 		}
-
-	
 
 		distinct(): List {
 		    return new DistinctList(this);
@@ -185,94 +248,36 @@ module NOA {
 		/** aggregate */
 
 		sum () {
-
+		    return new ListSum(this);
 		}
 
 		min () {
-
+		    return new ListMin(this);
 		}
 
 		max () {
-
+		    return new ListMax(this);
 		}
 
 		avg () {
-
+		    return new ListAverage(this);
 		}
 
 		count () {
-
+		    return new ListCount(this);
 		}
 
 		first () {
-
+		    return new ListFirst(this);
 		}
 
 		numbercount () {
-
+		    return new ListNumberCount(this);
 		}
 
-		last () {
-
+		atIndex(index: number) { //TODO: bleghname
+		    return new ListIndex(this, index);
 		}
-
-		/** util functions */
-
-		add (value) {
-			this.insert(this.cells.length, value);
-			//return this.cells.length - 1;
-			return this;
-		}
-
-		aggregate(index: string, caller?: Base, onchange?: (newvalue, oldvalue) => void ) {
-		    if (this.aggregates[index])
-		        return this.aggregates[index].get(caller, onchange)
-
-		    //check if index is a known aggregate class?
-		    if (!(NOA[index] && NOA[index].prototype == ListAggregation))
-		        throw "Unknown aggregate: " + index;
-
-		    var a = this.aggregates[index] = this[index](); //invokes aggregation
-		    return a.get(onchange);
-		}
-
-		//TODO: if caller & onchange, should it follow the cell or follow the value at the specified index?!
-		get (index : number /*, caller?: Base, onchange? : (newvalue, oldvalue)=>void*/) {
-			return this.cells[index].get(/*caller, onchange*/);
-		}
-
-		toArray (recurse? : bool) { //TODO: implement recurse
-			var res = [];
-			var l = this.cells.length;
-			for(var i = 0; i < l; i++)
-				res.push(this.get(i));
-			return res;
-		}
-
-		removeAll (value) {
-		for(var i = this.cells.length -1 ; i >=0; i--) {
-			if (this.get(i) == value)
-				this.remove(i);
-		}
-	}
-
-		free () {
-			console.log("freeing " + this.cells.length)
-			for (var i = this.cells.length -1; i >= 0; i--)
-				this.cells[i].free();
-
-			//TODO: free aggregates
-		}
-
-		/* toString : function() {
-		 var res = [];
-		 var l = this.cells.length;
-		 for(var i = 0; i < l; i++)
-		 res.push(this.get(i));
-		 return "[" + res.join(",") + "]";
-		 }
-		 */
-
 	}
 
 }
