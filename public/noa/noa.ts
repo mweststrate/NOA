@@ -290,3 +290,15 @@ export class NOA {
 	};
 }
 }
+
+(function (root) {
+    (function (root, NOA, exports, mod, define) {
+        if (typeof exports === "object" && exports) {
+            mod.exports = NOA; // CommonJS
+        } else if (typeof define === "function" && define.amd) {
+            define(NOA); // AMD
+        } else {
+            root.NOA = NOA; // <script>
+        }
+    })(root, NOA, root['exports'], root['module'], root['define']);
+})(this);

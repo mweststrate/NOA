@@ -11,13 +11,17 @@ module NOA{
             if (!this.has(key)) {
                 this.data[key] = new Cell(this, key, value);
                 this.keys.add(key);
-                this.fire('put',key, value, undefined); //todo, needs to fire or is done automatically?
+                this.fire('set',key, value, undefined); //todo, needs to fire or is done automatically?
             }
 
             else if (this.get(key) != value) {
                 this.data[key].set(value); //fires event
             }
         }
+
+        fireCellChanged(index: any, newvalue: any, oldvalue: any) {
+            this.fire('set', index, newvalue, oldvalue);
+        };
 
         remove(key : string) {
             if (!this.has(key))
@@ -50,8 +54,12 @@ module NOA{
                 handler.call(key, this.get(key));
         }
 
-        onPut (caller: Base, callback: (key : string,  newvalue : any, oldvalue : any) => void) {
-            return this.on('put', caller, callback);
+        onSet (caller: Base, callback: (key : string,  newvalue : any, oldvalue : any) => void) {
+            return this.on('set', caller, callback);
+        }
+
+        onRemove(caller: Base, callback: (key: string, oldvalue: any) => void ) {
+            return this.on('remove', caller, callback);
         }
 
         toObject (recurse?: bool): Object { //TODO: implement recurse

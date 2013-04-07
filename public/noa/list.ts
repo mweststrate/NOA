@@ -14,7 +14,7 @@ module NOA {
 		}
 
 		/** core functions */
-			insert (index: number, value) : List {
+		insert (index: number, value) : List {
 			this.debugIn("Insert at " + index + ": " + value);
 
 			var cell = new Cell(this, index, value);
@@ -35,6 +35,10 @@ module NOA {
 			this.debugOut();
 			return this;
 		}
+
+		fireCellChanged(index: any, newvalue: any, oldvalue: any) {
+		    this.fire('set', index, newvalue, oldvalue);
+		};
 
 		remove (index : number) : any {
 			this.debugIn("Remove at " + index);
@@ -86,7 +90,7 @@ module NOA {
 
 		/** events */
 
-			onInsert(caller: Base, cb : (index: number, value) => void) : List {
+		onInsert(caller: Base, cb : (index: number, value) => void) : List {
 			this.on('insert', caller, cb);
 			return this;
 		}
@@ -108,7 +112,7 @@ module NOA {
 
 		/** householding */
 
-			_updateIndexes (start : number, end : number, delta? : number) : List{
+		_updateIndexes (start : number, end : number, delta? : number) : List{
 //TODO: move end to the third argument to simplify the code        
 //debugger;
 			if (arguments.length == 2) {
@@ -129,7 +133,7 @@ module NOA {
 		}
 
 
-                /** util functions */
+        /** util functions */
 
 		add(value) {
 		    this.insert(this.cells.length, value);

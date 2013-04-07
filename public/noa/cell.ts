@@ -11,7 +11,7 @@ module NOA {
 	export class ValueContainer extends Base {
         public value : any; //TODO: private / protected?
 
-        public get(caller?: Base, onChange?: (newvalue : any, oldvalue: any) => void) {
+        public get(caller?: Base, onChange?: (newvalue : any, oldvalue: any) => void): any {
             if (onChange)
                 this.onChange(caller, onChange);
 
@@ -20,14 +20,13 @@ module NOA {
 
         public changed (newvalue, oldvalue) {
             var a = NOA.makeArray(arguments);
-            a.unshift('changed');
+            a.unshift('change');
             this.fire.apply(this, a);
             return this;
         }
 
         onChange (caller: Base, callback : (newvalue : any, oldvalue: any) => void) {
-            return this.on('changed', caller, callback);
-
+            return this.on('change', caller, callback);
         }
     }
 
@@ -51,17 +50,6 @@ module NOA {
             this.initialized = true;
         }
 
-        /* TODO: why?! remove () {
-         if(this.parent && NOA.Record.isA(this.parent)) {
-         this.parent.remove(this.index);
-         } else if(this.parent && NOA.List.isA(this.parent)) {
-         this.parent.remove(this.index);
-         } else {
-         throw "Cell.Remove can only be invoked for cells owned by a list or record!";
-         }
-         },*/
-
-
         hasExpression () {
             return this.value instanceof ValueContainer;
         }
@@ -78,7 +66,7 @@ module NOA {
                 var oldvalue = orig;
                 if(this.hasExpression()) {
                     oldvalue = orig.get();
-                    this.unlisten(orig, 'changed');
+                    this.unlisten(orig, 'change');
                 }
 
                 if(newvalue instanceof Base)
@@ -138,7 +126,7 @@ module NOA {
 
         free () {
             if(this.hasExpression())
-                this.unlisten(this.value, 'changed');
+                this.unlisten(this.value, 'change');
 
             if(this.value instanceof Base)
                 this.value.die();
