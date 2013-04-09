@@ -22,13 +22,13 @@ module NOA {
 
 		}
 
-		onSourceInsert (index : number, value) { }
+		onSourceInsert (index : number, value, cell: Cell) { }
 
 		onSourceRemove(index: number, value) { }
 
 		onSourceMove(from : number, to : number) { }
 
-		onSourceSet(index: number, newvalue, oldvalue) { }
+		onSourceSet(index: number, newvalue, oldvalue, cell: Cell) { }
 	}
 
 
@@ -52,8 +52,7 @@ module NOA {
 
 		}
 
-		onSourceInsert (index : number, _) {
-			var source = this.source.cell(index);
+		onSourceInsert (index : number, _, source) {
 			var scope = Scope.newScope(this.basescope);
 			scope[name] = source;
 
@@ -65,7 +64,7 @@ module NOA {
 			else
 				throw "Map function should be JS function or expression"
 
-			this.insert(index, a); //cells that are assigned an expression automatically listen
+			this.insert(index, a, source); //cells that are assigned an expression automatically listen
 		}
 
 		onSourceRemove(index: number, value) {
@@ -209,14 +208,14 @@ module NOA {
 				this.insert(0, this.source.cell(this.begin))
 		}
 
-		onSourceInsert(index, value) {
+		onSourceInsert(index, value, cell) {
 			if (index < this.begin) { //Item inserted before the subset
 				this.removeLast();
 				this.addFirst();
 			}
 			else if (index >= this.begin && index < this.end) { //item inserted within the subset
 				this.removeLast();
-				this.insert(index - this.begin, this.source.cell(index));
+				this.insert(index - this.begin, cell);
 			}
 		};
 
@@ -281,8 +280,8 @@ module NOA {
 			this.unlisten(source, 'set');
 		}
 
-		onSourceInsert (index, value) {
-			this.insert(this.cells.length - index, this.source.cell(index));
+		onSourceInsert (index, value, cell) {
+			this.insert(this.cells.length - index, cell);
 		};
 
 		onSourceRemove (index) {
@@ -332,12 +331,12 @@ module NOA {
 		};
 
 		//reusable insert function
-		onSourceInsert (baseindex: number, value, _knownindex? : number) {
+		onSourceInsert (baseindex: number, value, cell : Cell, _knownindex? : number) {
 			var nidx = _knownindex;
 			if (nidx === undefined)
 				nidx = NOA.binarySearch(this.cells, value, this.searcher);
 
-			this.insert(nidx, value);
+			this.insert(nidx, value, cell.getOrigin());
 			this.updateMapping(nidx, 1);
 			this.mapping.splice(baseindex, 0, nidx);
 		};
@@ -349,12 +348,12 @@ module NOA {
 			this.mapping.splice(baseindex, 1);
 		}
 
-		onSourceSet (index : number, value) {
+		onSourceSet (index : number, value, _, cell) {
 			var baseidx = this.mapping[index];
 			var nidx = NOA.binarySearch(this.cells, value, this.searcher);
 			if (nidx != baseidx) {
 				this.onSourceRemove(index);
-				this.onSourceInsert(index, value, nidx);
+				this.onSourceInsert(index, value, cell, nidx);
 			}
 			else //just update
 				this.set(index, value);
@@ -368,7 +367,7 @@ module NOA {
 		constructor(source: List) {
 			super(source);
 			source.replayInserts(this.onSourceInsert)
-
+			this.unlisten(source, 'move')
 		}
 
 		toKey (value) {
@@ -379,11 +378,11 @@ module NOA {
 			return value.toString();
 		}
 
-		onSourceInsert (index : number, value) {
+		onSourceInsert (index : number, value, cell) {
 			var key = this.toKey(value);
 			var has = key in this.occ;
 			if (!has) {
-				this.add(value);
+				this.add(value, cell);
 				this.occ[key] = 1;
 			}
 			else
@@ -403,9 +402,9 @@ module NOA {
 		};
 
 
-		onSourceSet(index: number, newvalue, origvalue) {
+		onSourceSet(index: number, newvalue, origvalue, cell) {
 			this.onSourceRemove(index, origvalue);
-			this.onSourceInsert(index, newvalue);
+			this.onSourceInsert(index, newvalue, cell);
 		};
 	}
 
@@ -428,8 +427,8 @@ module NOA {
 		setupSublist (index : number, sublist) {
 			var cell = this.source.cell(index); //the cell knows our position in lmap reliable when handling events, so the join transformation does not need to track that.
 
-			var sublistInsert = function (subindex, subvalue) {
-				this.insert(this.lmap[cell.index][0] + subindex, subvalue);
+			var sublistInsert = function (subindex, _, cell) {
+				this.insert(this.lmap[cell.index][0] + subindex, cell);
 				this.updateLmap(cell.index, +1);
 			}
 
@@ -444,18 +443,14 @@ module NOA {
 				this.remove(this.lmap[cell.index][0] + sf);
 				this.updateLmap(cell.index, -1);
 			});
-
-			sublist.onSet(function (sf: number, value: number) {
-				this.set(this.lmap[cell.index][0] + sf, value);
-			});
 		}
 
-		onSourceInsert(index : number, value) {
+		onSourceInsert(index : number, value, cell) {
 			var start = index == 0 ? 0 : this.lmap[index - 1][0] + this.lmap[index - 1][1];
 
 			if (!(value instanceof List)) { //plain value, insert right away
 				this.lmap.splice(index, 0, [start, 1]);
-				this.insert(start, value);
+				this.insert(start, value, cell);
 			}
 			else { //list
 				this.lmap.splice(index, 0, [start, 0]);
@@ -466,7 +461,6 @@ module NOA {
 		onSourceRemove (index : number, value) {
 			if (value instanceof List) {
 				this.unlisten(value, 'insert');
-				this.unlisten(value, 'set');
 				this.unlisten(value, 'remove');
 				this.unlisten(value, 'move');
 			}
@@ -481,25 +475,27 @@ module NOA {
 		}
 
 
-		onSourceSet (index : number, newvalue, oldvalue) {
+		onSourceSet (index : number, newvalue, oldvalue, cell) {
 			this.onSourceRemove(index, oldvalue);
-			this.onSourceInsert(index, newvalue);
+			this.onSourceInsert(index, newvalue, cell);
 		};
 
 		onSourceMove (from : number, to : number) {
 			//this can be done in an intelligent way by moving the items, but, its complicated since we already captured in the scope
 			//just, copy the original from and to value and re-apply remove and insert at the proper indexes
-			this.onSourceRemove(from, this.source.get(from)); //pass the old value to remove, to unlisten the changes
+		    /*MWE: old , this seem to be incorrect, it seems to be a swap funciton. Lets fix that. 
+            this.onSourceRemove(from, this.source.get(from)); //pass the old value to remove, to unlisten the changes
 			this.onSourceInsert(from, this.source.get(from));
 			this.onSourceRemove(to, this.source.get(to)); //pass the old value
 			this.onSourceInsert(to, this.source.get(to));
+            */
+		    var cell = this.source.cell(from);
+		    this.onSourceRemove(from, this.source.get(from));
+		    this.onSourceInsert(to > from ? to - 1 : to, cell.get(), cell);
 		};
 
 	}
 
-
-	//TODO: this one can perfectly be memoized
-	//TODO: very similar to SubList?
 	export class ListTail extends ListTransformation {
 		start : number; //sublist from
 
@@ -508,15 +504,16 @@ module NOA {
 			if (start === undefined)
 				this.start = 1;
 			this.start = start;
+			this.unlisten(source, 'set');
 		}
 
-		onSourceInsert(index: number, value) {
+		onSourceInsert(index: number, _, cell) {
 			if (index < this.start){
 				if (this.source.cells.length >= this.start)
 					this.insert(0, this.source.get(this.start));
 			}
 			else
-				this.insert(index - this.start, value);
+				this.insert(index - this.start, cell);
 		}
 
 		onSourceRemove(index: number, value) {
@@ -539,9 +536,13 @@ module NOA {
 			}
 		}
 
-		onSourceSet(index: number, newvalue) {
-			if (index >= this.start)
-				this.set(index - this.start, newvalue);
-		}
 	}
+
+	//TODO:
+	//Unmap
+	//Contains
+	//Intersect
+	//Union
+	//Substract
+	//Other list math
 }

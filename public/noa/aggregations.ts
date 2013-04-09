@@ -23,18 +23,26 @@ module NOA {
 
         }
 
-        onSourceInsert(index: number, value) { }
+        onSourceInsert(index: number, value, cell: Cell) { }
 
         onSourceRemove(index: number, value) { }
 
         onSourceMove(from: number, to: number) { }
 
-        onSourceSet(index: number, newvalue, oldvalue) { }
+        onSourceSet(index: number, newvalue, oldvalue, cell: Cell) { }
 
-        updateValue(newvalue) {
+        updateValue(newvalue, cell?: Cell) {
             if (newvalue != this.value) {
                 var old = this.value;
                 this.value = newvalue;
+
+                var origin: CellContainer = null;
+                if (cell)
+                    origin = cell.getOrigin();
+                else if (newvalue instanceof ValueContainer)
+                    origin = (<ValueContainer>newvalue).getOrigin();
+
+                this.setOrigin(origin);
                 this.changed(newvalue, old);
             }
         }
@@ -173,19 +181,22 @@ module NOA {
 
         findNewMax () {
             var max = -1 * (1/0); // -INF
+            var maxcell = null;
 
             NOA.each(this.source.cells, cell => {
                 var v = cell.get();
                 if (NOA.isNumber(v))
-                    if (v > max)
+                    if (v > max) {
                         max = v;
+                        maxcell = cell;
+                    }
             })
-            this.updateValue(max);
+            this.updateValue(max, maxcell);
         }
 
-        onSourceInsert(index: number, value) {
+        onSourceInsert(index: number, value, cell) {
             if (NOA.isNumber(value) && value > this.value)
-                this.updateValue(value);
+                this.updateValue(value, cell);
         }
 
         onSourceRemove(index: number, value) {
@@ -212,19 +223,22 @@ module NOA {
 
         findNewMin () {
             var min = 1 * (1/0); // +NF
+            var mincell = null;
 
             NOA.each(this.source.cells, cell => {
                 var v = cell.get();
                 if (NOA.isNumber(v))
-                    if (v < min)
+                    if (v < min) {
                         min = v;
+                        mincell = cell;
+                    }
             })
-            this.updateValue(min);
+            this.updateValue(min, mincell);
         }
 
-        onSourceInsert(index: number, value) {
+        onSourceInsert(index: number, value, cell:Cell) {
             if (NOA.isNumber(value) && value < this.value)
-                this.updateValue(value);
+                this.updateValue(value, cell);
         }
 
         onSourceRemove(index: number, value) {
@@ -246,6 +260,7 @@ module NOA {
 
         constructor(source: List, index: number) {
             super(source);
+            this.unlisten(source, 'set')
             this.index = index;
             this.updateRealIndex();
             this.update();
@@ -259,7 +274,7 @@ module NOA {
             if (this.realindex < 0 || this.realindex >= this.source.cells.length)
                 this.updateValue(null)
             else
-                this.updateValue(this.source.get(this.realindex));
+                this.updateValue(this.source.cell(this.realindex));
         }
 
         onSourceInsert(index: number, value) {
@@ -276,11 +291,11 @@ module NOA {
             if (from == this.realindex || to == this.realindex)
                 this.update();
         }
-
+/*
         onSourceSet(index: number, newvalue) { 
             if (index == this.realindex)
                 this.updateValue(newvalue);
-        }
+        }*/
     }
 
     export class ListFirst extends ListIndex {

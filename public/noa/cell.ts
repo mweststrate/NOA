@@ -4,12 +4,21 @@ module NOA {
 
 
     export class CellContainer extends Base {
-        fireCellChanged(index: any, newvalue: any, oldvalue: any){ NOA.notImplemented()};
+        fireCellChanged(index: any, newvalue: any, oldvalue: any, cell : Cell){ NOA.notImplemented()};
         cell(index: any): Cell { NOA.notImplemented(); return null; };
     }
 
 	export class ValueContainer extends Base {
         public value : any; //TODO: private / protected?
+        origin: CellContainer;
+
+        public getOrigin() : CellContainer {
+            return this.origin;
+        }
+
+        public setOrigin(origin : CellContainer) {
+            this.origin = origin;
+        }
 
         public get(caller?: Base, onChange?: (newvalue : any, oldvalue: any) => void): any {
             if (onChange)
@@ -18,7 +27,7 @@ module NOA {
             return this.value;
         };
 
-        public changed (newvalue, oldvalue) {
+        public changed (...args : any[]) {
             var a = NOA.makeArray(arguments);
             a.unshift('change');
             this.fire.apply(this, a);
@@ -42,10 +51,20 @@ module NOA {
         index  : any = -1; //int or string
         private initialized : bool = false;
 
-        constructor (parent : CellContainer, index, value) {
+        constructor(parent: CellContainer, index: number, value: ValueContainer);
+        constructor(parent: CellContainer, index: string, value: ValueContainer);
+        constructor(parent: CellContainer, index: string, value: any, origin: CellContainer);
+        constructor(parent: CellContainer, index: number, value: any, origin: CellContainer);
+        constructor(parent: CellContainer, index: any, value: any, origin?: CellContainer) {
             super();
             this.parent = parent;
             this.index = index;
+
+            if (origin)
+                this.setOrigin(origin)
+            else if(value instanceof ValueContainer)
+                this.setOrigin((<ValueContainer> value).getOrigin())
+
             this.set(value);
             this.initialized = true;
         }
@@ -85,15 +104,16 @@ module NOA {
                     });
                 }
 
-                this.fireChanged(newvalue, oldvalue);
+                if (this.initialized)
+                    this.fireChanged(newvalue, oldvalue);
             }
             this.debugOut();
         }
 
         fireChanged (newv : any, oldv: any) {
             if (this.parent)
-                this.parent.fireCellChanged(this.index, newv, oldv);
-            this.changed(newv, oldv);
+                this.parent.fireCellChanged(this.index, newv, oldv, this);
+            this.changed(newv, oldv, this);
         }
 
         get (caller?: Base, onchange? : (newvalue : any, oldvalue: any) => void) : any {

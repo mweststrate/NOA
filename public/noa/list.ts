@@ -6,7 +6,7 @@ module NOA {
 
 		static Aggregates = { count : "count", numbercount: "numbercount", sum : "sum", min: "min", max : "max", vag : "avg", first : "first", last : "last" };
 
-		cells = [];
+		cells : Cell[] = [];
 		aggregates = {};
 
 		constructor() {
@@ -14,30 +14,34 @@ module NOA {
 		}
 
 		/** core functions */
-		insert (index: number, value) : List {
+		insert(index: number, value: ValueContainer): List;
+		insert(index: number, value: any, origin: CellContainer): List;
+		insert(index: number, value: any, origin?: CellContainer): List {
 			this.debugIn("Insert at " + index + ": " + value);
 
-			var cell = new Cell(this, index, value);
+			var cell = new Cell(<CellContainer>this, index, <any> value, <CellContainer>origin); //Todo extract origin from value
 			this.cells.splice(index, 0, cell);
 
 			this._updateIndexes(index +1, 1);
-			this.fire('insert', index, cell.value);
+			this.fire('insert', index, cell.value, cell);
 
 			this.debugOut();
 			return this;
 		}
 
-		set (index : number, value) : List {
+		set (index: number, value: ValueContainer): List;
+		set (index: number, value: any, origin: CellContainer): List;
+		set (index: number, value: any, origin?: CellContainer): List {
 			this.debugIn("Set at " + index + ": " + value);
 
-			this.cells[index]._store(value);
+			this.cells[index].set(value);
 
 			this.debugOut();
 			return this;
 		}
 
-		fireCellChanged(index: any, newvalue: any, oldvalue: any) {
-		    this.fire('set', index, newvalue, oldvalue);
+		fireCellChanged(index: any, newvalue: any, oldvalue: any, cell : Cell) {
+		    this.fire('set', index, newvalue, oldvalue, cell);
 		};
 
 		remove (index : number) : any {
@@ -90,7 +94,7 @@ module NOA {
 
 		/** events */
 
-		onInsert(caller: Base, cb : (index: number, value) => void) : List {
+		onInsert(caller: Base, cb : (index: number, value, cell: Cell) => void) : List {
 			this.on('insert', caller, cb);
 			return this;
 		}
@@ -105,7 +109,7 @@ module NOA {
 			return this;
 		}
 
-		onSet(caller: Base, cb : (index : number, newvalue, oldvalue) => void) : List{
+		onSet(caller: Base, cb : (index : number, newvalue, oldvalue, cell: Cell) => void) : List{
 			this.on('set', caller, cb);
 			return this;
 		}
@@ -126,17 +130,19 @@ module NOA {
 			return this;
 		}
 
-		replayInserts(cb : (index: number, value: any) => void) {
+		replayInserts(cb : (index: number, value: any, cell: Cell) => void) {
 			var l= this.cells.length;
 			for(var i = 0; i < l; i++)
-				cb(i, this.get(i));
+				cb(i, this.get(i), this.cells[i]);
 		}
 
 
         /** util functions */
 
-		add(value) {
-		    this.insert(this.cells.length, value);
+		add(value: ValueContainer);
+		add(value: any, origin: CellContainer);
+		add(value: any, origin?: CellContainer) {
+		    this.insert(this.cells.length, value, origin);
 		    //return this.cells.length - 1;
 		    return this;
 		}

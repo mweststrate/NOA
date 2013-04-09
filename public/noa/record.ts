@@ -9,13 +9,13 @@ module NOA{
 
         set (key : string, value : any) {
             if (!this.has(key)) {
-                this.data[key] = new Cell(this, key, value);
-                this.keys.add(key);
+                this.data[key] = new Cell(this, key, value, this);
+                this.keys.add(key, this);
                 this.fire('set',key, value, undefined); //todo, needs to fire or is done automatically?
             }
 
             else if (this.get(key) != value) {
-                this.data[key].set(value); //fires event
+                (<Cell>this.data[key]).set(value); //fires event
             }
         }
 
@@ -28,7 +28,7 @@ module NOA{
                 return;
 
             this.fire('remove', key);
-            this.data[key].free();
+            (<Cell>this.data[key]).free();
 
             this.keys.removeAll(key);
             delete this.data[key];
@@ -42,7 +42,7 @@ module NOA{
             if (!this.has(key))
                 throw "Value for '" + key + "' is not yet defined!"
             //	return null;
-            return this.data[key].get(caller, onchange);
+            return (<Cell>this.data[key]).get(caller, onchange);
         }
 
         has (key: string): bool {
@@ -71,7 +71,7 @@ module NOA{
 
         free () {
             for(var key in this.data)
-                this.data[key].die().free();
+                (<Cell>this.data[key]).die().free();
 
             this.keys.free();
             super.free();
