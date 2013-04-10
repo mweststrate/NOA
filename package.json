@@ -19,5 +19,8 @@
   ],
   "author": "Michel Weststrate",
   "license": "BSD",
-  "gitHead": "3de9852dadcadb46c59f10715128442ec618190b"
+  "gitHead": "3de9852dadcadb46c59f10715128442ec618190b",
+  "devDependencies": {
+    "grunt": "~0.4.1"
+  }
 }

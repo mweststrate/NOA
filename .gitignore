@@ -1,2 +1,4 @@
 .idea/workspace.xml
 /*.js
+node_modules
+npm-debug.log
