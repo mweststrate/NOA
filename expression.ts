@@ -2,6 +2,7 @@
 
 module NOA {
 
+	//TODO: make reall class of scope, not some wrapped map. 
 	export class Scope {
 		private static SCOPE = [{}];
 
