@@ -21,6 +21,7 @@
   "license": "BSD",
   "gitHead": "3de9852dadcadb46c59f10715128442ec618190b",
   "devDependencies": {
-    "grunt": "~0.4.1"
+    "grunt": "~0.4.1",
+    "grunt-typescript": "~0.1.3"
   }
 }

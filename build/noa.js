@@ -1302,6 +1302,255 @@ var NOA;
 })(NOA || (NOA = {}));
 var NOA;
 (function (NOA) {
+    var NOA = (function () {
+        function NOA() { }
+        NOA.depth = 0;
+        NOA.count = 0;
+        NOA.testnr = 0;
+        NOA.GLOBALSCOPE = (function () {
+            return this;
+        })();
+        NOA.debugbreakon = -1;
+        NOA.debugIn = function debugIn() {
+            var args = [];
+            for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                args[_i] = arguments[_i + 0];
+            }
+            NOA.depth += 1;
+            NOA.debug.apply(NOA, arguments);
+        };
+        NOA.debugOut = function debugOut() {
+            var args = [];
+            for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                args[_i] = arguments[_i + 0];
+            }
+            NOA.depth = Math.max(NOA.depth - 1, 0);
+        };
+        NOA.debug = function debug() {
+            var args = [];
+            for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                args[_i] = arguments[_i + 0];
+            }
+            NOA.count += 1;
+            var p = '';
+            for(var i = NOA.depth; i >= 0; i-- , p += ' ') {
+                ;
+            }
+            var stuff = [];
+            for(var i = 0; i < arguments.length; i++) {
+                var a = arguments[i];
+                if(a === null) {
+                    stuff.push("'null'");
+                } else if(a === undefined) {
+                    stuff.push("'undefined'");
+                } else if(a.debugName) {
+                    stuff.push(a.debugName());
+                } else if(a.toString().indexOf(' ') > -1) {
+                    stuff.push("'" + a.toString() + "'");
+                } else {
+                    stuff.push(a.toString());
+                }
+            }
+            console.log(NOA.count + ':' + p + stuff.join(' '));
+            if(NOA.count == NOA.debugbreakon) {
+                debugger;
+
+            }
+        };
+        NOA.warn = function warn() {
+            var args = [];
+            for (var _i = 0; _i < (arguments.length - 0); _i++) {
+                args[_i] = arguments[_i + 0];
+            }
+            console.warn.apply(console, arguments);
+        };
+        NOA.assert = function assert(value) {
+            if(!value) {
+                throw "NOA assertion failed!";
+            }
+        };
+        NOA.test = function test(test, expected) {
+            NOA.testnr += 1;
+            if(('' + test) != ('' + expected)) {
+                var msg = "Test #" + NOA.testnr + " failed: '" + test + "' expected '" + expected + "'";
+                console.error(msg);
+                document.write("<br/>" + msg);
+            }
+        };
+        NOA.each = function each(ar, cb, scope, flags) {
+            scope = scope || NOA.GLOBALSCOPE;
+            flags = flags || "";
+            var map = flags.match(/m/), filter = flags.match(/f/), sparse = flags.match(/s/), reverse = flags.match(/r/), res = [], start = reverse ? ar.length - 1 : 0, delta = reverse ? -1 : 1, end = reverse ? -1 : ar.length, isArray = NOA.isArray(ar);
+            if(isArray) {
+                for(var i = start; i != end; i += delta) {
+                    if(ar[i] == null && sparse) {
+                        continue;
+                    }
+                    var value = cb.call(scope, ar[i], i, ar, scope);
+                    if(map) {
+                        if(reverse) {
+                            res.unshift(value);
+                        } else {
+                            res.push(value);
+                        }
+                    } else if(filter) {
+                        if(value === true) {
+                            if(reverse) {
+                                res.unshift(ar[i]);
+                            } else {
+                                res.push(ar[i]);
+                            }
+                        }
+                    } else if(value === false) {
+                        break;
+                    }
+                }
+                return res;
+            } else {
+                for(var key in ar) {
+                    if(ar[key] == null && sparse) {
+                        continue;
+                    }
+                    var value = cb.call(scope, ar[key], key, ar, scope);
+                    if(map) {
+                        res[key] = value;
+                    } else if(filter) {
+                        if(value === true) {
+                            res[key] = ar[key];
+                        }
+                    } else if(value === false) {
+                        break;
+                    }
+                }
+                return res;
+            }
+        };
+        NOA.ensureObject = function ensureObject(path, scope) {
+            var parts;
+            if(NOA.type(path) == "array") {
+                parts = path;
+            } else {
+                parts = path.split(".");
+            }
+            if(scope == undefined) {
+                scope = NOA.GLOBALSCOPE;
+            }
+            for(var i = 0; i < parts.length; i++) {
+                if(!scope[parts[i]]) {
+                    scope[parts[i]] = {
+                    };
+                }
+                scope = scope[parts[i]];
+            }
+            return scope;
+        };
+        NOA.exists = function exists(path, scope) {
+            var parts;
+            if(NOA.isArray(path)) {
+                parts = path;
+            } else {
+                parts = path.split(".");
+            }
+            if(!scope) {
+                scope = NOA.GLOBALSCOPE;
+            }
+            for(var i = 0; i < parts.length; i++) {
+                if(!scope[parts[i]]) {
+                    return false;
+                }
+                scope = scope[parts[i]];
+            }
+            return true;
+        };
+        NOA.isFunction = function isFunction(thing) {
+            return NOA.type(thing) === "function";
+        };
+        NOA.isNumber = function isNumber(thing) {
+            return NOA.type(thing) == "number";
+        };
+        NOA.isArray = function isArray(thing) {
+            return Object.prototype.toString.call(thing) === '[object Array]';
+        };
+        NOA.inArray = function inArray(thing, array) {
+            if(!NOA.isArray(array)) {
+                throw "Second argument should be array";
+            }
+            for(var i = 0; i < array.length; i++) {
+                if(array[i] == thing) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+        NOA.type = function type(obj) {
+            if(obj == null) {
+                return String(obj);
+            } else {
+                return Object.prototype.toString.call(obj).substring(8).replace(/\]$/, "").toLowerCase();
+            }
+        };
+        NOA.makeArray = function makeArray(ar) {
+            var res = [];
+            var i = ar.length;
+            for(; i; i--) {
+                res[i - 1] = ar[i - 1];
+            }
+            return res;
+        };
+        NOA.binarySearch = function binarySearch(list, needle, comperator) {
+            var l = list.length - 1;
+            var lower = 0;
+            var upper = l;
+            if(l == -1) {
+                return 0;
+            }
+            if(comperator(needle, list[l]) > 0) {
+                return list.length;
+            }
+            while(upper - lower > 1) {
+                var t = Math.round((upper + lower) / 2);
+                var v = comperator(needle, list[t]);
+                if(v < 0) {
+                    upper = t;
+                } else {
+                    lower = t;
+                }
+            }
+            if(upper == lower) {
+                return upper;
+            } else if(comperator(needle, list[lower]) < 0) {
+                return lower;
+            }
+            return upper;
+        };
+        NOA.identity = function identity(x) {
+            return x;
+        };
+        NOA.noop = function noop() {
+        };
+        NOA.notImplemented = function notImplemented() {
+            throw "Not implemented. This function is TODO or supposed to be abstract";
+        };
+        NOA.randomUUID = function randomUUID() {
+            return "todo";
+        };
+        return NOA;
+    })();
+    NOA.NOA = NOA;    
+})(NOA || (NOA = {}));
+(function (root) {
+    (function (root, NOA, exports, mod, define) {
+        if(typeof exports === "object" && exports) {
+            mod.exports = NOA;
+        } else if(typeof define === "function" && define.amd) {
+            define(NOA);
+        } else {
+            root.NOA = NOA;
+        }
+    })(root, NOA, root['exports'], root['module'], root['define']);
+})(this);
+var NOA;
+(function (NOA) {
     var ListAggregation = (function (_super) {
         __extends(ListAggregation, _super);
         function ListAggregation(source) {
@@ -1583,253 +1832,3 @@ var NOA;
     })(ListIndex);
     NOA.ListLast = ListLast;    
 })(NOA || (NOA = {}));
-var NOA;
-(function (NOA) {
-    var NOA = (function () {
-        function NOA() { }
-        NOA.depth = 0;
-        NOA.count = 0;
-        NOA.testnr = 0;
-        NOA.GLOBALSCOPE = (function () {
-            return this;
-        })();
-        NOA.debugbreakon = -1;
-        NOA.debugIn = function debugIn() {
-            var args = [];
-            for (var _i = 0; _i < (arguments.length - 0); _i++) {
-                args[_i] = arguments[_i + 0];
-            }
-            NOA.depth += 1;
-            NOA.debug.apply(NOA, arguments);
-        };
-        NOA.debugOut = function debugOut() {
-            var args = [];
-            for (var _i = 0; _i < (arguments.length - 0); _i++) {
-                args[_i] = arguments[_i + 0];
-            }
-            NOA.depth = Math.max(NOA.depth - 1, 0);
-        };
-        NOA.debug = function debug() {
-            var args = [];
-            for (var _i = 0; _i < (arguments.length - 0); _i++) {
-                args[_i] = arguments[_i + 0];
-            }
-            NOA.count += 1;
-            var p = '';
-            for(var i = NOA.depth; i >= 0; i-- , p += ' ') {
-                ;
-            }
-            var stuff = [];
-            for(var i = 0; i < arguments.length; i++) {
-                var a = arguments[i];
-                if(a === null) {
-                    stuff.push("'null'");
-                } else if(a === undefined) {
-                    stuff.push("'undefined'");
-                } else if(a.debugName) {
-                    stuff.push(a.debugName());
-                } else if(a.toString().indexOf(' ') > -1) {
-                    stuff.push("'" + a.toString() + "'");
-                } else {
-                    stuff.push(a.toString());
-                }
-            }
-            console.log(NOA.count + ':' + p + stuff.join(' '));
-            if(NOA.count == NOA.debugbreakon) {
-                debugger;
-
-            }
-        };
-        NOA.warn = function warn() {
-            var args = [];
-            for (var _i = 0; _i < (arguments.length - 0); _i++) {
-                args[_i] = arguments[_i + 0];
-            }
-            console.warn.apply(console, arguments);
-        };
-        NOA.assert = function assert(value) {
-            if(!value) {
-                throw "NOA assertion failed!";
-            }
-        };
-        NOA.test = function test(test, expected) {
-            NOA.testnr += 1;
-            if(('' + test) != ('' + expected)) {
-                var msg = "Test #" + NOA.testnr + " failed: '" + test + "' expected '" + expected + "'";
-                console.error(msg);
-                document.write("<br/>" + msg);
-            }
-        };
-        NOA.each = function each(ar, cb, scope, flags) {
-            scope = scope || NOA.GLOBALSCOPE;
-            flags = flags || "";
-            var map = flags.match(/m/), filter = flags.match(/f/), sparse = flags.match(/s/), reverse = flags.match(/r/), res = [], start = reverse ? ar.length - 1 : 0, delta = reverse ? -1 : 1, end = reverse ? -1 : ar.length, isArray = NOA.isArray(ar);
-            if(isArray) {
-                for(var i = start; i != end; i += delta) {
-                    if(ar[i] == null && sparse) {
-                        continue;
-                    }
-                    var value = cb.call(scope, ar[i], i, ar, scope);
-                    if(map) {
-                        if(reverse) {
-                            res.unshift(value);
-                        } else {
-                            res.push(value);
-                        }
-                    } else if(filter) {
-                        if(value === true) {
-                            if(reverse) {
-                                res.unshift(ar[i]);
-                            } else {
-                                res.push(ar[i]);
-                            }
-                        }
-                    } else if(value === false) {
-                        break;
-                    }
-                }
-                return res;
-            } else {
-                for(var key in ar) {
-                    if(ar[key] == null && sparse) {
-                        continue;
-                    }
-                    var value = cb.call(scope, ar[key], key, ar, scope);
-                    if(map) {
-                        res[key] = value;
-                    } else if(filter) {
-                        if(value === true) {
-                            res[key] = ar[key];
-                        }
-                    } else if(value === false) {
-                        break;
-                    }
-                }
-                return res;
-            }
-        };
-        NOA.ensureObject = function ensureObject(path, scope) {
-            var parts;
-            if(NOA.type(path) == "array") {
-                parts = path;
-            } else {
-                parts = path.split(".");
-            }
-            if(scope == undefined) {
-                scope = NOA.GLOBALSCOPE;
-            }
-            for(var i = 0; i < parts.length; i++) {
-                if(!scope[parts[i]]) {
-                    scope[parts[i]] = {
-                    };
-                }
-                scope = scope[parts[i]];
-            }
-            return scope;
-        };
-        NOA.exists = function exists(path, scope) {
-            var parts;
-            if(NOA.isArray(path)) {
-                parts = path;
-            } else {
-                parts = path.split(".");
-            }
-            if(!scope) {
-                scope = NOA.GLOBALSCOPE;
-            }
-            for(var i = 0; i < parts.length; i++) {
-                if(!scope[parts[i]]) {
-                    return false;
-                }
-                scope = scope[parts[i]];
-            }
-            return true;
-        };
-        NOA.isFunction = function isFunction(thing) {
-            return NOA.type(thing) === "function";
-        };
-        NOA.isNumber = function isNumber(thing) {
-            return NOA.type(thing) == "number";
-        };
-        NOA.isArray = function isArray(thing) {
-            return Object.prototype.toString.call(thing) === '[object Array]';
-        };
-        NOA.inArray = function inArray(thing, array) {
-            if(!NOA.isArray(array)) {
-                throw "Second argument should be array";
-            }
-            for(var i = 0; i < array.length; i++) {
-                if(array[i] == thing) {
-                    return i;
-                }
-            }
-            return -1;
-        };
-        NOA.type = function type(obj) {
-            if(obj == null) {
-                return String(obj);
-            } else {
-                return Object.prototype.toString.call(obj).substring(8).replace(/\]$/, "").toLowerCase();
-            }
-        };
-        NOA.makeArray = function makeArray(ar) {
-            var res = [];
-            var i = ar.length;
-            for(; i; i--) {
-                res[i - 1] = ar[i - 1];
-            }
-            return res;
-        };
-        NOA.binarySearch = function binarySearch(list, needle, comperator) {
-            var l = list.length - 1;
-            var lower = 0;
-            var upper = l;
-            if(l == -1) {
-                return 0;
-            }
-            if(comperator(needle, list[l]) > 0) {
-                return list.length;
-            }
-            while(upper - lower > 1) {
-                var t = Math.round((upper + lower) / 2);
-                var v = comperator(needle, list[t]);
-                if(v < 0) {
-                    upper = t;
-                } else {
-                    lower = t;
-                }
-            }
-            if(upper == lower) {
-                return upper;
-            } else if(comperator(needle, list[lower]) < 0) {
-                return lower;
-            }
-            return upper;
-        };
-        NOA.identity = function identity(x) {
-            return x;
-        };
-        NOA.noop = function noop() {
-        };
-        NOA.notImplemented = function notImplemented() {
-            throw "Not implemented. This function is TODO or supposed to be abstract";
-        };
-        NOA.randomUUID = function randomUUID() {
-            return "todo";
-        };
-        return NOA;
-    })();
-    NOA.NOA = NOA;    
-})(NOA || (NOA = {}));
-(function (root) {
-    (function (root, NOA, exports, mod, define) {
-        if(typeof exports === "object" && exports) {
-            mod.exports = NOA;
-        } else if(typeof define === "function" && define.amd) {
-            define(NOA);
-        } else {
-            root.NOA = NOA;
-        }
-    })(root, NOA, root['exports'], root['module'], root['define']);
-})(this);
-//@ sourceMappingURL=noa.js.map
