@@ -1,0 +1,23 @@
+{
+  "name": "NOA",
+  "version": "0.0.0",
+  "description": "A reflective data and calculating model for javascript",
+  "main": "build/noa.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mweststrate/NOA.git"
+  },
+  "keywords": [
+    "reflective",
+    "data"
+  ],
+  "author": "Michel Weststrate",
+  "license": "BSD",
+  "gitHead": "3de9852dadcadb46c59f10715128442ec618190b"
+}
