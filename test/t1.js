@@ -16,12 +16,12 @@ exports.test1 = function(test) {
 	x.cell(2).set(1);
 	x.move(1,0); //JOIN fails if this is not disabled
 
-	should.deepEqual(x.toArray(), [7,3,1]);
+	test.deepEqual(x.toArray(), [7,3,1]);
 
 	x.die();
 
-	should.equal(NOA.List.count, 0);
-	should.equal(NOA.core.Cell.count, 0);
+	test.equal(NOA.List.count, 0);
+	test.equal(NOA.core.Cell.count, 0);
 
 	test.done();
 };
@@ -47,15 +47,15 @@ exports.test2 = function(test) {
 	x.cell(2).set(1);
 	x.move(1,0); //JOIN fails if this is not disabled
 
-	should.deepEqual(x.toArray(), [7,3,1]);
-	should.deepEqual(y.toArray(), [14,6,2])
+	test.deepEqual(x.toArray(), [7,3,1]);
+	test.deepEqual(y.toArray(), [14,6,2])
 
 	x.die();
 	y.die();
 
-	should.equal(NOA.List.count, 0);
-	should.equal(NOA.core.Cell.count, 0);
-	should.equal(NOA.core.Expression.count, 0);
+	test.equal(NOA.List.count, 0);
+	test.equal(NOA.core.Cell.count, 0);
+	test.equal(NOA.core.Expression.count, 0);
 
 	test.done();
 
@@ -86,17 +86,17 @@ exports.test3 = function(test) {
     x.cell(2).set(1);
     x.move(1,0);
 
-    should.deepEqual( x.toArray(), [7,3,1]);
-    should.deepEqual( y.toArray(), [14,6,2]);
-    should.deepEqual( z.toArray(), [6,2]);
+    test.deepEqual( x.toArray(), [7,3,1]);
+    test.deepEqual( y.toArray(), [14,6,2]);
+    test.deepEqual( z.toArray(), [6,2]);
 
     x.die();
     y.die();
     z.die();
 
-    should.equal(NOA.List.count, 0);
-    should.equal(NOA.core.Cell.count, 0);
-    should.equal(NOA.core.Expression.count, 0);
+    test.equal(NOA.List.count, 0);
+    test.equal(NOA.core.Cell.count, 0);
+    test.equal(NOA.core.Expression.count, 0);
 
     test.done();
 
@@ -116,20 +116,20 @@ exports.test4 = function(test) {
 
     var a = z.join().live();
 
-    should.deepEqual(a.toArray(), [1,2,3,4]);
+    test.deepEqual(a.toArray(), [1,2,3,4]);
 
     a.die(); //should kill z
     //z.live().die();
     x.die();
     y.die();
 
-    should.equal(a.destroyed, true);
-    should.equal(z.destroyed, true);
-    should.equal(x.destroyed, true);
-    should.equal(y.destroyed, true);
+    test.equal(a.destroyed, true);
+    test.equal(z.destroyed, true);
+    test.equal(x.destroyed, true);
+    test.equal(y.destroyed, true);
 
-    should.equal(NOA.List.count, 0);
-    should.equal(NOA.core.Cell.count, 0);
+    test.equal(NOA.List.count, 0);
+    test.equal(NOA.core.Cell.count, 0);
 
     test.done();
 
@@ -183,14 +183,14 @@ exports.test5 = function(test) {
     x.cell(2).set(1);
     x.move(1,0); //JOIN fails if this is not disabled
 
-    should.deepEqual( x.toArray(), [7,3,1]);
-    should.deepEqual( y.toArray(), [14,6,2]);
-    should.deepEqual( z.toArray(), [6,2]);
-    should.deepEqual( a.toArray(), [3,1]);
-    should.deepEqual( b.toArray(), [1,3,7]);
-    should.deepEqual( c.toArray(), [7,3,1]);
-    should.deepEqual( d.toArray(), [3,7,1]);//Not the best test.., only the contained elements should be the same, not the order..
-    should.deepEqual( e.toArray(), [14,6,2,7,3,1,3,1,6,2]);
+    test.deepEqual( x.toArray(), [7,3,1]);
+    test.deepEqual( y.toArray(), [14,6,2]);
+    test.deepEqual( z.toArray(), [6,2]);
+    test.deepEqual( a.toArray(), [3,1]);
+    test.deepEqual( b.toArray(), [1,3,7]);
+    test.deepEqual( c.toArray(), [7,3,1]);
+    test.deepEqual( d.toArray(), [3,7,1]);//Not the best test.., only the contained elements should be the same, not the order..
+    test.deepEqual( e.toArray(), [14,6,2,7,3,1,3,1,6,2]);
 
     x.die();
     y.die();
@@ -201,9 +201,9 @@ exports.test5 = function(test) {
     d.die();
     e.die();
 
-    should.equal(NOA.core.Expression.count, 0);
-    should.equal(NOA.core.Cell.count, 0);
-    should.equal(NOA.List.count, 0);
+    test.equal(NOA.core.Expression.count, 0);
+    test.equal(NOA.core.Cell.count, 0);
+    test.equal(NOA.List.count, 0);
 
     test.done();
 
@@ -238,7 +238,7 @@ exports.test6 = function(test) {
     x.cell(2).set(1);
     x.move(1,0); //JOIN fails if this is not disabled
 
-    should.deepEqual( x.toArray(), [7,3,1]);
+    test.deepEqual( x.toArray(), [7,3,1]);
 
     var s = [];
     for(var i = 0; i < xsuper.cells.length;i++)
@@ -247,15 +247,15 @@ exports.test6 = function(test) {
 
     console.log("xsuper is " + s.join(",") + " expected " + "49,21,7,21,9,3,7,3,1");
 
-    should.deepEqual(xjoin.toArray(), [49,21,7,21,9,3,7,3,1])
+    test.deepEqual(xjoin.toArray(), [49,21,7,21,9,3,7,3,1])
 
     x.die();
     xsuper.die();
     xjoin.die();
 
-    should.equal(NOA.List.count, 0);
-    should.equal(NOA.core.Cell.count, 0);
-    should.equal(NOA.core.Expression.count, 0);
+    test.equal(NOA.List.count, 0);
+    test.equal(NOA.core.Cell.count, 0);
+    test.equal(NOA.core.Expression.count, 0);
 
     test.done();
 
@@ -270,8 +270,8 @@ exports.test7 = function(test) {
     o.set("a", 1);
     o.remove("b");
 
-    should.equal(JSON.stringify(o.toObject()), '{"a":1,"c":5}');
-    should.deepEqual(o.keys.toArray(), ["a","c"]);
+    test.equal(JSON.stringify(o.toObject()), '{"a":1,"c":5}');
+    test.deepEqual(o.keys.toArray(), ["a","c"]);
 
     o.set("b", 2);
 
@@ -279,20 +279,20 @@ exports.test7 = function(test) {
         return this.variable("this").get("a") + this.variable("this").get("b");
     }, null, o).live();
 
-    should.equal(o.get("c"), '3');
+    test.equal(o.get("c"), '3');
     o.set("a", 10);
     o.set("b", 7);
     //TODO: will fail as changin a and b does not fire the application; this is not changed. There should be a NOA.get which is used inside the operation?
     //Probably shoulde be like: Expression(o.cell("c"), ["this", "this.a", "this.b"], function(a, b) { return a + b }, null, o)
-    should.equal(o.get("c"), '17');
+    test.equal(o.get("c"), '17');
 
     f.die();
     o.die();
 
-    should.equal(NOA.List.count, 0);
-    should.equal(NOA.Record.count, 0);
-    should.equal(NOA.core.Cell.count, 0);
-    should.equal(NOA.core.Expression.count, 0);
+    test.equal(NOA.List.count, 0);
+    test.equal(NOA.Record.count, 0);
+    test.equal(NOA.core.Cell.count, 0);
+    test.equal(NOA.core.Expression.count, 0);
     */
     test.done();
 

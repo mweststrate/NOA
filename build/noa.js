@@ -1538,17 +1538,6 @@ var NOA;
     })();
     NOA.NOA = NOA;    
 })(NOA || (NOA = {}));
-(function (root) {
-    (function (root, NOA, exports, mod, define) {
-        if(typeof exports === "object" && exports) {
-            mod.exports = NOA;
-        } else if(typeof define === "function" && define.amd) {
-            define(NOA);
-        } else {
-            root.NOA = NOA;
-        }
-    })(root, NOA, root['exports'], root['module'], root['define']);
-})(this);
 var NOA;
 (function (NOA) {
     var ListAggregation = (function (_super) {

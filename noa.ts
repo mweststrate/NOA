@@ -290,7 +290,7 @@ export class NOA {
 	};
 }
 }
-
+/*
 (function (root) {
     (function (root, NOA, exports, mod, define) {
         if (typeof exports === "object" && exports) {
@@ -302,3 +302,4 @@ export class NOA {
         }
     })(root, NOA, root['exports'], root['module'], root['define']);
 })(this);
+*/
