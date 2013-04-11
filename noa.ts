@@ -7,7 +7,7 @@
 ///<reference path='transformations.ts'/>
 ///<reference path='aggregations.ts'/>
 
-module NOA {
+export module NOA {
 export class NOA {
 
     //MWE: todo proper syntax for private members?
