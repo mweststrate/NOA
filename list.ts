@@ -240,6 +240,7 @@ module NOA {
 		}
 
 		reverse(): List {
+			//TODO: if this is a reversed list, return this.getSource()
 		    return new ReversedList(this);
 		}
 

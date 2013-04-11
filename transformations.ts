@@ -539,6 +539,7 @@ module NOA {
 	}
 
 	//TODO:
+	//NumberFilter, and use it inside, min,max,avg and such
 	//Unmap
 	//Contains
 	//Intersect
