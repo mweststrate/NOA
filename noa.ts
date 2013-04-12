@@ -7,7 +7,7 @@
 ///<reference path='transformations.ts'/>
 ///<reference path='aggregations.ts'/>
 
-export module NOA {
+module NOA {
 export class NOA {
 
     //MWE: todo proper syntax for private members?
@@ -303,3 +303,10 @@ export class NOA {
     })(root, NOA, root['exports'], root['module'], root['define']);
 })(this);
 */
+
+(function(root) {
+var exports = root['exports'];
+
+for(var key in NOA)
+    exports[key] = NOA[key];
+})(this);
