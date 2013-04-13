@@ -311,5 +311,3 @@ for(var key in NOA)
     exports[key] = NOA[key];
 })(this);
 */
-
-export module NOA;
