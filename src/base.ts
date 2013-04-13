@@ -65,7 +65,7 @@ module NOA {
 		constructor() {
 		    this.noabase = new BaseData();
 			this.noaid = Base.noaid += 1;
-			var x = this['__proto__']; //work around for webstorm typescript
+			var x = this['__proto__'].constructor; //work around for webstorm typescript
 			if (!x.count)
 				x.count = 0;
 			x.count += 1;
@@ -164,7 +164,7 @@ module NOA {
 			this.destroyed = true;
 			delete this.freeing;
 			this.noabase = null; //forget the handlers, hope GC picks them up :)
-			this['__proto__'].count -= 1; //Webstorm typescript workaround
+			this['__proto__'].constructor.count -= 1; //Webstorm typescript workaround
 		}
 
 		/*

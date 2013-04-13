@@ -63,7 +63,7 @@ var NOA;
             this.freeing = false;
             this.noabase = new BaseData();
             this.noaid = Base.noaid += 1;
-            var x = this['__proto__'];
+            var x = this['__proto__'].constructor;
             if(!x.count) {
                 x.count = 0;
             }
@@ -132,7 +132,7 @@ var NOA;
             this.destroyed = true;
             delete this.freeing;
             this.noabase = null;
-            this['__proto__'].count -= 1;
+            this['__proto__'].constructor.count -= 1;
         };
         Base.prototype.onFree = function (caller, callback) {
             this.on('free', caller, callback);
