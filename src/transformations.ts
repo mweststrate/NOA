@@ -1,5 +1,5 @@
 ///<reference path='noa.ts'/>
-
+//TODO: move to own namespace: NOA.transformations
 module NOA {
 
 	export class ListTransformation extends List {
@@ -539,7 +539,7 @@ module NOA {
 	}
 
 	//TODO:
-	//NumberFilter, and use it inside, min,max,avg and such
+	//NumberFilter, and use it inside, min,max,avg and such. Numberfilter is just List.map(NOA.util.isNumber)
 	//Unmap
 	//Contains
 	//Intersect

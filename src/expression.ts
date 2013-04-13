@@ -1,5 +1,5 @@
 ///<reference path='noa.ts'/>
-
+//TODO: move to own namespace: NOA.expessions
 module NOA {
 
 	//TODO: make reall class of scope, not some wrapped map. 

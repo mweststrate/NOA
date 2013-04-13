@@ -1,5 +1,5 @@
 ///<reference path='noa.ts'/>
-
+//TODO: move to own namespace: NOA.aggregations
 module NOA {
     export class ListAggregation extends ValueContainer { //Generic on return type!
         source: List; //TODO: remove parent?
