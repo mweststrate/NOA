@@ -99,7 +99,7 @@ module NOA {
 
 		variable (name) {
 			var thing = Scope.getFromScope(name);
-			NOA.assert(!thing.destroyed);
+			Util.assert(!thing.destroyed);
 			return thing.get(); //TODO: could registered values being read here instead of in cell?
 			/*
 

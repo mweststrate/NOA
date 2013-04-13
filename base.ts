@@ -44,10 +44,10 @@ module NOA {
 		}
 
 		public free() {
-		    NOA.each(this.events, listeners =>
-                NOA.each(listeners, listener => listener.free())); //Does JS behave as expected under concurrent modifications?
+		    Util.each(this.events, listeners =>
+                Util.each(listeners, listener => listener.free())); //Does JS behave as expected under concurrent modifications?
 
-		    NOA.each(this.subscriptions, h => h.free());
+		    Util.each(this.subscriptions, h => h.free());
 		}
 	}
 
@@ -80,20 +80,20 @@ module NOA {
 		fire (event : string, ...args : any[]) {
 			if (this.destroyed)
 				return this;
-			var a = NOA.makeArray(arguments);
+			var a = Util.makeArray(arguments);
 			a.shift();
 
 			var listeners = this.noabase.getListeners(event);
 			var l = listeners.length;
 
 			if (l > 0) {
-				NOA.debugIn(this,"fires",event,":",a);
+				Util.debugIn(this,"fires",event,":",a);
 
 				for(var i = 0 ; i < l; i++)
 					if (listeners[i])
 						listeners[i].fire.apply(listeners[i], a); //Note, event name is included in the call
 
-				NOA.debugOut();
+				Util.debugOut();
 			}
 			return this;
 		}
@@ -111,12 +111,12 @@ module NOA {
 		 */
 		on(ev : string, caller : Base, callback : Function) : Binding {
             //TODO: revise this method. Is it ever freed from the other side? introduce second argument owner?
-			var a = NOA.makeArray(arguments);
+			var a = Util.makeArray(arguments);
 			var event = a.shift();
 			var f = a.shift();
 			var scope = this;
 
-			if (!NOA.isFunction(f)) //Nope, its the scope...
+			if (!Util.isFunction(f)) //Nope, its the scope...
 				scope = f;
 			f = a.shift();
 
@@ -220,15 +220,15 @@ module NOA {
 		}
 
 		debug (...args : any[]) {
-			NOA.debug.apply(NOA, [this].concat(NOA.makeArray(arguments)));
+			Util.debug.apply(Util, [this].concat(Util.makeArray(arguments)));
 		}
 
 		debugIn(...args: any[]) {
-			NOA.debugIn.apply(NOA, [this].concat(NOA.makeArray(arguments)));
+			Util.debugIn.apply(Util, [this].concat(Util.makeArray(arguments)));
 		}
 
 		debugOut(...args: any[]) {
-			NOA.debugOut();
+			Util.debugOut();
 		}
 
 		toString() : string {

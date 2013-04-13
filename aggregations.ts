@@ -79,18 +79,18 @@ module NOA {
         }
 
         onSourceInsert(index: number, value) {
-            if (NOA.isNumber(value))
+            if (Util.isNumber(value))
                 this.updateValue(this.value + 1)
         }
 
         onSourceRemove(index: number, value) {  //TODO: check if remove provides old value!
-            if (NOA.isNumber(value))
+            if (Util.isNumber(value))
                 this.updateValue(this.value - 1)
         }
 
         onSourceSet(index: number, newvalue, oldvalue) {
-            var lin = NOA.isNumber(newvalue);
-            var rin = NOA.isNumber(oldvalue);
+            var lin = Util.isNumber(newvalue);
+            var rin = Util.isNumber(oldvalue);
             if (lin && !rin)
                 this.updateValue(this.value + 1)
             else if (rin && !lin)
@@ -108,20 +108,20 @@ module NOA {
         }
 
         onSourceInsert(index: number, value) {
-            if (NOA.isNumber(value))
+            if (Util.isNumber(value))
                 this.updateValue(this.value + value)
         }
 
         onSourceRemove(index: number, value) {
-            if (NOA.isNumber(value))
+            if (Util.isNumber(value))
                 this.updateValue(this.value - value)
         }
 
         onSourceSet(index: number, newvalue, oldvalue) {
             var delta = 0;
-            if(NOA.isNumber(newvalue))
+            if(Util.isNumber(newvalue))
                 delta += newvalue;
-            if (NOA.isNumber(oldvalue))
+            if (Util.isNumber(oldvalue))
                 delta -= oldvalue;
             this.updateValue(this.value + delta);
         }
@@ -183,9 +183,9 @@ module NOA {
             var max = -1 * (1/0); // -INF
             var maxcell = null;
 
-            NOA.each(this.source.cells, cell => {
+            Util.each(this.source.cells, cell => {
                 var v = cell.get();
-                if (NOA.isNumber(v))
+                if (Util.isNumber(v))
                     if (v > max) {
                         max = v;
                         maxcell = cell;
@@ -195,17 +195,17 @@ module NOA {
         }
 
         onSourceInsert(index: number, value, cell) {
-            if (NOA.isNumber(value) && value > this.value)
+            if (Util.isNumber(value) && value > this.value)
                 this.updateValue(value, cell);
         }
 
         onSourceRemove(index: number, value) {
-            if (NOA.isNumber(value) && value >= this.value)
+            if (Util.isNumber(value) && value >= this.value)
                 this.findNewMax();
         }
 
         onSourceSet(index: number, newvalue, oldvalue) { 
-            if (NOA.isNumber(oldvalue) && oldvalue >= this.value)
+            if (Util.isNumber(oldvalue) && oldvalue >= this.value)
                 this.findNewMax();
         }
     }
@@ -225,9 +225,9 @@ module NOA {
             var min = 1 * (1/0); // +NF
             var mincell = null;
 
-            NOA.each(this.source.cells, cell => {
+            Util.each(this.source.cells, cell => {
                 var v = cell.get();
-                if (NOA.isNumber(v))
+                if (Util.isNumber(v))
                     if (v < min) {
                         min = v;
                         mincell = cell;
@@ -237,17 +237,17 @@ module NOA {
         }
 
         onSourceInsert(index: number, value, cell:Cell) {
-            if (NOA.isNumber(value) && value < this.value)
+            if (Util.isNumber(value) && value < this.value)
                 this.updateValue(value, cell);
         }
 
         onSourceRemove(index: number, value) {
-            if (NOA.isNumber(value) && value <= this.value)
+            if (Util.isNumber(value) && value <= this.value)
                 this.findNewMin();
         }
 
         onSourceSet(index: number, newvalue, oldvalue) { 
-            if (NOA.isNumber(oldvalue) && oldvalue <= this.value)
+            if (Util.isNumber(oldvalue) && oldvalue <= this.value)
                 this.findNewMin();
         }
     }

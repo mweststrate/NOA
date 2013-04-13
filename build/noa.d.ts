@@ -274,7 +274,7 @@ module NOA {
     }
 }
 module NOA {
-    class NOA {
+    class Util {
         static depth: number;
         static count: number;
         static testnr: number;

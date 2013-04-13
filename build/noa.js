@@ -45,12 +45,12 @@ var NOA;
             delete this.events[binding.event][binding.id];
         };
         BaseData.prototype.free = function () {
-            NOA.NOA.each(this.events, function (listeners) {
-                return NOA.NOA.each(listeners, function (listener) {
+            NOA.Util.each(this.events, function (listeners) {
+                return NOA.Util.each(listeners, function (listener) {
                     return listener.free();
                 });
             });
-            NOA.NOA.each(this.subscriptions, function (h) {
+            NOA.Util.each(this.subscriptions, function (h) {
                 return h.free();
             });
         };
@@ -78,27 +78,27 @@ var NOA;
             if(this.destroyed) {
                 return this;
             }
-            var a = NOA.NOA.makeArray(arguments);
+            var a = NOA.Util.makeArray(arguments);
             a.shift();
             var listeners = this.noabase.getListeners(event);
             var l = listeners.length;
             if(l > 0) {
-                NOA.NOA.debugIn(this, "fires", event, ":", a);
+                NOA.Util.debugIn(this, "fires", event, ":", a);
                 for(var i = 0; i < l; i++) {
                     if(listeners[i]) {
                         listeners[i].fire.apply(listeners[i], a);
                     }
                 }
-                NOA.NOA.debugOut();
+                NOA.Util.debugOut();
             }
             return this;
         };
         Base.prototype.on = function (ev, caller, callback) {
-            var a = NOA.NOA.makeArray(arguments);
+            var a = NOA.Util.makeArray(arguments);
             var event = a.shift();
             var f = a.shift();
             var scope = this;
-            if(!NOA.NOA.isFunction(f)) {
+            if(!NOA.Util.isFunction(f)) {
                 scope = f;
             }
             f = a.shift();
@@ -184,25 +184,25 @@ var NOA;
             for (var _i = 0; _i < (arguments.length - 0); _i++) {
                 args[_i] = arguments[_i + 0];
             }
-            NOA.NOA.debug.apply(NOA.NOA, [
+            NOA.Util.debug.apply(NOA.Util, [
                 this
-            ].concat(NOA.NOA.makeArray(arguments)));
+            ].concat(NOA.Util.makeArray(arguments)));
         };
         Base.prototype.debugIn = function () {
             var args = [];
             for (var _i = 0; _i < (arguments.length - 0); _i++) {
                 args[_i] = arguments[_i + 0];
             }
-            NOA.NOA.debugIn.apply(NOA.NOA, [
+            NOA.Util.debugIn.apply(NOA.Util, [
                 this
-            ].concat(NOA.NOA.makeArray(arguments)));
+            ].concat(NOA.Util.makeArray(arguments)));
         };
         Base.prototype.debugOut = function () {
             var args = [];
             for (var _i = 0; _i < (arguments.length - 0); _i++) {
                 args[_i] = arguments[_i + 0];
             }
-            NOA.NOA.debugOut();
+            NOA.Util.debugOut();
         };
         Base.prototype.toString = function () {
             return this['prototype'].toString.apply(this);
@@ -296,10 +296,10 @@ var NOA;
 
         }
         CellContainer.prototype.fireCellChanged = function (index, newvalue, oldvalue, cell) {
-            NOA.NOA.notImplemented();
+            NOA.Util.notImplemented();
         };
         CellContainer.prototype.cell = function (index) {
-            NOA.NOA.notImplemented();
+            NOA.Util.notImplemented();
             return null;
         };
         return CellContainer;
@@ -328,7 +328,7 @@ var NOA;
             for (var _i = 0; _i < (arguments.length - 0); _i++) {
                 args[_i] = arguments[_i + 0];
             }
-            var a = NOA.NOA.makeArray(arguments);
+            var a = NOA.Util.makeArray(arguments);
             a.unshift('change');
             this.fire.apply(this, a);
             return this;
@@ -527,7 +527,7 @@ var NOA;
         };
         Expression.prototype.variable = function (name) {
             var thing = Scope.getFromScope(name);
-            NOA.NOA.assert(!thing.destroyed);
+            NOA.Util.assert(!thing.destroyed);
             return thing.get();
         };
         Expression.prototype.free = function () {
@@ -660,7 +660,7 @@ var NOA;
             if(this.aggregates[index]) {
                 return this.aggregates[index].get(caller, onchange);
             }
-            if(!(NOA.NOA[index] && NOA.NOA[index].prototype == NOA.ListAggregation)) {
+            if(!(NOA.Util[index] && NOA.Util[index].prototype == NOA.ListAggregation)) {
                 throw "Unknown aggregate: " + index;
             }
             var a = this.aggregates[index] = this[index]();
@@ -862,7 +862,7 @@ var NOA;
             var scope = NOA.Scope.newScope(this.basescope);
             scope[name] = source;
             var a;
-            if(NOA.NOA.isFunction(this.func)) {
+            if(NOA.Util.isFunction(this.func)) {
                 a = new NOA.Expression(this.func, scope);
             } else if(this.func instanceof NOA.Expression) {
                 a = this.func;
@@ -1114,7 +1114,7 @@ var NOA;
         SortedList.prototype.onSourceInsert = function (baseindex, value, cell, _knownindex) {
             var nidx = _knownindex;
             if(nidx === undefined) {
-                nidx = NOA.NOA.binarySearch(this.cells, value, this.searcher);
+                nidx = NOA.Util.binarySearch(this.cells, value, this.searcher);
             }
             this.insert(nidx, value, cell.getOrigin());
             this.updateMapping(nidx, 1);
@@ -1128,7 +1128,7 @@ var NOA;
         };
         SortedList.prototype.onSourceSet = function (index, value, _, cell) {
             var baseidx = this.mapping[index];
-            var nidx = NOA.NOA.binarySearch(this.cells, value, this.searcher);
+            var nidx = NOA.Util.binarySearch(this.cells, value, this.searcher);
             if(nidx != baseidx) {
                 this.onSourceRemove(index);
                 this.onSourceInsert(index, value, cell, nidx);
@@ -1302,38 +1302,38 @@ var NOA;
 })(NOA || (NOA = {}));
 var NOA;
 (function (NOA) {
-    var NOA = (function () {
-        function NOA() { }
-        NOA.depth = 0;
-        NOA.count = 0;
-        NOA.testnr = 0;
-        NOA.GLOBALSCOPE = (function () {
+    var Util = (function () {
+        function Util() { }
+        Util.depth = 0;
+        Util.count = 0;
+        Util.testnr = 0;
+        Util.GLOBALSCOPE = (function () {
             return this;
         })();
-        NOA.debugbreakon = -1;
-        NOA.debugIn = function debugIn() {
+        Util.debugbreakon = -1;
+        Util.debugIn = function debugIn() {
             var args = [];
             for (var _i = 0; _i < (arguments.length - 0); _i++) {
                 args[_i] = arguments[_i + 0];
             }
-            NOA.depth += 1;
-            NOA.debug.apply(NOA, arguments);
+            Util.depth += 1;
+            Util.debug.apply(Util, arguments);
         };
-        NOA.debugOut = function debugOut() {
+        Util.debugOut = function debugOut() {
             var args = [];
             for (var _i = 0; _i < (arguments.length - 0); _i++) {
                 args[_i] = arguments[_i + 0];
             }
-            NOA.depth = Math.max(NOA.depth - 1, 0);
+            Util.depth = Math.max(Util.depth - 1, 0);
         };
-        NOA.debug = function debug() {
+        Util.debug = function debug() {
             var args = [];
             for (var _i = 0; _i < (arguments.length - 0); _i++) {
                 args[_i] = arguments[_i + 0];
             }
-            NOA.count += 1;
+            Util.count += 1;
             var p = '';
-            for(var i = NOA.depth; i >= 0; i-- , p += ' ') {
+            for(var i = Util.depth; i >= 0; i-- , p += ' ') {
                 ;
             }
             var stuff = [];
@@ -1351,36 +1351,36 @@ var NOA;
                     stuff.push(a.toString());
                 }
             }
-            console.log(NOA.count + ':' + p + stuff.join(' '));
-            if(NOA.count == NOA.debugbreakon) {
+            console.log(Util.count + ':' + p + stuff.join(' '));
+            if(Util.count == Util.debugbreakon) {
                 debugger;
 
             }
         };
-        NOA.warn = function warn() {
+        Util.warn = function warn() {
             var args = [];
             for (var _i = 0; _i < (arguments.length - 0); _i++) {
                 args[_i] = arguments[_i + 0];
             }
             console.warn.apply(console, arguments);
         };
-        NOA.assert = function assert(value) {
+        Util.assert = function assert(value) {
             if(!value) {
                 throw "NOA assertion failed!";
             }
         };
-        NOA.test = function test(test, expected) {
-            NOA.testnr += 1;
+        Util.test = function test(test, expected) {
+            Util.testnr += 1;
             if(('' + test) != ('' + expected)) {
-                var msg = "Test #" + NOA.testnr + " failed: '" + test + "' expected '" + expected + "'";
+                var msg = "Test #" + Util.testnr + " failed: '" + test + "' expected '" + expected + "'";
                 console.error(msg);
                 document.write("<br/>" + msg);
             }
         };
-        NOA.each = function each(ar, cb, scope, flags) {
-            scope = scope || NOA.GLOBALSCOPE;
+        Util.each = function each(ar, cb, scope, flags) {
+            scope = scope || Util.GLOBALSCOPE;
             flags = flags || "";
-            var map = flags.match(/m/), filter = flags.match(/f/), sparse = flags.match(/s/), reverse = flags.match(/r/), res = [], start = reverse ? ar.length - 1 : 0, delta = reverse ? -1 : 1, end = reverse ? -1 : ar.length, isArray = NOA.isArray(ar);
+            var map = flags.match(/m/), filter = flags.match(/f/), sparse = flags.match(/s/), reverse = flags.match(/r/), res = [], start = reverse ? ar.length - 1 : 0, delta = reverse ? -1 : 1, end = reverse ? -1 : ar.length, isArray = Util.isArray(ar);
             if(isArray) {
                 for(var i = start; i != end; i += delta) {
                     if(ar[i] == null && sparse) {
@@ -1425,15 +1425,15 @@ var NOA;
                 return res;
             }
         };
-        NOA.ensureObject = function ensureObject(path, scope) {
+        Util.ensureObject = function ensureObject(path, scope) {
             var parts;
-            if(NOA.type(path) == "array") {
+            if(Util.type(path) == "array") {
                 parts = path;
             } else {
                 parts = path.split(".");
             }
             if(scope == undefined) {
-                scope = NOA.GLOBALSCOPE;
+                scope = Util.GLOBALSCOPE;
             }
             for(var i = 0; i < parts.length; i++) {
                 if(!scope[parts[i]]) {
@@ -1444,15 +1444,15 @@ var NOA;
             }
             return scope;
         };
-        NOA.exists = function exists(path, scope) {
+        Util.exists = function exists(path, scope) {
             var parts;
-            if(NOA.isArray(path)) {
+            if(Util.isArray(path)) {
                 parts = path;
             } else {
                 parts = path.split(".");
             }
             if(!scope) {
-                scope = NOA.GLOBALSCOPE;
+                scope = Util.GLOBALSCOPE;
             }
             for(var i = 0; i < parts.length; i++) {
                 if(!scope[parts[i]]) {
@@ -1462,17 +1462,17 @@ var NOA;
             }
             return true;
         };
-        NOA.isFunction = function isFunction(thing) {
-            return NOA.type(thing) === "function";
+        Util.isFunction = function isFunction(thing) {
+            return Util.type(thing) === "function";
         };
-        NOA.isNumber = function isNumber(thing) {
-            return NOA.type(thing) == "number";
+        Util.isNumber = function isNumber(thing) {
+            return Util.type(thing) == "number";
         };
-        NOA.isArray = function isArray(thing) {
+        Util.isArray = function isArray(thing) {
             return Object.prototype.toString.call(thing) === '[object Array]';
         };
-        NOA.inArray = function inArray(thing, array) {
-            if(!NOA.isArray(array)) {
+        Util.inArray = function inArray(thing, array) {
+            if(!Util.isArray(array)) {
                 throw "Second argument should be array";
             }
             for(var i = 0; i < array.length; i++) {
@@ -1482,14 +1482,14 @@ var NOA;
             }
             return -1;
         };
-        NOA.type = function type(obj) {
+        Util.type = function type(obj) {
             if(obj == null) {
                 return String(obj);
             } else {
                 return Object.prototype.toString.call(obj).substring(8).replace(/\]$/, "").toLowerCase();
             }
         };
-        NOA.makeArray = function makeArray(ar) {
+        Util.makeArray = function makeArray(ar) {
             var res = [];
             var i = ar.length;
             for(; i; i--) {
@@ -1497,7 +1497,7 @@ var NOA;
             }
             return res;
         };
-        NOA.binarySearch = function binarySearch(list, needle, comperator) {
+        Util.binarySearch = function binarySearch(list, needle, comperator) {
             var l = list.length - 1;
             var lower = 0;
             var upper = l;
@@ -1523,28 +1523,21 @@ var NOA;
             }
             return upper;
         };
-        NOA.identity = function identity(x) {
+        Util.identity = function identity(x) {
             return x;
         };
-        NOA.noop = function noop() {
+        Util.noop = function noop() {
         };
-        NOA.notImplemented = function notImplemented() {
+        Util.notImplemented = function notImplemented() {
             throw "Not implemented. This function is TODO or supposed to be abstract";
         };
-        NOA.randomUUID = function randomUUID() {
+        Util.randomUUID = function randomUUID() {
             return "todo";
         };
-        return NOA;
+        return Util;
     })();
-    NOA.NOA = NOA;    
+    NOA.Util = Util;    
 })(NOA || (NOA = {}));
-(function (root) {
-    debugger;
-    //var exports = root['exports'];
-    for(var key in NOA) {
-        exports[key] = NOA[key];
-    }
-})(this);
 var NOA;
 (function (NOA) {
     var ListAggregation = (function (_super) {
@@ -1612,18 +1605,18 @@ var NOA;
             this.unlisten(source, 'move');
         }
         ListNumberCount.prototype.onSourceInsert = function (index, value) {
-            if(NOA.NOA.isNumber(value)) {
+            if(NOA.Util.isNumber(value)) {
                 this.updateValue(this.value + 1);
             }
         };
         ListNumberCount.prototype.onSourceRemove = function (index, value) {
-            if(NOA.NOA.isNumber(value)) {
+            if(NOA.Util.isNumber(value)) {
                 this.updateValue(this.value - 1);
             }
         };
         ListNumberCount.prototype.onSourceSet = function (index, newvalue, oldvalue) {
-            var lin = NOA.NOA.isNumber(newvalue);
-            var rin = NOA.NOA.isNumber(oldvalue);
+            var lin = NOA.Util.isNumber(newvalue);
+            var rin = NOA.Util.isNumber(oldvalue);
             if(lin && !rin) {
                 this.updateValue(this.value + 1);
             } else if(rin && !lin) {
@@ -1641,21 +1634,21 @@ var NOA;
             this.unlisten(source, 'move');
         }
         ListSum.prototype.onSourceInsert = function (index, value) {
-            if(NOA.NOA.isNumber(value)) {
+            if(NOA.Util.isNumber(value)) {
                 this.updateValue(this.value + value);
             }
         };
         ListSum.prototype.onSourceRemove = function (index, value) {
-            if(NOA.NOA.isNumber(value)) {
+            if(NOA.Util.isNumber(value)) {
                 this.updateValue(this.value - value);
             }
         };
         ListSum.prototype.onSourceSet = function (index, newvalue, oldvalue) {
             var delta = 0;
-            if(NOA.NOA.isNumber(newvalue)) {
+            if(NOA.Util.isNumber(newvalue)) {
                 delta += newvalue;
             }
-            if(NOA.NOA.isNumber(oldvalue)) {
+            if(NOA.Util.isNumber(oldvalue)) {
                 delta -= oldvalue;
             }
             this.updateValue(this.value + delta);
@@ -1707,9 +1700,9 @@ var NOA;
         ListMax.prototype.findNewMax = function () {
             var max = -1 * (1 / 0);
             var maxcell = null;
-            NOA.NOA.each(this.source.cells, function (cell) {
+            NOA.Util.each(this.source.cells, function (cell) {
                 var v = cell.get();
-                if(NOA.NOA.isNumber(v)) {
+                if(NOA.Util.isNumber(v)) {
                     if(v > max) {
                         max = v;
                         maxcell = cell;
@@ -1719,17 +1712,17 @@ var NOA;
             this.updateValue(max, maxcell);
         };
         ListMax.prototype.onSourceInsert = function (index, value, cell) {
-            if(NOA.NOA.isNumber(value) && value > this.value) {
+            if(NOA.Util.isNumber(value) && value > this.value) {
                 this.updateValue(value, cell);
             }
         };
         ListMax.prototype.onSourceRemove = function (index, value) {
-            if(NOA.NOA.isNumber(value) && value >= this.value) {
+            if(NOA.Util.isNumber(value) && value >= this.value) {
                 this.findNewMax();
             }
         };
         ListMax.prototype.onSourceSet = function (index, newvalue, oldvalue) {
-            if(NOA.NOA.isNumber(oldvalue) && oldvalue >= this.value) {
+            if(NOA.Util.isNumber(oldvalue) && oldvalue >= this.value) {
                 this.findNewMax();
             }
         };
@@ -1747,9 +1740,9 @@ var NOA;
         ListMin.prototype.findNewMin = function () {
             var min = 1 * (1 / 0);
             var mincell = null;
-            NOA.NOA.each(this.source.cells, function (cell) {
+            NOA.Util.each(this.source.cells, function (cell) {
                 var v = cell.get();
-                if(NOA.NOA.isNumber(v)) {
+                if(NOA.Util.isNumber(v)) {
                     if(v < min) {
                         min = v;
                         mincell = cell;
@@ -1759,17 +1752,17 @@ var NOA;
             this.updateValue(min, mincell);
         };
         ListMin.prototype.onSourceInsert = function (index, value, cell) {
-            if(NOA.NOA.isNumber(value) && value < this.value) {
+            if(NOA.Util.isNumber(value) && value < this.value) {
                 this.updateValue(value, cell);
             }
         };
         ListMin.prototype.onSourceRemove = function (index, value) {
-            if(NOA.NOA.isNumber(value) && value <= this.value) {
+            if(NOA.Util.isNumber(value) && value <= this.value) {
                 this.findNewMin();
             }
         };
         ListMin.prototype.onSourceSet = function (index, newvalue, oldvalue) {
-            if(NOA.NOA.isNumber(oldvalue) && oldvalue <= this.value) {
+            if(NOA.Util.isNumber(oldvalue) && oldvalue <= this.value) {
                 this.findNewMin();
             }
         };

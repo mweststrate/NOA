@@ -152,7 +152,7 @@ module NOA {
 		        return this.aggregates[index].get(caller, onchange)
 
 		    //check if index is a known aggregate class?
-		    if (!(NOA[index] && NOA[index].prototype == ListAggregation))
+		    if (!(Util[index] && Util[index].prototype == ListAggregation))
 		        throw "Unknown aggregate: " + index;
 
 		    var a = this.aggregates[index] = this[index](); //invokes aggregation

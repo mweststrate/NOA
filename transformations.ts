@@ -57,7 +57,7 @@ module NOA {
 			scope[name] = source;
 
 			var a;
-			if (NOA.isFunction(this.func))
+			if (Util.isFunction(this.func))
 				a = new Expression(this.func, scope)
 			else if (this.func instanceof Expression)
 				a = this.func;
@@ -334,7 +334,7 @@ module NOA {
 		onSourceInsert (baseindex: number, value, cell : Cell, _knownindex? : number) {
 			var nidx = _knownindex;
 			if (nidx === undefined)
-				nidx = NOA.binarySearch(this.cells, value, this.searcher);
+				nidx = Util.binarySearch(this.cells, value, this.searcher);
 
 			this.insert(nidx, value, cell.getOrigin());
 			this.updateMapping(nidx, 1);
@@ -350,7 +350,7 @@ module NOA {
 
 		onSourceSet (index : number, value, _, cell) {
 			var baseidx = this.mapping[index];
-			var nidx = NOA.binarySearch(this.cells, value, this.searcher);
+			var nidx = Util.binarySearch(this.cells, value, this.searcher);
 			if (nidx != baseidx) {
 				this.onSourceRemove(index);
 				this.onSourceInsert(index, value, cell, nidx);

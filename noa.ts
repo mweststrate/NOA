@@ -8,7 +8,7 @@
 ///<reference path='aggregations.ts'/>
 
 module NOA {
-export class NOA {
+export class Util {
 
     //MWE: todo proper syntax for private members?
     static depth = 0;
@@ -26,7 +26,7 @@ export class NOA {
      */
     static debugIn(...args: any[]) {
         depth += 1;
-        NOA.debug.apply(NOA, arguments);
+        Util.debug.apply(Util, arguments);
     };
 
     /**
@@ -62,7 +62,7 @@ export class NOA {
         }
 
         console.log(count + ':' + p + stuff.join(' '));
-        if (count == NOA.debugbreakon) {
+        if (count == Util.debugbreakon) {
             debugger;
         }
     };
@@ -109,7 +109,7 @@ export class NOA {
             start   = reverse ? ar.length -1 : 0,
             delta   = reverse ? -1 : 1,
             end     = reverse ? -1 : ar.length,
-            isArray = NOA.isArray(ar);
+            isArray = Util.isArray(ar);
 
         if (isArray){
             for(var i = start; i != end; i += delta) {
@@ -170,7 +170,7 @@ export class NOA {
      */
     static ensureObject (path : string, scope? : Object) : Object {
         var parts;
-        if (NOA.type(path) == "array")
+        if (Util.type(path) == "array")
             parts = path;
         else
             parts = path.split(".");
@@ -189,7 +189,7 @@ export class NOA {
 
     static exists(path : string, scope? : Object) : bool {
         var parts;
-        if (NOA.isArray(path))
+        if (Util.isArray(path))
             parts = path;
         else
             parts = path.split(".");
@@ -206,7 +206,7 @@ export class NOA {
     };
 
     static isFunction (thing : any) : bool {
-        return NOA.type(thing) === "function";
+        return Util.type(thing) === "function";
     };
 
 
@@ -219,7 +219,7 @@ export class NOA {
     }
 
     static inArray (thing : any, array : any[]) {
-        if (!NOA.isArray(array))
+        if (!Util.isArray(array))
             throw "Second argument should be array";
         for (var i = 0; i < array.length; i++)
             if (array[i] == thing)
@@ -303,10 +303,11 @@ export class NOA {
     })(root, NOA, root['exports'], root['module'], root['define']);
 })(this);
 */
-
+/*
 (function(root) {
-var exports = root['exports'];
+//var exports = root['exports'];
 
 for(var key in NOA)
     exports[key] = NOA[key];
 })(this);
+*/

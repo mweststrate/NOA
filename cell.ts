@@ -4,8 +4,8 @@ module NOA {
 
 
     export class CellContainer extends Base {
-        fireCellChanged(index: any, newvalue: any, oldvalue: any, cell : Cell){ NOA.notImplemented()};
-        cell(index: any): Cell { NOA.notImplemented(); return null; };
+        fireCellChanged(index: any, newvalue: any, oldvalue: any, cell : Cell){ Util.notImplemented()};
+        cell(index: any): Cell { Util.notImplemented(); return null; };
     }
 
 	export class ValueContainer extends Base {
@@ -28,7 +28,7 @@ module NOA {
         };
 
         public changed (...args : any[]) {
-            var a = NOA.makeArray(arguments);
+            var a = Util.makeArray(arguments);
             a.unshift('change');
             this.fire.apply(this, a);
             return this;
