@@ -2,7 +2,7 @@ NOA = require("../build/noa.js");
 
 exports.test1 = function(test) {
 
-	var x = new NOA.List().live().debugName("x");
+	var x = new NOA.List().live();//.debugName("x");
 
 	//base set
 	x.add(3); 
@@ -27,7 +27,7 @@ exports.test1 = function(test) {
 };
 
 exports.test2 = function(test) {
-	var x = new NOA.List().live().debugName("x");;
+	var x = new NOA.List().live();//.debugName("x");;
 
    	var y = x.map("x", function() { 
 		var v = this.variable('x');
@@ -298,3 +298,11 @@ exports.test7 = function(test) {
 
 };
 
+function runall() {
+    var assert = require("assert")
+    for(var key in exports)
+        exports[key](assert);
+}
+
+if (!module.parent)
+    runall();

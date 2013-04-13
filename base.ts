@@ -164,7 +164,7 @@ module NOA {
 			this.destroyed = true;
 			delete this.freeing;
 			this.noabase = null; //forget the handlers, hope GC picks them up :)
-			this['prototype'].count -= 1; //Webstorm typescript workaround
+			this['__proto__'].count -= 1; //Webstorm typescript workaround
 		}
 
 		/*
@@ -231,9 +231,9 @@ module NOA {
 			Util.debugOut();
 		}
 
-		toString() : string {
-			return this['prototype'].toString.apply(this);
-		}
+		/*toString() : string {
+			return this['__proto__'].toString.apply(this);
+		}*/
 	}
 
 	export class GlobalEvents extends Base {

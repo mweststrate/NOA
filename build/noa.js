@@ -132,7 +132,7 @@ var NOA;
             this.destroyed = true;
             delete this.freeing;
             this.noabase = null;
-            this['prototype'].count -= 1;
+            this['__proto__'].count -= 1;
         };
         Base.prototype.onFree = function (caller, callback) {
             this.on('free', caller, callback);
@@ -203,9 +203,6 @@ var NOA;
                 args[_i] = arguments[_i + 0];
             }
             NOA.Util.debugOut();
-        };
-        Base.prototype.toString = function () {
-            return this['prototype'].toString.apply(this);
         };
         return Base;
     })();
@@ -401,7 +398,7 @@ var NOA;
                 NOA.readTracker[0][this.noaid] = this;
             }
             var res = _super.prototype.get.call(this, caller, onchange);
-            if(this.hasExpression) {
+            if(this.hasExpression()) {
                 return res.get();
             }
             return res;

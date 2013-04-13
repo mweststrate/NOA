@@ -123,7 +123,7 @@ module NOA {
 
             var res = super.get(caller, onchange)
 
-            if (this.hasExpression)
+            if (this.hasExpression())
                 return res.get();
             return res;
         }
