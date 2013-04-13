@@ -1538,6 +1538,11 @@ var NOA;
     })();
     NOA.Util = Util;    
 })(NOA || (NOA = {}));
+(function (root) {
+    for(var key in NOA) {
+        exports[key] = NOA[key];
+    }
+})(this);
 var NOA;
 (function (NOA) {
     var ListAggregation = (function (_super) {

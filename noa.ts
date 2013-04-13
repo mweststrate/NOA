@@ -303,11 +303,16 @@ export class Util {
     })(root, NOA, root['exports'], root['module'], root['define']);
 })(this);
 */
-/*
+
+//MWE this is a poor attempt to fix the export mechanism of typescript which I don't understand. 
+//If the module is exported, commonJS / AMD define code is generated. However, this causes that it 
+//is no longer to extend the NOA namespace of multiple files. Properly there is a proper way 
+//to do this, but for now, just export all items in the NOA namespace suffices. 
+
+declare var exports : any;
 (function(root) {
 //var exports = root['exports'];
-
 for(var key in NOA)
     exports[key] = NOA[key];
 })(this);
-*/
+
