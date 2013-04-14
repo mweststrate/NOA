@@ -16,15 +16,15 @@
     <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="aggregations.ts" />
-    <Content Include="base.ts" />
-    <Content Include="binding.ts" />
-    <Content Include="cell.ts" />
-    <Content Include="expression.ts" />
-    <Content Include="list.ts" />
-    <Content Include="noa.ts" />
-    <Content Include="record.ts" />
-    <Content Include="transformations.ts" />
+    <Content Include="src/aggregations.ts" />
+    <Content Include="src/base.ts" />
+    <Content Include="src/binding.ts" />
+    <Content Include="src/cell.ts" />
+    <Content Include="src/expression.ts" />
+    <Content Include="src/list.ts" />
+    <Content Include="src/noa.ts" />
+    <Content Include="src/record.ts" />
+    <Content Include="src/transformations.ts" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
