@@ -10,7 +10,10 @@ module NOA {
 			this.source = source;
 			this.uses(source);
 
-			source.onFree(this, () => this.free())
+			source.onFree(this, () => {
+			//	debugger;
+				this.free()
+			})
 
 			source.onInsert(this, this.onSourceInsert);
 

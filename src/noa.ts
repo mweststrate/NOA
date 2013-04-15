@@ -8,6 +8,7 @@
 ///<reference path='aggregations.ts'/>
 
 declare var require : Function;
+declare var process : any;
 
 module NOA {
 export class Util {
@@ -296,7 +297,11 @@ export class Util {
         var assert = require("assert")
         var sawerror = false;
 
-        for(var key in tests) {
+        var filter = function(_:string):bool { return true; }
+        if (process.argv.length == 3)
+            filter = function(name : string) { return name.indexOf(process.argv[2]) != -1; }
+
+        for(var key in tests) if (filter(key)) {
             console.log("\n=== RUNNING TEST " +  key + "===\n")
             assert.done = function() { report.push(" . - " + key) }
             try {
@@ -314,6 +319,7 @@ export class Util {
         }
 
         console.log(report.join("\n"))
+        //console.log(process.argv);
     }
 }
 }

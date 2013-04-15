@@ -830,7 +830,9 @@ var NOA;
             this.source = source;
             this.uses(source);
             source.onFree(this, function () {
-                return _this.free();
+                debugger;
+
+                _this.free();
             });
             source.onInsert(this, this.onSourceInsert);
             source.onSet(this, this.onSourceSet);
@@ -1539,21 +1541,31 @@ var NOA;
             ];
             var assert = require("assert");
             var sawerror = false;
-            for(var key in tests) {
-                console.log("\n=== RUNNING TEST " + key + "===\n");
-                assert.done = function () {
-                    report.push(" . - " + key);
+            var filter = function (_) {
+                return true;
+            };
+            if(process.argv.length == 3) {
+                filter = function (name) {
+                    return name.indexOf(process.argv[2]) != -1;
                 };
-                try  {
-                    tests[key](assert);
-                } catch (e) {
-                    report.push(" X - " + key);
-                    if(!sawerror) {
-                        report.push("   -> " + e.stack);
-                    } else {
-                        report.push("   -> " + e.stack.split("\n").slice(0, 2));
+            }
+            for(var key in tests) {
+                if(filter(key)) {
+                    console.log("\n=== RUNNING TEST " + key + "===\n");
+                    assert.done = function () {
+                        report.push(" . - " + key);
+                    };
+                    try  {
+                        tests[key](assert);
+                    } catch (e) {
+                        report.push(" X - " + key);
+                        if(!sawerror) {
+                            report.push("   -> " + e.stack);
+                        } else {
+                            report.push("   -> " + e.stack.split("\n").slice(0, 2));
+                        }
+                        sawerror = true;
                     }
-                    sawerror = true;
                 }
             }
             console.log(report.join("\n"));
