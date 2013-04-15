@@ -186,6 +186,7 @@ module NOA {
 		        this.cells[i].free();
 
 		    //TODO: free aggregates
+		    super.free();
 		}
 
         /* toString : function() {

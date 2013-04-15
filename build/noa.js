@@ -176,7 +176,7 @@ var NOA;
                 return this.toString();
             } else {
                 this.noabase.debugname = newname;
-                return this.toString();
+                return this;
             }
         };
         Base.prototype.debug = function () {
@@ -686,6 +686,7 @@ var NOA;
             for(var i = this.cells.length - 1; i >= 0; i--) {
                 this.cells[i].free();
             }
+            _super.prototype.free.call(this);
         };
         List.prototype.map = function (name, func) {
             return new NOA.MappedList(this, name, func);

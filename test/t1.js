@@ -2,7 +2,8 @@ NOA = require("../build/noa.js");
 
 exports.test1 = function(test) {
 
-	var x = new NOA.List().live();//.debugName("x");
+	var x = new NOA.List().live();
+    x.debugName("x");
 
 	//base set
 	x.add(3); 
@@ -21,7 +22,7 @@ exports.test1 = function(test) {
 	x.die();
 
 	test.equal(NOA.List.count, 0);
-	test.equal(NOA.core.Cell.count, 0);
+	test.equal(NOA.Cell.count, 0);
 
 	test.done();
 };
@@ -30,10 +31,13 @@ exports.test2 = function(test) {
 	var x = new NOA.List().live();//.debugName("x");;
 
    	var y = x.map("x", function() { 
+        debugger;
 		var v = this.variable('x');
 		//console.log("DOUBLEMAP: " + v + " * 2 = " + (v * 2));
 		return v * 2; 
-	}).debugName("y").live();
+	}).live();
+
+    y.debugName("y");
 
 	//base set
 	x.add(3); 
@@ -54,7 +58,7 @@ exports.test2 = function(test) {
 	y.die();
 
 	test.equal(NOA.List.count, 0);
-	test.equal(NOA.core.Cell.count, 0);
+	test.equal(NOA.Cell.count, 0);
 	test.equal(NOA.core.Expression.count, 0);
 
 	test.done();
@@ -62,18 +66,21 @@ exports.test2 = function(test) {
 };
 
 exports.test3 = function(test) {
-    var x = new NOA.List().live().debugName("x");;
+    var x = new NOA.List().live();
+    x.debugName("x");
 
     var y = x.map("x", function() {
         var v = this.variable('x');
         //console.log("DOUBLEMAP: " + v + " * 2 = " + (v * 2));
         return v * 2;
-    }).debugName("y").live();
+    }).live();
+    y.debugName("y");
 
     var z = y.filter("c", function(x) {
         return this.variable("c") < 10;
         //return x < 10;
-    }).debugName("z").live();
+    }).live();
+    z.debugName("z");
 
     x.add(3);
     x.add(2);
@@ -95,15 +102,16 @@ exports.test3 = function(test) {
     z.die();
 
     test.equal(NOA.List.count, 0);
-    test.equal(NOA.core.Cell.count, 0);
-    test.equal(NOA.core.Expression.count, 0);
+    test.equal(NOA.Cell.count, 0);
+    test.equal(NOA.Expression.count, 0);
 
     test.done();
 
 };
 
 exports.test4 = function(test) {
-    var x = new NOA.List().live().debugName("x");
+    var x = new NOA.List().live();
+    x.debugName("x");
     x.add(1);
     x.add(2);
 
@@ -129,7 +137,7 @@ exports.test4 = function(test) {
     test.equal(y.destroyed, true);
 
     test.equal(NOA.List.count, 0);
-    test.equal(NOA.core.Cell.count, 0);
+    test.equal(NOA.Cell.count, 0);
 
     test.done();
 
@@ -138,7 +146,8 @@ exports.test4 = function(test) {
 exports.test5 = function(test) {
     var start = (+ new Date);
 
-    var x = new NOA.List().live().debugName("x");;
+    var x = new NOA.List().live();
+    x.debugName("x");
 
     console.info(x.toString());
 
@@ -147,12 +156,14 @@ exports.test5 = function(test) {
         var v = this.variable('x');
         //console.log("DOUBLEMAP: " + v + " * 2 = " + (v * 2));
         return v * 2;
-    }).debugName("y").live();
+    }).live();
+    y.debugName("y")
 
     var z = y.filter("c", function(x) {
         return this.variable("c") < 10;
         //return x < 10;
-    }).debugName("z").live();
+    }).live();
+    z.debugName("z");
 
     var a = x.subset(1,3).debugName("a").live();
     var b = x.sort().debugName("b").live();
@@ -202,7 +213,7 @@ exports.test5 = function(test) {
     e.die();
 
     test.equal(NOA.core.Expression.count, 0);
-    test.equal(NOA.core.Cell.count, 0);
+    test.equal(NOA.Cell.count, 0);
     test.equal(NOA.List.count, 0);
 
     test.done();
@@ -254,7 +265,7 @@ exports.test6 = function(test) {
     xjoin.die();
 
     test.equal(NOA.List.count, 0);
-    test.equal(NOA.core.Cell.count, 0);
+    test.equal(NOA.Cell.count, 0);
     test.equal(NOA.core.Expression.count, 0);
 
     test.done();
@@ -291,7 +302,7 @@ exports.test7 = function(test) {
 
     test.equal(NOA.List.count, 0);
     test.equal(NOA.Record.count, 0);
-    test.equal(NOA.core.Cell.count, 0);
+    test.equal(NOA.Cell.count, 0);
     test.equal(NOA.core.Expression.count, 0);
     */
     test.done();
@@ -300,8 +311,10 @@ exports.test7 = function(test) {
 
 function runall() {
     var assert = require("assert")
-    for(var key in exports)
+    for(var key in exports) {
+        assert.done = function() { console.log("finished test " + key)}
         exports[key](assert);
+    }
 }
 
 if (!module.parent)

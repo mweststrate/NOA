@@ -207,7 +207,9 @@ module NOA {
 			return this;
 		}
 
-		debugName (newname? : string) : string {
+		debugName () : string;
+		debugName (newname : string) : Base;
+		debugName (newname? : string) : any {
 			if (newname === undefined) {
 				if (this.noabase && this.noabase.debugname)
 					return this.noabase.debugname;
@@ -215,7 +217,7 @@ module NOA {
 			}
 			else {
 				this.noabase.debugname = newname;
-				return this.toString();
+				return this;
 			}
 		}
 

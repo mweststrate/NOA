@@ -28,7 +28,8 @@ module NOA {
         public live(): Base;
         public die(): Base;
         public uses(that: Base): Base;
-        public debugName(newname?: string): string;
+        public debugName(): string;
+        public debugName(newname: string): Base;
         public debug(...args: any[]): void;
         public debugIn(...args: any[]): void;
         public debugOut(...args: any[]): void;
