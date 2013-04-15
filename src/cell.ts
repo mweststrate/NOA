@@ -99,7 +99,7 @@ module NOA {
                 if(this.hasExpression()) {
                     this.debug("now following", newvalue);
 
-                    newvalue = newvalue.get((newv, oldv) => {
+                    newvalue = (<ValueContainer>newvalue).get(newvalue, (newv, oldv) => {
                         this.fireChanged(newv, oldv);
                     });
                 }

@@ -294,16 +294,22 @@ export class Util {
     static runtests(tests : Object) {
         var report : string[] = ["--- TEST REPORT--\n"]
         var assert = require("assert")
+        var sawerror = false;
+
         for(var key in tests) {
-            console.log("\n\n=== RUNNING TEST " +  key + "===\n\n")
-            assert.done = function() { report.push("\n\n=== FINISHED TEST " + key + "===\n\n") }
+            console.log("\n=== RUNNING TEST " +  key + "===\n")
+            assert.done = function() { report.push(" . - " + key) }
             try {
 
                 tests[key](assert);
             }
             catch (e) {
-                 report.push("\n\n=== FAILED TEST " + key + ": " + e + "===\n\n")
-                 report.push("" + e.stack)
+                 report.push(" X - " + key)
+                 if (!sawerror)
+                    report.push("   -> " + e.stack)
+                 else
+                    report.push("   -> " + e.stack.split("\n").slice(0,2))
+                 sawerror = true;
             }
         }
 

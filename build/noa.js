@@ -375,7 +375,7 @@ var NOA;
                 this.value = newvalue;
                 if(this.hasExpression()) {
                     this.debug("now following", newvalue);
-                    newvalue = newvalue.get(function (newv, oldv) {
+                    newvalue = (newvalue).get(newvalue, function (newv, oldv) {
                         _this.fireChanged(newv, oldv);
                     });
                 }
@@ -565,7 +565,7 @@ var NOA;
             var cell = new NOA.Cell(this, index, value, origin);
             this.cells.splice(index, 0, cell);
             this._updateIndexes(index + 1, 1);
-            this.fire('insert', index, cell.value, cell);
+            this.fire('insert', index, cell.get(), cell);
             this.debugOut();
             return this;
         };
@@ -1538,16 +1538,22 @@ var NOA;
                 "--- TEST REPORT--\n"
             ];
             var assert = require("assert");
+            var sawerror = false;
             for(var key in tests) {
-                console.log("\n\n=== RUNNING TEST " + key + "===\n\n");
+                console.log("\n=== RUNNING TEST " + key + "===\n");
                 assert.done = function () {
-                    report.push("\n\n=== FINISHED TEST " + key + "===\n\n");
+                    report.push(" . - " + key);
                 };
                 try  {
                     tests[key](assert);
                 } catch (e) {
-                    report.push("\n\n=== FAILED TEST " + key + ": " + e + "===\n\n");
-                    report.push("" + e.stack);
+                    report.push(" X - " + key);
+                    if(!sawerror) {
+                        report.push("   -> " + e.stack);
+                    } else {
+                        report.push("   -> " + e.stack.split("\n").slice(0, 2));
+                    }
+                    sawerror = true;
                 }
             }
             console.log(report.join("\n"));

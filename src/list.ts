@@ -23,7 +23,7 @@ module NOA {
 			this.cells.splice(index, 0, cell);
 
 			this._updateIndexes(index +1, 1);
-			this.fire('insert', index, cell.value, cell);
+			this.fire('insert', index, cell.get(), cell);
 
 			this.debugOut();
 			return this;
