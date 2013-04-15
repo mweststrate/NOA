@@ -300,6 +300,7 @@ module NOA {
         static noop(): void;
         static notImplemented(): void;
         static randomUUID(): string;
+        static runtests(tests: Object): void;
     }
 }
 module NOA {

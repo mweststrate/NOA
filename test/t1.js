@@ -309,13 +309,7 @@ exports.test7 = function(test) {
 
 };
 
-function runall() {
-    var assert = require("assert")
-    for(var key in exports) {
-        assert.done = function() { console.log("finished test " + key)}
-        exports[key](assert);
-    }
-}
+
 
 if (!module.parent)
-    runall();
+    NOA.Util.runtests(exports);

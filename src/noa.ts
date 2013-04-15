@@ -7,6 +7,8 @@
 ///<reference path='transformations.ts'/>
 ///<reference path='aggregations.ts'/>
 
+declare var require : Function;
+
 module NOA {
 export class Util {
 
@@ -288,6 +290,25 @@ export class Util {
 	static randomUUID () {
 		return "todo";
 	};
+
+    static runtests(tests : Object) {
+        var report : string[] = ["--- TEST REPORT--"]
+        var assert = require("assert")
+        for(var key in tests) {
+            console.log("\n\n=== RUNNING TEST " +  key + "===\n\n")
+            assert.done = function() { report.push("\n\n=== FINISHED TEST " + key + "===\n\n") }
+            try {
+
+                tests[key](assert);
+            }
+            catch (e) {
+                 report.push("\n\n=== FAILED TEST " + key + ": " + e + "===\n\n")
+                 report.push("" + e.stack)
+            }
+        }
+
+        console.log(report.join("\n"))
+    }
 }
 }
 /*

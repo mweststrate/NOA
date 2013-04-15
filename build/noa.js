@@ -1532,6 +1532,24 @@ var NOA;
         Util.randomUUID = function randomUUID() {
             return "todo";
         };
+        Util.runtests = function runtests(tests) {
+            var report = [
+                "--- TEST REPORT--"
+            ];
+            var assert = require("assert");
+            for(var key in tests) {
+                assert.done = function () {
+                    report.push("\n\n=== FINISHED TEST " + key + "===\n\n");
+                };
+                try  {
+                    tests[key](assert);
+                } catch (e) {
+                    report.push("\n\n=== FAILED TEST " + key + ": " + e + "===\n\n");
+                    report.push("" + e.stack);
+                }
+            }
+            console.log(report.join("\n"));
+        };
         return Util;
     })();
     NOA.Util = Util;    
