@@ -81,16 +81,13 @@ var NOA;
             var a = NOA.Util.makeArray(arguments);
             a.shift();
             var listeners = this.noabase.getListeners(event);
-            var l = listeners.length;
-            if(l > 0) {
-                NOA.Util.debugIn(this, "fires", event, ":", a);
-                for(var i = 0; i < l; i++) {
-                    if(listeners[i]) {
-                        listeners[i].fire.apply(listeners[i], a);
-                    }
+            NOA.Util.debugIn(this, "fires", event, ":", a);
+            for(var key in listeners) {
+                if(listeners[key]) {
+                    listeners[key].fire.apply(listeners[key], a);
                 }
-                NOA.Util.debugOut();
             }
+            NOA.Util.debugOut();
             return this;
         };
         Base.prototype.on = function (ev, caller, callback) {
@@ -854,11 +851,12 @@ var NOA;
                 _super.call(this, source);
             this.basescope = NOA.Scope.getCurrentScope();
             this.func = func;
+            this.varname = name;
             this.replayInserts(this.onSourceInsert);
         }
         MappedList.prototype.onSourceInsert = function (index, _, source) {
             var scope = NOA.Scope.newScope(this.basescope);
-            scope[name] = source;
+            scope[this.varname] = source;
             var a;
             if(NOA.Util.isFunction(this.func)) {
                 a = new NOA.Expression(this.func, scope);
@@ -1534,10 +1532,11 @@ var NOA;
         };
         Util.runtests = function runtests(tests) {
             var report = [
-                "--- TEST REPORT--"
+                "--- TEST REPORT--\n"
             ];
             var assert = require("assert");
             for(var key in tests) {
+                console.log("\n\n=== RUNNING TEST " + key + "===\n\n");
                 assert.done = function () {
                     report.push("\n\n=== FINISHED TEST " + key + "===\n\n");
                 };

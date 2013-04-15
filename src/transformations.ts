@@ -35,6 +35,7 @@ module NOA {
 	export class MappedList extends ListTransformation {
 		basescope : Object;
 		func : any; //function or expession
+		varname : string;
 		/**
 		 * Constructs a new list with all the mapped items in this list. If name is defined, the current value to which the filter is applied is available
 		 * in func as this.variable(x), and it is available as the first argument
@@ -47,6 +48,7 @@ module NOA {
 
 			this.basescope = Scope.getCurrentScope();
 			this.func = func;
+			this.varname = name;
 
 			this.replayInserts(this.onSourceInsert);
 
@@ -54,7 +56,7 @@ module NOA {
 
 		onSourceInsert (index : number, _, source) {
 			var scope = Scope.newScope(this.basescope);
-			scope[name] = source;
+			scope[this.varname] = source;
 
 			var a;
 			if (Util.isFunction(this.func))

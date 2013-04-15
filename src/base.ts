@@ -80,21 +80,18 @@ module NOA {
 		fire (event : string, ...args : any[]) {
 			if (this.destroyed)
 				return this;
+			//TODO: remove all makeArray's, done by typescript :)
 			var a = Util.makeArray(arguments);
 			a.shift();
 
 			var listeners = this.noabase.getListeners(event);
-			var l = listeners.length;
+			Util.debugIn(this,"fires",event,":",a);
 
-			if (l > 0) {
-				Util.debugIn(this,"fires",event,":",a);
+			for(var key in listeners)
+				if (listeners[key])
+					listeners[key].fire.apply(listeners[key], a); //Note, event name is included in the call
 
-				for(var i = 0 ; i < l; i++)
-					if (listeners[i])
-						listeners[i].fire.apply(listeners[i], a); //Note, event name is included in the call
-
-				Util.debugOut();
-			}
+			Util.debugOut();
 			return this;
 		}
 

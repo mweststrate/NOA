@@ -204,6 +204,7 @@ module NOA {
     class MappedList extends ListTransformation {
         public basescope: Object;
         public func: any;
+        public varname: string;
         constructor(source: List, name: string, func: any);
         public onSourceInsert(index: number, _, source): void;
         public onSourceRemove(index: number, value): void;
