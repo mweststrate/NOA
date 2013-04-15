@@ -245,11 +245,13 @@ module NOA {
 		    return new ReversedList(this);
 		}
 
+		//TODO: introduce sort and sortby (map(getfield).order.ummap)
 		sort(comperator): List { 
 		    return new SortedList(this, comperator);
 		}
 
 		distinct(): List {
+			//TODO: return sorted version of the list!
 		    return new DistinctList(this);
 		}
 		

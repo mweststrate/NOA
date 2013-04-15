@@ -69,6 +69,7 @@ module NOA {
 
     }
 
+    //TODO: just replace by numberfilter().count()
     export class ListNumberCount extends ListAggregation {
 
         value: number = 0;
@@ -127,6 +128,7 @@ module NOA {
         }
     }
 
+    //TODO: just use an experssion for this based on count and sum
     export class ListAverage extends ListAggregation {
 
         value: number = 0;

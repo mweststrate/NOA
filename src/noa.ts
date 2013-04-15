@@ -292,7 +292,7 @@ export class Util {
 	};
 
     static runtests(tests : Object) {
-        var report : string[] = ["--- TEST REPORT--"]
+        var report : string[] = ["--- TEST REPORT--\n"]
         var assert = require("assert")
         for(var key in tests) {
             console.log("\n\n=== RUNNING TEST " +  key + "===\n\n")
