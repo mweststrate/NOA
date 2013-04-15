@@ -7,7 +7,7 @@ module NOA {
         public removeSubscription(binding: Binding): void;
         public addSubscription(binding: Binding): void;
         public getSubscriptions(): Binding[];
-        public getListeners(eventname: string): Binding[];
+        public getListeners(eventname: string): {};
         public addEventListener(binding: Binding): void;
         public removeEventListener(binding: Binding): void;
         public free(): void;

@@ -31,7 +31,7 @@ exports.test2 = function(test) {
 	var x = new NOA.List().live();//.debugName("x");;
 
    	var y = x.map("x", function() { 
-        debugger;
+        //debugger;
 		var v = this.variable('x');
 		//console.log("DOUBLEMAP: " + v + " * 2 = " + (v * 2));
 		return v * 2; 
@@ -59,7 +59,7 @@ exports.test2 = function(test) {
 
 	test.equal(NOA.List.count, 0);
 	test.equal(NOA.Cell.count, 0);
-	test.equal(NOA.core.Expression.count, 0);
+	test.equal(NOA.Expression.count, 0);
 
 	test.done();
 
@@ -212,7 +212,7 @@ exports.test5 = function(test) {
     d.die();
     e.die();
 
-    test.equal(NOA.core.Expression.count, 0);
+    test.equal(NOA.Expression.count, 0);
     test.equal(NOA.Cell.count, 0);
     test.equal(NOA.List.count, 0);
 
@@ -266,7 +266,7 @@ exports.test6 = function(test) {
 
     test.equal(NOA.List.count, 0);
     test.equal(NOA.Cell.count, 0);
-    test.equal(NOA.core.Expression.count, 0);
+    test.equal(NOA.Expression.count, 0);
 
     test.done();
 
@@ -286,7 +286,7 @@ exports.test7 = function(test) {
 
     o.set("b", 2);
 
-    var f = new NOA.core.Expression(o.cell("c"), function() {
+    var f = new NOA.Expression(o.cell("c"), function() {
         return this.variable("this").get("a") + this.variable("this").get("b");
     }, null, o).live();
 
@@ -303,7 +303,7 @@ exports.test7 = function(test) {
     test.equal(NOA.List.count, 0);
     test.equal(NOA.Record.count, 0);
     test.equal(NOA.Cell.count, 0);
-    test.equal(NOA.core.Expression.count, 0);
+    test.equal(NOA.Expression.count, 0);
     */
     test.done();
 

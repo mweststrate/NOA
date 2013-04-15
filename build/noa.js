@@ -31,7 +31,8 @@ var NOA;
             if(this.events[eventname]) {
                 return this.events[eventname];
             }
-            return [];
+            return {
+            };
         };
         BaseData.prototype.addEventListener = function (binding) {
             var eventname = binding.event;
@@ -454,6 +455,8 @@ var NOA;
             var s = Scope.getCurrentScope();
             while(s != null) {
                 if(name in s) {
+                    var thing = s[name];
+                    NOA.readTracker[0][thing.noaid] = thing;
                     return s[name];
                 }
                 s = s['$PARENTSCOPE$'];
@@ -501,7 +504,7 @@ var NOA;
                 for(var noaid in this.params) {
                     if(!reads[noaid]) {
                         var cell = this.params[noaid];
-                        this.unlisten(cell, "changed");
+                        this.unlisten(cell, "change");
                         cell.die();
                     }
                 }
@@ -511,7 +514,7 @@ var NOA;
                         this.params[cell.noaid] = cell;
                         cell.live();
                         this.debug("Added expression dependency: " + cell.debugName());
-                        this.listen(cell, "changed", this._apply);
+                        this.listen(cell, "change", this._apply);
                     }
                 }
             }finally {
@@ -528,7 +531,7 @@ var NOA;
             this.debug("freeing expression " + this.noaid);
             for(var key in this.params) {
                 var cell = this.params[key];
-                this.unlisten(cell, "changed");
+                this.unlisten(cell, "change");
                 cell.die();
             }
             _super.prototype.free.call(this);

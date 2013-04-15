@@ -15,8 +15,11 @@ module NOA {
 			var s = getCurrentScope();
 
 			while (s != null) {
-				if (name in s)
+				if (name in s) {
+					var thing = s[name];
+					NOA.readTracker[0][thing.noaid] = thing;
 					return s[name];
+				}
 				s = s['$PARENTSCOPE$'];
 			}
 
@@ -77,7 +80,7 @@ module NOA {
 				for(var noaid in this.params)
 					if (!reads[noaid]) {
 						var cell = this.params[noaid]
-						this.unlisten(cell, "changed");
+						this.unlisten(cell, "change");
 						cell.die();
 					}
 				//register new parents
@@ -87,7 +90,7 @@ module NOA {
 						this.params[cell.noaid] = cell;
 						cell.live();
 						this.debug("Added expression dependency: " + cell.debugName());
-						this.listen(cell, "changed", this._apply);
+						this.listen(cell, "change", this._apply);
 					}
 				}
 			}
@@ -127,7 +130,7 @@ module NOA {
 			this.debug("freeing expression " + this.noaid);
 			for(var key in this.params) {
 				var cell = this.params[key]
-				this.unlisten(cell, "changed");
+				this.unlisten(cell, "change");//TODO: to sensitive, hardcoded strings!
 				cell.die();
 			}
 			super.free();

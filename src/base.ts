@@ -26,10 +26,10 @@ module NOA {
 		    return res;
 		}
 
-		public getListeners(eventname: string): Binding[]{
+		public getListeners(eventname: string): {} {
             if (this.events[eventname])
                 return this.events[eventname];
-            return [];
+            return {};
 		}
 
 		public addEventListener(binding: Binding) {
