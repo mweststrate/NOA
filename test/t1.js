@@ -1,3 +1,4 @@
+
 NOA = require("../build/noa.js");
 
 exports.test1 = function(test) {
@@ -65,6 +66,48 @@ exports.test2 = function(test) {
 
 };
 
+exports.filterlive = function(test) {
+    debugger;
+    //test.equal(NOA.List.count, 0);
+    var x = new NOA.List().live();
+    test.equal(NOA.List.count, 1);
+
+    var z = x.filter("c", function(x) {
+        return this.variable("c") < 4;
+        //return x < 10;
+    }).live();
+    test.equal(NOA.List.count, 3);
+
+    x.die();
+    z.die();
+
+    test.equal(NOA.List.count, 0);
+
+    var x = new NOA.List().live();
+    test.equal(NOA.List.count, 1);
+
+    var z = x.filter("c", function(x) {
+        return this.variable("c") < 4;
+        //return x < 10;
+    }).live();
+    x.add(3);
+
+    test.deepEqual(z.toArray(), [3])
+
+    test.equal(NOA.List.count, 3);
+    test.equal(NOA.Cell.count, 3);
+    test.equal(NOA.Expression.count,1);
+
+    x.die();
+    z.die();
+
+    test.equal(NOA.List.count, 0);
+    test.equal(NOA.Cell.count, 0);
+    test.equal(NOA.Expression.count,0);
+
+    test.done();
+} 
+
 exports.test3filter = function(test) {
     var x = new NOA.List().live();
     x.debugName("x");
@@ -99,11 +142,15 @@ exports.test3filter = function(test) {
     x.cell(2).set(1);
     test.deepEqual( x.toArray(), [3,2,1]);
     test.deepEqual( z.toArray(), [3,2,1]);
-    
+
     x.move(1,0);
 
     test.deepEqual( x.toArray(), [2,3,1]);
     test.deepEqual( z.toArray(), [2,3,1]);
+
+    x.set(0, 4);
+    test.deepEqual( x.toArray(), [4,2,1]);
+    test.deepEqual( z.toArray(), [2,1]);
 
     x.die();
     z.die();

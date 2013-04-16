@@ -64,11 +64,13 @@ var NOA;
             this.freeing = false;
             this.noabase = new BaseData();
             this.noaid = Base.noaid += 1;
-            var x = this['__proto__'].constructor;
-            if(!x.count) {
-                x.count = 0;
+            var x = this;
+            while(x = x['__proto__']) {
+                if(!x.constructor.count) {
+                    x.constructor.count = 0;
+                }
+                x.constructor.count += 1;
             }
-            x.count += 1;
         }
         Base.noaid = 0;
         Base.prototype.fire = function (event) {
@@ -130,7 +132,12 @@ var NOA;
             this.destroyed = true;
             delete this.freeing;
             this.noabase = null;
-            this['__proto__'].constructor.count -= 1;
+            var x = this;
+            while(x = x['__proto__']) {
+                if(x.constructor.count !== undefined) {
+                    x.constructor.count -= 1;
+                }
+            }
         };
         Base.prototype.onFree = function (caller, callback) {
             this.on('free', caller, callback);
@@ -830,8 +837,6 @@ var NOA;
             this.source = source;
             this.uses(source);
             source.onFree(this, function () {
-                debugger;
-
                 _this.free();
             });
             source.onInsert(this, this.onSourceInsert);

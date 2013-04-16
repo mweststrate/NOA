@@ -60,15 +60,17 @@ module NOA {
 		public  destroyed : bool = false;
 		private freeing : bool = false;
 
-		//TODO:? static count : number = 0;
-
 		constructor() {
 		    this.noabase = new BaseData();
 			this.noaid = Base.noaid += 1;
-			var x = this['__proto__'].constructor; //work around for webstorm typescript
-			if (!x.count)
-				x.count = 0;
-			x.count += 1;
+
+			//TODO: expensive? use global debug flag
+ 			var x : any = this;
+            while(x = x['__proto__']) {
+            	if (!x.constructor.count)
+            		x.constructor.count = 0;
+            	x.constructor.count += 1;
+            }
 		}
 
 
@@ -161,7 +163,13 @@ module NOA {
 			this.destroyed = true;
 			delete this.freeing;
 			this.noabase = null; //forget the handlers, hope GC picks them up :)
-			this['__proto__'].constructor.count -= 1; //Webstorm typescript workaround
+
+			//TODO: expensive; only do this if special debug flag is set?
+            var x : any = this;
+            while(x = x['__proto__']) {
+                if(x.constructor.count !== undefined) 
+                   x.constructor.count -= 1;
+            }
 		}
 
 		/*
