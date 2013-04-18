@@ -228,8 +228,8 @@ module NOA {
 		 */
 		subset(begin: number, end?: number): List {
             if (end === undefined)
-		        return new SubSetList(this, begin, end);
-		    return new ListTail(this, begin);
+		    	return new ListTail(this, begin);
+		    return new SubSetList(this, begin, end);
 		}
 
 		tail() {
