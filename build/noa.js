@@ -1202,8 +1202,8 @@ var NOA;
         };
         JoinedList.prototype.setupSublist = function (index, sublist) {
             var cell = this.source.cell(index);
-            var sublistInsert = function (subindex, _, cell) {
-                this.insert(this.lmap[cell.index][0] + subindex, cell);
+            var sublistInsert = function (subindex, _, subcell) {
+                this.insert(this.lmap[cell.index][0] + subindex, subcell);
                 this.updateLmap(cell.index, +1);
             };
             sublist.replayInserts(this, sublistInsert);
