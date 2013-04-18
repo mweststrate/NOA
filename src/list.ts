@@ -17,6 +17,9 @@ module NOA {
 		insert(index: number, value: ValueContainer): List;
 		insert(index: number, value: any, origin: CellContainer): List;
 		insert(index: number, value: any, origin?: CellContainer): List {
+			if (index < 0 || index > this.cells.length)
+				throw new Error("Remove out of bounds: " + index + " not in 0.." + this.cells.length)
+
 			this.debugIn("Insert at " + index + ": " + value);
 
 			var cell = new Cell(<CellContainer>this, index, <any> value, <CellContainer>origin); //Todo extract origin from value
@@ -32,6 +35,9 @@ module NOA {
 		set (index: number, value: ValueContainer): List;
 		set (index: number, value: any, origin: CellContainer): List;
 		set (index: number, value: any, origin?: CellContainer): List {
+			if (index < 0 || index >= this.cells.length)
+				throw new Error("Set out of bounds: " + index + " not in 0.." + this.cells.length)
+			
 			this.debugIn("Set at " + index + ": " + value);
 
 			this.cells[index].set(value);
@@ -45,6 +51,8 @@ module NOA {
 		};
 
 		remove (index : number) : any {
+			if (index < 0 || index >= this.cells.length)
+				throw new Error("Remove out of bounds: " + index + " not in 0.." + this.cells.length)
 			this.debugIn("Remove at " + index);
 
 			var origcell = this.cells[index];
@@ -63,6 +71,9 @@ module NOA {
 		move (from : number, to : number) : List {
 			if (from == to)
 				return this;
+
+			if (from < 0 || to < 0 || from >= this.cells.length || to >= this.cells.length)
+				throw new Error("Move out of bounds: " + from + to + " not in 0.." + this.cells.length);
 
 			this.debugIn("Move from " + from + " to " + to);
 
@@ -89,6 +100,9 @@ module NOA {
 		}
 
 		cell (index: number) : Cell {
+			if (index < 0 || index >= this.cells.length)
+				throw new Error("Cell out of bounds: " + index + " not in 0.." + this.cells.length)
+
 			return this.cells[index];
 		}
 
@@ -162,6 +176,9 @@ module NOA {
         //TODO: if caller & onchange, should it follow the cell or follow the value at the specified index?!
         //Todo should it follow atIndex?
 		get (index: number /*, caller?: Base, onchange? : (newvalue, oldvalue)=>void*/) {
+			if (index < 0 || index >= this.cells.length)
+				throw new Error("Get out of bounds: " + index + " not in 0.." + this.cells.length)
+
 		    return this.cells[index].get(/*caller, onchange*/);
 		}
 
