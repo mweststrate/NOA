@@ -1114,9 +1114,12 @@ var NOA;
             return this.func(a, b.get());
         };
         SortedList.prototype.onSourceInsert = function (baseindex, value, cell, _knownindex) {
+            var _this = this;
             var nidx = _knownindex;
             if(nidx === undefined) {
-                nidx = NOA.Util.binarySearch(this.cells, value, this.searcher);
+                nidx = NOA.Util.binarySearch(this.cells, value, function (a, b) {
+                    return _this.searcher(a, b);
+                });
             }
             this.insert(nidx, value, cell.getOrigin());
             this.updateMapping(nidx, 1);
@@ -1129,8 +1132,11 @@ var NOA;
             this.mapping.splice(baseindex, 1);
         };
         SortedList.prototype.onSourceSet = function (index, value, _, cell) {
+            var _this = this;
             var baseidx = this.mapping[index];
-            var nidx = NOA.Util.binarySearch(this.cells, value, this.searcher);
+            var nidx = NOA.Util.binarySearch(this.cells, value, function (a, b) {
+                return _this.searcher(a, b);
+            });
             if(nidx != baseidx) {
                 this.onSourceRemove(index);
                 this.onSourceInsert(index, value, cell, nidx);
