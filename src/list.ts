@@ -17,10 +17,10 @@ module NOA {
 		insert(index: number, value: ValueContainer): List;
 		insert(index: number, value: any, origin: CellContainer): List;
 		insert(index: number, value: any, origin?: CellContainer): List {
-			if (index < 0 || index > this.cells.length)
-				throw new Error("Remove out of bounds: " + index + " not in 0.." + this.cells.length)
-
 			this.debugIn("Insert at " + index + ": " + value);
+			if (index < 0 || index > this.cells.length)
+				throw new Error("Insert out of bounds: " + index + " not in 0.." + this.cells.length)
+
 
 			var cell = new Cell(<CellContainer>this, index, <any> value, <CellContainer>origin); //Todo extract origin from value
 			this.cells.splice(index, 0, cell);
@@ -35,10 +35,10 @@ module NOA {
 		set (index: number, value: ValueContainer): List;
 		set (index: number, value: any, origin: CellContainer): List;
 		set (index: number, value: any, origin?: CellContainer): List {
+			this.debugIn("Set at " + index + ": " + value);
 			if (index < 0 || index >= this.cells.length)
 				throw new Error("Set out of bounds: " + index + " not in 0.." + this.cells.length)
 			
-			this.debugIn("Set at " + index + ": " + value);
 
 			this.cells[index].set(value);
 
@@ -51,9 +51,9 @@ module NOA {
 		};
 
 		remove (index : number) : any {
+			this.debugIn("Remove at " + index);
 			if (index < 0 || index >= this.cells.length)
 				throw new Error("Remove out of bounds: " + index + " not in 0.." + this.cells.length)
-			this.debugIn("Remove at " + index);
 
 			var origcell = this.cells[index];
 			var origvalue = origcell.get();
@@ -72,10 +72,10 @@ module NOA {
 			if (from == to)
 				return this;
 
+			this.debugIn("Move from " + from + " to " + to);
 			if (from < 0 || to < 0 || from >= this.cells.length || to >= this.cells.length)
 				throw new Error("Move out of bounds: " + from + to + " not in 0.." + this.cells.length);
 
-			this.debugIn("Move from " + from + " to " + to);
 
 			var c = this.cells[from];
 			c.index = to;
