@@ -151,8 +151,10 @@ module NOA {
             super.free();
         }
 
-        toString() : string {
-            return ((this.parent ? this.parent.debugName() + "." + this.index : "Cell " + this.noaid) + ":" + this.value);
+        toString () : string {
+            return ("[Cell(" + this.noaid +"): " + 
+               (this.parent ? this.parent.toString() + "#" + this.index : "") + 
+               "=" + this.value +"]");
         }
 
     }

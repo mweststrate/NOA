@@ -238,9 +238,13 @@ module NOA {
 			Util.debugOut();
 		}
 
-		/*toString() : string {
-			return this['__proto__'].toString.apply(this);
-		}*/
+		toString() : string {
+			var n = this.noabase.debugname;
+			if (n)
+				return n;
+			else
+				return "[" + (<any>this).constructor.name + ":" + this.noaid + "]";
+		}
 	}
 
 	export class GlobalEvents extends Base {
