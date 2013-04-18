@@ -148,7 +148,7 @@ module NOA {
         public onRemove(caller: Base, cb: (from: number, value: any) => void): List;
         public onSet(caller: Base, cb: (index: number, newvalue: any, oldvalue: any, cell: Cell) => void): List;
         public _updateIndexes(start: number, end: number, delta?: number): List;
-        public replayInserts(cb: (index: number, value: any, cell: Cell) => void): void;
+        public replayInserts(scope, cb: (index: number, value: any, cell: Cell) => void): void;
         public add(value: ValueContainer);
         public add(value: any, origin: CellContainer);
         public aggregate(index: string, caller?: Base, onchange?: (newvalue: any, oldvalue: any) => void);
@@ -260,7 +260,7 @@ module NOA {
         public lmap: any[];
         constructor(source: List);
         public updateLmap(index: number, delta: number): void;
-        public setupSublist(index: number, sublist): void;
+        public setupSublist(index: number, sublist: List): void;
         public onSourceInsert(index: number, value, cell): void;
         public onSourceRemove(index: number, value): void;
         public onSourceSet(index: number, newvalue, oldvalue, cell): void;

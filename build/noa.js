@@ -642,10 +642,10 @@ var NOA;
             }
             return this;
         };
-        List.prototype.replayInserts = function (cb) {
+        List.prototype.replayInserts = function (scope, cb) {
             var l = this.cells.length;
             for(var i = 0; i < l; i++) {
-                cb(i, this.get(i), this.cells[i]);
+                cb.call(scope, i, this.get(i), this.cells[i]);
             }
         };
         List.prototype.add = function (value, origin) {
@@ -854,7 +854,7 @@ var NOA;
             this.basescope = NOA.Scope.getCurrentScope();
             this.func = func;
             this.varname = name;
-            this.replayInserts(this.onSourceInsert);
+            this.replayInserts(this, this.onSourceInsert);
         }
         MappedList.prototype.onSourceInsert = function (index, _, source) {
             var scope = NOA.Scope.newScope(this.basescope);
@@ -888,7 +888,7 @@ var NOA;
             this.parent.debugName = function (_) {
                 return "FilterMap-for-" + _this.debugName();
             };
-            this.source.replayInserts(this.onSourceInsert);
+            this.source.replayInserts(this, this.onSourceInsert);
         }
         FilteredList.prototype.updateMapping = function (index, delta, to) {
             var l = to ? to : this.mapping.length;
@@ -1099,7 +1099,7 @@ var NOA;
                     }
                 };
             }
-            source.replayInserts(this.onSourceInsert);
+            source.replayInserts(this, this.onSourceInsert);
             this.unlisten(source, 'move');
         }
         SortedList.prototype.updateMapping = function (from, delta) {
@@ -1147,7 +1147,7 @@ var NOA;
                 _super.call(this, source);
             this.occ = {
             };
-            source.replayInserts(this.onSourceInsert);
+            source.replayInserts(this, this.onSourceInsert);
             this.unlisten(source, 'move');
         }
         DistinctList.prototype.toKey = function (value) {
@@ -1192,7 +1192,7 @@ var NOA;
         function JoinedList(source) {
                 _super.call(this, source);
             this.lmap = [];
-            source.replayInserts(this.onSourceInsert);
+            source.replayInserts(this, this.onSourceInsert);
         }
         JoinedList.prototype.updateLmap = function (index, delta) {
             this.lmap[index][1] += delta;
@@ -1206,7 +1206,7 @@ var NOA;
                 this.insert(this.lmap[cell.index][0] + subindex, cell);
                 this.updateLmap(cell.index, +1);
             };
-            sublist.replayInserts(sublistInsert);
+            sublist.replayInserts(this, sublistInsert);
             sublist.onInsert(this, sublistInsert);
             sublist.onMove(this, function (sf, st) {
                 this.move(this.lmap[cell.index][0] + sf, this.lmap[cell.index][0] + st);

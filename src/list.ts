@@ -130,10 +130,10 @@ module NOA {
 			return this;
 		}
 
-		replayInserts(cb : (index: number, value: any, cell: Cell) => void) {
+		replayInserts(scope, cb : (index: number, value: any, cell: Cell) => void) {
 			var l= this.cells.length;
 			for(var i = 0; i < l; i++)
-				cb(i, this.get(i), this.cells[i]);
+				cb.call(scope, i, this.get(i), this.cells[i]);
 		}
 
 

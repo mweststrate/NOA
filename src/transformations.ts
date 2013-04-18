@@ -53,7 +53,7 @@ module NOA {
 			this.func = func;
 			this.varname = name;
 
-			this.replayInserts(this.onSourceInsert);
+			this.replayInserts(this, this.onSourceInsert);
 
 		}
 
@@ -93,7 +93,7 @@ module NOA {
 		    this.parent = source;
 		    this.parent.debugName = (_?:string):any => "FilterMap-for-" + this.debugName();
 			
-			this.source.replayInserts(this.onSourceInsert);
+			this.source.replayInserts(this, this.onSourceInsert);
 		}
 
 		updateMapping (index: number, delta: number, to?: number) {
@@ -319,7 +319,7 @@ module NOA {
 						return 1;
 				};
 
-			source.replayInserts(this.onSourceInsert);
+			source.replayInserts(this, this.onSourceInsert);
 
 			this.unlisten(source, 'move');
 		}
@@ -372,7 +372,7 @@ module NOA {
 
 		constructor(source: List) {
 			super(source);
-			source.replayInserts(this.onSourceInsert)
+			source.replayInserts(this, this.onSourceInsert)
 			this.unlisten(source, 'move')
 		}
 
@@ -421,7 +421,7 @@ module NOA {
 
 		constructor(source: List) {
 			super(source);
-			source.replayInserts(this.onSourceInsert);
+			source.replayInserts(this, this.onSourceInsert);
 		}
 
 		updateLmap  (index : number, delta : number) {
@@ -430,7 +430,7 @@ module NOA {
 				this.lmap[i][0] += delta;
 		}
 
-		setupSublist (index : number, sublist) {
+		setupSublist (index : number, sublist: List) {
 			var cell = this.source.cell(index); //the cell knows our position in lmap reliable when handling events, so the join transformation does not need to track that.
 
 			var sublistInsert = function (subindex, _, cell) {
@@ -438,7 +438,7 @@ module NOA {
 				this.updateLmap(cell.index, +1);
 			}
 
-			sublist.replayInserts(sublistInsert);
+			sublist.replayInserts(this, sublistInsert);
 
 			sublist.onInsert(this, sublistInsert);
 			sublist.onMove(this, function (sf : number, st : number) {
