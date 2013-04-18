@@ -293,32 +293,43 @@ export class Util {
 	};
 
     static runtests(tests : Object) {
-        var report : string[] = ["--- TEST REPORT--\n"]
+        var report : string[] = ["\n==[ TEST REPORT ]=="]
         var assert = require("assert")
-        var sawerror = false;
+        var count = 0;
+        var success = 0;
 
         var filter = function(_:string):bool { return true; }
         if (process.argv.length == 3)
             filter = function(name : string) { return name.indexOf(process.argv[2]) != -1; }
 
+        var failed = true;
         for(var key in tests) if (filter(key)) {
-            console.log("\n=== RUNNING TEST " +  key + "===\n")
-            assert.done = function() { report.push(" . - " + key) }
+            console.log("\n[\x1b[34mRun\x1b[0m]   " +  key + "\n")
+        
+            failed = true; count += 1;
+            assert.done = function() { 
+                report.push("[\x1b[32mok\x1b[0m]   " + key);
+                failed = false;
+                success +=1;
+            }
             try {
-
                 tests[key](assert);
+                if (failed)
+                    throw new Error("Test finished without calling 'done'")
+
             }
             catch (e) {
-                 report.push(" X - " + key)
-                 if (!sawerror)
-                    report.push("   -> " + e.stack)
-                 else
-                    report.push("   -> " + e.stack.split("\n").slice(0,2))
-                 sawerror = true;
+                console.error(e)
+                console.error(e.stack); 
+
+                report.push("\n[\x1b[1m\x1b[31mFAIL\x1b[0m] " + key + ":\n          " + e);
+                if (e.stack) 
+                    report.push("\x1b[37m      " + e.stack.split("\n")[1] + "\x1b[0m")
             }
         }
 
         console.log(report.join("\n"))
+        console.log("\nCompleted test run: " + success + " out of " + count + " tests succeeded")
         //console.log(process.argv);
     }
 }
