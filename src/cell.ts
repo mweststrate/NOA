@@ -116,11 +116,7 @@ module NOA {
             this.changed(newv, oldv, this);
         }
 
-        get (caller?: Base, onchange? : (newvalue : any, oldvalue: any) => void) : any {
-            if(readTracker.length > 0) {
-                readTracker[0][this.noaid] = this;
-            }
-
+        get (caller?: Base, onchange?: (newvalue: any, oldvalue: any) => void ): any {
             var res = super.get(caller, onchange)
 
             if (this.hasExpression())
@@ -159,16 +155,7 @@ module NOA {
             return ((this.parent ? this.parent.debugName() + "." + this.index : "Cell " + this.noaid) + ":" + this.value);
         }
 
-
-        public static trackReads (list : Object) {
-            readTracker.unshift(list);
-        }
-
-        public static untrackReads () {
-            readTracker.shift();
-        }
     }
 
-    export  var readTracker  = [];//TODO: move to expression
 }
 //@ sourceMappingURL=cell.js.map

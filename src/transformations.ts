@@ -36,7 +36,7 @@ module NOA {
 
 
 	export class MappedList extends ListTransformation {
-		basescope : Object;
+		basescope : Scope;
 		func : any; //function or expession
 		varname : string;
 		/**
@@ -59,7 +59,7 @@ module NOA {
 
 		onSourceInsert (index : number, _, source) {
 			var scope = Scope.newScope(this.basescope);
-			scope[this.varname] = source;
+			scope.set(this.varname, source);
 
 			var a;
 			if (Util.isFunction(this.func))
@@ -91,6 +91,7 @@ module NOA {
 		    super(source.map(name, func)); //do not follow the source but to the filtermap!
 
 		    this.parent = source;
+		    this.parent.debugName = (_?:string):any => "FilterMap-for-" + this.debugName();
 			
 			this.source.replayInserts(this.onSourceInsert);
 		}

@@ -4,36 +4,15 @@ module NOA {
 
 	//TODO: make reall class of scope, not some wrapped map. 
 	export class Scope {
-		private static SCOPE = [{}];
+	    private static SCOPE : Scope[] = [];
 
-		static getCurrentScope () {
+		static getCurrentScope () : Scope {
 			return SCOPE[0];
 		};
 
-
-		static getFromScope (name) {
-			var s = getCurrentScope();
-
-			while (s != null) {
-				if (name in s) {
-					var thing = s[name];
-					NOA.readTracker[0][thing.noaid] = thing;
-					return s[name];
-				}
-				s = s['$PARENTSCOPE$'];
-			}
-
-
-			throw "NOA: Undefined variable: " + name;
-		};
-
-
-		static newScope (basescope) {
-			return {
-				$PARENTSCOPE$ : basescope //MWE: lets hope nobody ever names his variable '$PARENTSCOPE$'...
-			}
+		static newScope (basescope : Scope) : Scope {
+		    return new Scope(basescope);
 		}
-
 
 		static pushScope (scope) {
 			SCOPE.unshift(scope);
@@ -43,6 +22,35 @@ module NOA {
 			SCOPE.shift();
 		};
 
+        // - End static members -//
+        private vars = {};
+		private parent: Scope;
+
+        constructor(parentscope?: Scope) {
+            this.parent = parentscope;
+        }
+
+        get (varname: string, readTracker: Object): ValueContainer {
+            if (varname in this.vars) {
+                var thing = this.vars[varname];
+                readTracker[thing.noaid] = thing;
+                return thing;
+            }
+            if (this.parent)
+	            return this.parent.get(varname, readTracker);
+
+            throw "Undefined variable: '" + varname + "'"
+        }
+
+        set (varname: string, value : ValueContainer) {
+        	if (varname in this.vars)
+        		throw  "Already declared: '" + varname + "'"
+
+        	if (!value)
+        		throw "No value provided to Scope.set!"
+
+        	this.vars[varname] = value;
+        }
 	}
 
 	export class Expression extends ValueContainer {
@@ -50,6 +58,7 @@ module NOA {
 		scope : Object;
 		value : any ;
 		params = {}; //contains bound value containers
+		readTracker = null;
 
 
 		constructor (func, scope) {
@@ -60,16 +69,13 @@ module NOA {
 			this._apply();
 		};
 
-
-
 		_apply () {
 			if (this.destroyed)
 				return;
-			try {
+			 try {
 				Scope.pushScope(this.scope);
 
-				var reads = {};
-				Cell.trackReads(reads)
+				var reads = this.readTracker = {}; //Setup readtracker for this.variable() mwe: bwegh..
 
 				var origvalue = this.value;
 				this.value = this.func.apply(this);
@@ -81,27 +87,24 @@ module NOA {
 					if (!reads[noaid]) {
 						var cell = this.params[noaid]
 						this.unlisten(cell, "change");
-						cell.die();
 					}
 				//register new parents
 				for(var noaid in reads) {
 					if (!this.params[noaid]) {
 						var cell = reads[noaid];
 						this.params[cell.noaid] = cell;
-						cell.live();
 						this.debug("Added expression dependency: " + cell.debugName());
 						this.listen(cell, "change", this._apply);
 					}
 				}
 			}
 			finally {
-				Cell.untrackReads();
 				Scope.popScope();
 			}
 		};
 
-		variable (name) {
-			var thing = Scope.getFromScope(name);
+		variable (name: string) {
+		    var thing = Scope.getCurrentScope().get(name, this.readTracker);
 			Util.assert(!thing.destroyed);
 			return thing.get(); //TODO: could registered values being read here instead of in cell?
 			/*
@@ -131,7 +134,7 @@ module NOA {
 			for(var key in this.params) {
 				var cell = this.params[key]
 				this.unlisten(cell, "change");//TODO: to sensitive, hardcoded strings!
-				cell.die();
+				//cell.die();
 			}
 			super.free();
 		}

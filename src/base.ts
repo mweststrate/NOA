@@ -162,7 +162,7 @@ module NOA {
 			//delete this.constructor.instances[this.noaid];
 			this.destroyed = true;
 			delete this.freeing;
-			this.noabase = null; //forget the handlers, hope GC picks them up :)
+			//this.noabase = null; //forget the handlers, hope GC picks them up :)
 
 			//TODO: expensive; only do this if special debug flag is set?
             var x : any = this;
@@ -200,7 +200,7 @@ module NOA {
 			if (this.noabase.refcount == 0)
 				this.free();
 			else if (this.noabase.refcount < 0)
-				throw this + " Trying to kill a thing which is not living";
+				throw new Error(this + " Trying to kill a thing which is not living");
 			return this;
 		}
 
@@ -215,7 +215,7 @@ module NOA {
 		debugName () : string;
 		debugName (newname : string) : Base;
 		debugName (newname? : string) : any {
-			if (newname === undefined) {
+			if (!newname) {
 				if (this.noabase && this.noabase.debugname)
 					return this.noabase.debugname;
 				return this.toString();

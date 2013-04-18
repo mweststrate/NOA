@@ -70,12 +70,14 @@ exports.filterlive = function(test) {
     debugger;
     //test.equal(NOA.List.count, 0);
     var x = new NOA.List().live();
+    x.debugName("x");
     test.equal(NOA.List.count, 1);
 
     var z = x.filter("c", function(x) {
         return this.variable("c") < 4;
         //return x < 10;
     }).live();
+    z.debugName("z");
     test.equal(NOA.List.count, 3);
 
     x.die();
@@ -149,8 +151,8 @@ exports.test3filter = function(test) {
     test.deepEqual( z.toArray(), [2,3,1]);
 
     x.set(0, 4);
-    test.deepEqual( x.toArray(), [4,2,1]);
-    test.deepEqual( z.toArray(), [2,1]);
+    test.deepEqual( x.toArray(), [4,3,1]);
+    test.deepEqual( z.toArray(), [3,1]);
 
     x.die();
     z.die();

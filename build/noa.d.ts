@@ -93,30 +93,30 @@ module NOA {
         public die(): Cell;
         public free(): void;
         public toString(): string;
-        static trackReads(list: Object): void;
-        static untrackReads(): void;
     }
-    var readTracker: any[];
 }
 module NOA {
     class Scope {
         private static SCOPE;
-        static getCurrentScope(): {};
-        static getFromScope(name);
-        static newScope(basescope): {
-            $PARENTSCOPE$: any;
-        };
+        static getCurrentScope(): Scope;
+        static newScope(basescope: Scope): Scope;
         static pushScope(scope): void;
         static popScope(): void;
+        private vars;
+        private parent;
+        constructor(parentscope?: Scope);
+        public get(varname: string, readTracker: Object): ValueContainer;
+        public set(varname: string, value: ValueContainer): void;
     }
     class Expression extends ValueContainer {
         public func: Function;
         public scope: Object;
         public value: any;
         public params: {};
+        public readTracker;
         constructor(func, scope);
         public _apply(): void;
-        public variable(name);
+        public variable(name: string);
         public free(): void;
     }
 }
@@ -202,7 +202,7 @@ module NOA {
         public onSourceSet(index: number, newvalue, oldvalue, cell: Cell): void;
     }
     class MappedList extends ListTransformation {
-        public basescope: Object;
+        public basescope: Scope;
         public func: any;
         public varname: string;
         constructor(source: List, name: string, func: any);

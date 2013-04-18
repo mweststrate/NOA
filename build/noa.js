@@ -131,7 +131,6 @@ var NOA;
             this.noabase.free();
             this.destroyed = true;
             delete this.freeing;
-            this.noabase = null;
             var x = this;
             while(x = x['__proto__']) {
                 if(x.constructor.count !== undefined) {
@@ -160,7 +159,7 @@ var NOA;
             if(this.noabase.refcount == 0) {
                 this.free();
             } else if(this.noabase.refcount < 0) {
-                throw this + " Trying to kill a thing which is not living";
+                throw new Error(this + " Trying to kill a thing which is not living");
             }
             return this;
         };
@@ -174,7 +173,7 @@ var NOA;
             return this;
         };
         Base.prototype.debugName = function (newname) {
-            if(newname === undefined) {
+            if(!newname) {
                 if(this.noabase && this.noabase.debugname) {
                     return this.noabase.debugname;
                 }
@@ -399,9 +398,6 @@ var NOA;
             this.changed(newv, oldv, this);
         };
         Cell.prototype.get = function (caller, onchange) {
-            if(NOA.readTracker.length > 0) {
-                NOA.readTracker[0][this.noaid] = this;
-            }
             var res = _super.prototype.get.call(this, caller, onchange);
             if(this.hasExpression()) {
                 return res.get();
@@ -436,50 +432,50 @@ var NOA;
         Cell.prototype.toString = function () {
             return ((this.parent ? this.parent.debugName() + "." + this.index : "Cell " + this.noaid) + ":" + this.value);
         };
-        Cell.trackReads = function trackReads(list) {
-            NOA.readTracker.unshift(list);
-        };
-        Cell.untrackReads = function untrackReads() {
-            NOA.readTracker.shift();
-        };
         return Cell;
     })(ValueContainer);
     NOA.Cell = Cell;    
-    NOA.readTracker = [];
 })(NOA || (NOA = {}));
 var NOA;
 (function (NOA) {
     var Scope = (function () {
-        function Scope() { }
-        Scope.SCOPE = [
-            {
-            }
-        ];
+        function Scope(parentscope) {
+            this.vars = {
+            };
+            this.parent = parentscope;
+        }
+        Scope.SCOPE = [];
         Scope.getCurrentScope = function getCurrentScope() {
             return Scope.SCOPE[0];
         };
-        Scope.getFromScope = function getFromScope(name) {
-            var s = Scope.getCurrentScope();
-            while(s != null) {
-                if(name in s) {
-                    var thing = s[name];
-                    NOA.readTracker[0][thing.noaid] = thing;
-                    return s[name];
-                }
-                s = s['$PARENTSCOPE$'];
-            }
-            throw "NOA: Undefined variable: " + name;
-        };
         Scope.newScope = function newScope(basescope) {
-            return {
-                $PARENTSCOPE$: basescope
-            };
+            return new Scope(basescope);
         };
         Scope.pushScope = function pushScope(scope) {
             Scope.SCOPE.unshift(scope);
         };
         Scope.popScope = function popScope() {
             Scope.SCOPE.shift();
+        };
+        Scope.prototype.get = function (varname, readTracker) {
+            if(varname in this.vars) {
+                var thing = this.vars[varname];
+                readTracker[thing.noaid] = thing;
+                return thing;
+            }
+            if(this.parent) {
+                return this.parent.get(varname, readTracker);
+            }
+            throw "Undefined variable: '" + varname + "'";
+        };
+        Scope.prototype.set = function (varname, value) {
+            if(varname in this.vars) {
+                throw "Already declared: '" + varname + "'";
+            }
+            if(!value) {
+                throw "No value provided to Scope.set!";
+            }
+            this.vars[varname] = value;
         };
         return Scope;
     })();
@@ -490,6 +486,7 @@ var NOA;
                 _super.call(this);
             this.params = {
             };
+            this.readTracker = null;
             this.func = func;
             this.scope = scope;
             this._apply();
@@ -500,9 +497,8 @@ var NOA;
             }
             try  {
                 Scope.pushScope(this.scope);
-                var reads = {
+                var reads = this.readTracker = {
                 };
-                NOA.Cell.trackReads(reads);
                 var origvalue = this.value;
                 this.value = this.func.apply(this);
                 if(origvalue != this.value) {
@@ -512,25 +508,22 @@ var NOA;
                     if(!reads[noaid]) {
                         var cell = this.params[noaid];
                         this.unlisten(cell, "change");
-                        cell.die();
                     }
                 }
                 for(var noaid in reads) {
                     if(!this.params[noaid]) {
                         var cell = reads[noaid];
                         this.params[cell.noaid] = cell;
-                        cell.live();
                         this.debug("Added expression dependency: " + cell.debugName());
                         this.listen(cell, "change", this._apply);
                     }
                 }
             }finally {
-                NOA.Cell.untrackReads();
                 Scope.popScope();
             }
         };
         Expression.prototype.variable = function (name) {
-            var thing = Scope.getFromScope(name);
+            var thing = Scope.getCurrentScope().get(name, this.readTracker);
             NOA.Util.assert(!thing.destroyed);
             return thing.get();
         };
@@ -539,7 +532,6 @@ var NOA;
             for(var key in this.params) {
                 var cell = this.params[key];
                 this.unlisten(cell, "change");
-                cell.die();
             }
             _super.prototype.free.call(this);
         };
@@ -866,7 +858,7 @@ var NOA;
         }
         MappedList.prototype.onSourceInsert = function (index, _, source) {
             var scope = NOA.Scope.newScope(this.basescope);
-            scope[this.varname] = source;
+            scope.set(this.varname, source);
             var a;
             if(NOA.Util.isFunction(this.func)) {
                 a = new NOA.Expression(this.func, scope);
@@ -889,9 +881,13 @@ var NOA;
     var FilteredList = (function (_super) {
         __extends(FilteredList, _super);
         function FilteredList(source, name, func) {
+            var _this = this;
                 _super.call(this, source.map(name, func));
             this.mapping = [];
             this.parent = source;
+            this.parent.debugName = function (_) {
+                return "FilterMap-for-" + _this.debugName();
+            };
             this.source.replayInserts(this.onSourceInsert);
         }
         FilteredList.prototype.updateMapping = function (index, delta, to) {
@@ -1542,10 +1538,11 @@ var NOA;
         };
         Util.runtests = function runtests(tests) {
             var report = [
-                "--- TEST REPORT--\n"
+                "\n==[ TEST REPORT ]=="
             ];
             var assert = require("assert");
-            var sawerror = false;
+            var count = 0;
+            var success = 0;
             var filter = function (_) {
                 return true;
             };
@@ -1554,26 +1551,34 @@ var NOA;
                     return name.indexOf(process.argv[2]) != -1;
                 };
             }
+            var failed = true;
             for(var key in tests) {
                 if(filter(key)) {
-                    console.log("\n=== RUNNING TEST " + key + "===\n");
+                    console.log("\n[\x1b[34mRun\x1b[0m]   " + key + "\n");
+                    failed = true;
+                    count += 1;
                     assert.done = function () {
-                        report.push(" . - " + key);
+                        report.push("[\x1b[32mok\x1b[0m]   " + key);
+                        failed = false;
+                        success += 1;
                     };
                     try  {
                         tests[key](assert);
-                    } catch (e) {
-                        report.push(" X - " + key);
-                        if(!sawerror) {
-                            report.push("   -> " + e.stack);
-                        } else {
-                            report.push("   -> " + e.stack.split("\n").slice(0, 2));
+                        if(failed) {
+                            throw new Error("Test finished without calling 'done'");
                         }
-                        sawerror = true;
+                    } catch (e) {
+                        console.error(e);
+                        console.error(e.stack);
+                        report.push("\n[\x1b[1m\x1b[31mFAIL\x1b[0m] " + key + ":\n          " + e);
+                        if(e.stack) {
+                            report.push("\x1b[37m      " + e.stack.split("\n")[1] + "\x1b[0m");
+                        }
                     }
                 }
             }
             console.log(report.join("\n"));
+            console.log("\nCompleted test run: " + success + " out of " + count + " tests succeeded");
         };
         return Util;
     })();
