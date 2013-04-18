@@ -275,23 +275,28 @@ exports.test5 = function(test) {
     x.add(6);
 
     //mutations
-    x.insert(2,7);
+    x.insert(2,7); 
+
+    test.deepEqual( x.toArray(), [3,2,7,6]);
 
     var e = new NOA.List()
         .debugName("e")
-        .add(x)
+        .add(x) //TODO: this line breaks x.remove()
         .add(y)
         .add(x)
         .add(z)
-        .remove(2)
-        .insert(1,a) //x a y z
+    e.remove(2) //Does not return this but old value, that is, x!
+    e.insert(1,a) //x a y z
         .move(2,0) //y x a z
-        .join()
+    e= e.join()
         .live();//-> z x y
 
     x.remove(1); //super fails if ONLY this is disabled
+    test.deepEqual( x.toArray(), [3,7,6]);
+
     x.cell(2).set(1);
-    x.move(1,0); //JOIN fails if this is not disabled
+    test.deepEqual( x.toArray(), [3,7,1]);
+    x.move(1,0); 
 
     test.deepEqual( x.toArray(), [7,3,1]);
     test.deepEqual( y.toArray(), [14,6,2]);
@@ -300,6 +305,7 @@ exports.test5 = function(test) {
     test.deepEqual( b.toArray(), [1,3,7]);
     test.deepEqual( c.toArray(), [7,3,1]);
     test.deepEqual( d.toArray(), [3,7,1]);//Not the best test.., only the contained elements should be the same, not the order..
+    debugger;
     test.deepEqual( e.toArray(), [14,6,2,7,3,1,3,1,6,2]);
 
     x.die();

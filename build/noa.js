@@ -560,6 +560,9 @@ var NOA;
             last: "last"
         };
         List.prototype.insert = function (index, value, origin) {
+            if(index < 0 || index > this.cells.length) {
+                throw new Error("Remove out of bounds: " + index + " not in 0.." + this.cells.length);
+            }
             this.debugIn("Insert at " + index + ": " + value);
             var cell = new NOA.Cell(this, index, value, origin);
             this.cells.splice(index, 0, cell);
@@ -569,6 +572,9 @@ var NOA;
             return this;
         };
         List.prototype.set = function (index, value, origin) {
+            if(index < 0 || index >= this.cells.length) {
+                throw new Error("Set out of bounds: " + index + " not in 0.." + this.cells.length);
+            }
             this.debugIn("Set at " + index + ": " + value);
             this.cells[index].set(value);
             this.debugOut();
@@ -578,6 +584,9 @@ var NOA;
             this.fire('set', index, newvalue, oldvalue, cell);
         };
         List.prototype.remove = function (index) {
+            if(index < 0 || index >= this.cells.length) {
+                throw new Error("Remove out of bounds: " + index + " not in 0.." + this.cells.length);
+            }
             this.debugIn("Remove at " + index);
             var origcell = this.cells[index];
             var origvalue = origcell.get();
@@ -591,6 +600,9 @@ var NOA;
         List.prototype.move = function (from, to) {
             if(from == to) {
                 return this;
+            }
+            if(from < 0 || to < 0 || from >= this.cells.length || to >= this.cells.length) {
+                throw new Error("Move out of bounds: " + from + to + " not in 0.." + this.cells.length);
             }
             this.debugIn("Move from " + from + " to " + to);
             var c = this.cells[from];
@@ -611,6 +623,9 @@ var NOA;
             return this;
         };
         List.prototype.cell = function (index) {
+            if(index < 0 || index >= this.cells.length) {
+                throw new Error("Cell out of bounds: " + index + " not in 0.." + this.cells.length);
+            }
             return this.cells[index];
         };
         List.prototype.onInsert = function (caller, cb) {
@@ -663,6 +678,9 @@ var NOA;
             return a.get(onchange);
         };
         List.prototype.get = function (index) {
+            if(index < 0 || index >= this.cells.length) {
+                throw new Error("Get out of bounds: " + index + " not in 0.." + this.cells.length);
+            }
             return this.cells[index].get();
         };
         List.prototype.toArray = function (recurse) {
