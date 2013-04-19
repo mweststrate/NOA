@@ -383,16 +383,27 @@ exports.test6b = function(test) {
     x.add(2);
     x.add(6);
 
+    test.deepEqual( x.toArray(), [3,2,6]);
+    test.deepEqual(xjoin.toArray(), [9,6,18,6,4,12,18,12,36])
+
     //mutations
     x.insert(2,7);
 
-    x.remove(1); //super fails if ONLY this is disabled
+    test.deepEqual( x.toArray(), [3,2,7,6]);
+    test.deepEqual(xjoin.toArray(), [9,6,21,18, 6,4,14,12, 21,14,49,42, 18,12,42,36])
+
+    x.remove(1); 
+    test.deepEqual( x.toArray(), [3,7,6]);
+    test.deepEqual(xjoin.toArray(), [9,21,18, 21,49,42, 18,42,36])
+
     x.cell(2).set(1);
+    test.deepEqual( x.toArray(), [3,7,1]);
+    test.deepEqual(xjoin.toArray(), [9,21,3, 21,49,7, 3,7,1])
+
     x.move(1,0); //JOIN fails if this is not disabled
 
     test.deepEqual( x.toArray(), [7,3,1]);
-
-    test.deepEqual(xjoin.toArray(), [49,21,7,21,9,3,7,3,1])
+    test.deepEqual(xjoin.toArray(), [49,21,7, 21,9,3, 7,3,1])
 
     x.die();
     xsuper.die();
