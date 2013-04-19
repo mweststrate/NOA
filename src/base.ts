@@ -87,6 +87,7 @@ module NOA {
 			a.shift();
 
 			var listeners = this.noabase.getListeners(event);
+			//TODO: randomize the listners array before firing for test purposes
 			Util.debugIn(this,"fires",event,":",a);
 
 			for(var key in listeners)
@@ -247,6 +248,9 @@ module NOA {
 		}
 	}
 
+	//TODO: no, no global events, but a tracker 
+	//that creates living lists and objects, whcih are trackeed
+	//and fires/ receive events in a normalized structure
 	export class GlobalEvents extends Base {
 
 	    onListMove() { }
