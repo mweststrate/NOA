@@ -297,6 +297,7 @@ export class Util {
         var assert = require("assert")
         var count = 0;
         var success = 0;
+        var origdone = assert.done;
 
         var filter = function(_:string):bool { return true; }
         if (process.argv.length == 3)
@@ -331,6 +332,7 @@ export class Util {
         console.log(report.join("\n"))
         console.log("\nCompleted test run: " + success + " out of " + count + " tests succeeded")
         //console.log(process.argv);
+        assert.done = origdone;
     }
 }
 }

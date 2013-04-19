@@ -305,7 +305,6 @@ exports.test5 = function(test) {
     test.deepEqual( b.toArray(), [1,3,7]);
     test.deepEqual( c.toArray(), [7,3,1]);
     test.deepEqual( d.toArray(), [3,7,1]);//Not the best test.., only the contained elements should be the same, not the order..
-    debugger;
     test.deepEqual( e.toArray(), [14,6,2,7,3,1,3,1,6,2]);
 
     x.die();
@@ -325,7 +324,44 @@ exports.test5 = function(test) {
 
 };
 
-exports.test6 = function(test) {
+exports.test6a = function(test) {
+    var x = new NOA.List().debugName("x");
+    var y = new NOA.List().debugName("x");
+
+    var xy = x.map("xvar", function() {
+        var tmp = this.variable("xvar");
+        return y.map("yvar", function() {
+            var x = this.variable("xvar")
+            var y = this.variable("yvar")
+            console.log(x + " * " + y + " = " + (x*y))
+            return x * y;
+        }).debugName("xy-for-x-" + tmp);
+    }).debugName("xy");
+
+    var xyj = xy.join().debugName("xyjoin").live();
+
+    test.deepEqual(xyj.toArray(),[]);
+    x.add(3);
+    test.deepEqual(xyj.toArray(),[]);
+    y.add(2)
+    test.deepEqual(x.toArray(),[3]);
+    test.deepEqual(y.toArray(),[2]);
+    test.deepEqual(xyj.toArray(),[6]);
+    y.add(4);
+    y.add(8);
+    test.deepEqual(xyj.toArray(),[6,12,24]);
+    x.add(30);
+    x.add(300)
+    test.deepEqual(xyj.toArray(),[6,12,24,60,120,240,600,1200,2400]);
+
+    xyj.die()
+    test.equal(NOA.List.count, 0)
+    test.equal(NOA.Cell.count, 0)
+    test.equal(NOA.Expression.count, 0)
+    test.done();
+}
+
+exports.test6b = function(test) {
     var x = new NOA.List().live().debugName("x");;
 
     console.info(x.toString());
@@ -335,7 +371,7 @@ exports.test6 = function(test) {
             var x = this.variable("x");
             var y = this.variable("y");
 
-            //console.log("SUPERMAP: " + x + " * " + y + ' = ' + (x * y));
+            console.log("\n\nSUPERMAP: " + x + " * " + y + ' = ' + (x * y));
             return x * y;
         });        
     }).debugName("xsuper").live();
@@ -355,13 +391,6 @@ exports.test6 = function(test) {
     x.move(1,0); //JOIN fails if this is not disabled
 
     test.deepEqual( x.toArray(), [7,3,1]);
-
-    var s = [];
-    for(var i = 0; i < xsuper.cells.length;i++)
-        for(var j = 0; j < xsuper.cells[i].value.cells.length; j++)
-            s.push(xsuper.cells[i].value.cells[j].value);
-
-    console.log("xsuper is " + s.join(",") + " expected " + "49,21,7,21,9,3,7,3,1");
 
     test.deepEqual(xjoin.toArray(), [49,21,7,21,9,3,7,3,1])
 
