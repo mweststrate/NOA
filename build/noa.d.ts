@@ -33,6 +33,7 @@ module NOA {
         public debug(...args: any[]): void;
         public debugIn(...args: any[]): void;
         public debugOut(...args: any[]): void;
+        public toString(): string;
     }
     class GlobalEvents extends Base {
         public onListMove(): void;

@@ -208,6 +208,14 @@ var NOA;
             }
             NOA.Util.debugOut();
         };
+        Base.prototype.toString = function () {
+            var n = this.noabase.debugname;
+            if(n) {
+                return n;
+            } else {
+                return "[" + (this).constructor.name + ":" + this.noaid + "]";
+            }
+        };
         return Base;
     })();
     NOA.Base = Base;    
@@ -430,7 +438,7 @@ var NOA;
             _super.prototype.free.call(this);
         };
         Cell.prototype.toString = function () {
-            return ((this.parent ? this.parent.debugName() + "." + this.index : "Cell " + this.noaid) + ":" + this.value);
+            return ("[Cell(" + this.noaid + "): " + (this.parent ? this.parent.toString() + "#" + this.index : "") + "=" + this.value + "]");
         };
         return Cell;
     })(ValueContainer);
@@ -560,10 +568,10 @@ var NOA;
             last: "last"
         };
         List.prototype.insert = function (index, value, origin) {
-            if(index < 0 || index > this.cells.length) {
-                throw new Error("Remove out of bounds: " + index + " not in 0.." + this.cells.length);
-            }
             this.debugIn("Insert at " + index + ": " + value);
+            if(index < 0 || index > this.cells.length) {
+                throw new Error("Insert out of bounds: " + index + " not in 0.." + this.cells.length);
+            }
             var cell = new NOA.Cell(this, index, value, origin);
             this.cells.splice(index, 0, cell);
             this._updateIndexes(index + 1, 1);
@@ -572,10 +580,10 @@ var NOA;
             return this;
         };
         List.prototype.set = function (index, value, origin) {
+            this.debugIn("Set at " + index + ": " + value);
             if(index < 0 || index >= this.cells.length) {
                 throw new Error("Set out of bounds: " + index + " not in 0.." + this.cells.length);
             }
-            this.debugIn("Set at " + index + ": " + value);
             this.cells[index].set(value);
             this.debugOut();
             return this;
@@ -584,10 +592,10 @@ var NOA;
             this.fire('set', index, newvalue, oldvalue, cell);
         };
         List.prototype.remove = function (index) {
+            this.debugIn("Remove at " + index);
             if(index < 0 || index >= this.cells.length) {
                 throw new Error("Remove out of bounds: " + index + " not in 0.." + this.cells.length);
             }
-            this.debugIn("Remove at " + index);
             var origcell = this.cells[index];
             var origvalue = origcell.get();
             this.cells.splice(index, 1);
@@ -601,10 +609,10 @@ var NOA;
             if(from == to) {
                 return this;
             }
+            this.debugIn("Move from " + from + " to " + to);
             if(from < 0 || to < 0 || from >= this.cells.length || to >= this.cells.length) {
                 throw new Error("Move out of bounds: " + from + to + " not in 0.." + this.cells.length);
             }
-            this.debugIn("Move from " + from + " to " + to);
             var c = this.cells[from];
             c.index = to;
             if(from > to) {
@@ -872,7 +880,7 @@ var NOA;
             this.basescope = NOA.Scope.getCurrentScope();
             this.func = func;
             this.varname = name;
-            this.replayInserts(this, this.onSourceInsert);
+            this.source.replayInserts(this, this.onSourceInsert);
         }
         MappedList.prototype.onSourceInsert = function (index, _, source) {
             var scope = NOA.Scope.newScope(this.basescope);
@@ -1567,6 +1575,7 @@ var NOA;
             var assert = require("assert");
             var count = 0;
             var success = 0;
+            var origdone = assert.done;
             var filter = function (_) {
                 return true;
             };
@@ -1603,6 +1612,7 @@ var NOA;
             }
             console.log(report.join("\n"));
             console.log("\nCompleted test run: " + success + " out of " + count + " tests succeeded");
+            assert.done = origdone;
         };
         return Util;
     })();
