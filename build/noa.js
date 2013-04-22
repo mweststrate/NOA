@@ -614,7 +614,6 @@ var NOA;
                 throw new Error("Move out of bounds: " + from + to + " not in 0.." + this.cells.length);
             }
             var c = this.cells[from];
-            c.index = to;
             if(from > to) {
                 this._updateIndexes(to, from, 1);
                 c.index = to;
@@ -622,9 +621,9 @@ var NOA;
                 this.cells.splice(to, 0, c);
             } else {
                 this._updateIndexes(from, to, -1);
-                this.cells.splice(to, 0, c);
+                c.index = to;
                 this.cells.splice(from, 1);
-                this.cells[to].index = to;
+                this.cells.splice(to, 0, c);
             }
             this.fire('move', from, to);
             this.debugOut();
