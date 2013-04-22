@@ -361,6 +361,43 @@ exports.test6a = function(test) {
     test.done();
 }
 
+exports.test6b1 = function(test) {
+    var x = new NOA.List().debugName("x");
+    var y = new NOA.List().debugName("y");
+
+    var z = x.map("x", function() {
+        return y.map("y", function() {
+            var x = this.variable("x");
+            var y = this.variable("y");
+            return x * y;
+        })
+    }).debugName("z");
+
+    var j = z.join().debugName("j").live();
+
+    x.add(1);
+    x.add(2);
+    y.add(3);
+    y.add(4);
+    test.deepEqual(j.toArray(), [3, 4, 6, 8])
+
+    y.move(1,0);
+    test.deepEqual(j.toArray(), [4, 3, 8, 6])
+    
+    y.move(0,1);
+    test.deepEqual(j.toArray(), [3, 4, 6, 8])
+
+    x.move(0,1);
+    test.deepEqual(j.toArray(), [6, 8, 3, 4])
+
+    x.move(1, 0);
+    test.deepEqual(j.toArray(), [6, 8, 3, 4])
+
+    j.die();
+    test.equal(NOA.List.count, 0);
+    test.done();
+}
+
 exports.test6b = function(test) {
     var x = new NOA.List().live().debugName("x");;
 
@@ -403,7 +440,9 @@ exports.test6b = function(test) {
     x.move(1,0); //JOIN fails if this is not disabled
 
     test.deepEqual( x.toArray(), [7,3,1]);
-    test.deepEqual(xjoin.toArray(), [49,21,7, 21,9,3, 7,3,1])
+    // Was:                         [ 9,21,3, 21,49,7, 3,7,1]
+    test.deepEqual(xjoin.toArray(), [49,21,7, 21, 9,3, 7,3,1])
+    // Is:                          [21, 9,3,  9,21,3, 7,3,1]
 
     x.die();
     xsuper.die();
@@ -416,6 +455,8 @@ exports.test6b = function(test) {
     test.done();
 
 };
+
+//TODO: test exception
 
 exports.test7 = function(test) {
     /*

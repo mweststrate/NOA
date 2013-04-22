@@ -78,19 +78,18 @@ module NOA {
 
 
 			var c = this.cells[from];
-			c.index = to;
 
-			if (from > to) {
+			if (from > to) { //Move to the left
 				this._updateIndexes(to, from, 1);
 				c.index = to;
 				this.cells.splice(from, 1);
 				this.cells.splice(to,0,c);
 			}
-			else { //from < to
+			else { //from < to //Move to the right
 				this._updateIndexes(from, to, -1);
-				this.cells.splice(to,0,c);
+				c.index = to;
 				this.cells.splice(from, 1);
-				this.cells[to].index = to;
+				this.cells.splice(to,0,c);
 			}
 
 			this.fire('move', from, to);
