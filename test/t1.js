@@ -1,6 +1,11 @@
 
 NOA = require("../build/noa.js");
 
+function testIndexes(x, test) {
+    for(var i = 0; i < x.cells.length; i++)
+        test.equal(x.cells[i].index, i);
+}
+
 exports.test1 = function(test) {
 
 	var x = new NOA.List().live();
@@ -10,17 +15,39 @@ exports.test1 = function(test) {
 	x.add(3); 
 	x.add(2);  
 	x.add(6);
+    testIndexes(x, test);
 
-	//mutations
-	x.insert(2,7);
+    //mutations
+    x.insert(2,7);
+    testIndexes(x, test);
 
-	x.remove(1); //super fails if ONLY this is disabled
-	x.cell(2).set(1);
-	x.move(1,0); //JOIN fails if this is not disabled
+    x.remove(1); //super fails if ONLY this is disabled
+    testIndexes(x, test);
 
-	test.deepEqual(x.toArray(), [7,3,1]);
+    x.cell(2).set(1);
+    testIndexes(x, test);
 
-	x.die();
+    x.move(1,0);
+    test.deepEqual(x.toArray(), [7,3,1]);
+    testIndexes(x, test);
+
+    x.move(2,0)
+    test.deepEqual(x.toArray(), [1,7,3]);
+    testIndexes(x, test);
+    
+    x.move(0,2)
+    test.deepEqual(x.toArray(), [7,3,1]);
+    testIndexes(x, test);
+
+    x.move(0,1)
+    test.deepEqual(x.toArray(), [3,7,1]);
+    testIndexes(x, test);
+
+    x.move(2,1)
+    test.deepEqual(x.toArray(), [3,1,7]);
+    testIndexes(x, test);
+
+    x.die();
 
 	test.equal(NOA.List.count, 0);
 	test.equal(NOA.Cell.count, 0);

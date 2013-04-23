@@ -25,7 +25,7 @@ module NOA {
 			var cell = new Cell(<CellContainer>this, index, <any> value, <CellContainer>origin); //Todo extract origin from value
 			this.cells.splice(index, 0, cell);
 
-			this._updateIndexes(index +1, 1);
+			this._updateIndexes(index +1);
 			this.fire('insert', index, cell.get(), cell);
 
 			this.debugOut();
@@ -59,7 +59,7 @@ module NOA {
 			var origvalue = origcell.get();
 
 			this.cells.splice(index, 1);
-			this._updateIndexes(index, -1);
+			this._updateIndexes(index);
 
 			this.fire('remove', index, origvalue);
 
@@ -78,19 +78,9 @@ module NOA {
 
 
 			var c = this.cells[from];
-
-			if (from > to) { //Move to the left
-				this._updateIndexes(to, from, 1);
-				c.index = to;
-				this.cells.splice(from, 1);
-				this.cells.splice(to,0,c);
-			}
-			else { //from < to //Move to the right
-				this._updateIndexes(from, to, -1);
-				c.index = to;
-				this.cells.splice(from, 1);
-				this.cells.splice(to,0,c);
-			}
+			this.cells.splice(from, 1);
+			this.cells.splice(to,0,c);
+			this._updateIndexes(to, from);
 
 			this.fire('move', from, to);
 
@@ -129,17 +119,16 @@ module NOA {
 
 		/** householding */
 
-		_updateIndexes (start : number, end : number, delta? : number) : List{
-//TODO: move end to the third argument to simplify the code        
-//debugger;
-			if (arguments.length == 2) {
-				var l = this.cells.length;
-				for(var i = start; i < l; i++)
-					this.cells[i].index += end;
-			}
-			else if (arguments.length == 3)
-				for(var i = start; i < end; i++)
-					this.cells[i].index += delta;
+		_updateIndexes (start : number, end? : number) : List {
+			if (start >= this.cells.length)
+				return this; //updating after adding the last does need no further processing
+			if (end === undefined) 
+				return this._updateIndexes(start, this.cells.length -1);
+			if (end < start)
+				return this._updateIndexes(end, start);
+
+			for(var i = start; i <= end; i++)
+				this.cells[i].index = i;
 			return this;
 		}
 
