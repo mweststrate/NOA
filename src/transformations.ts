@@ -540,10 +540,15 @@ module NOA {
 
             //move
 		    var startt = this.getOffset(to); //new index at which we will be inserting
-		    for (var i = 0; i < length; i++)
-		    	if (from < to)
-		        	this.move(startf, startt + length - 1);
-		        else
+		    if (from < to) {
+		    	var pl = this.getLength(to-1); //length of prevous item. -2, since lmap is already updated
+		        startt = startt + pl - 1;
+		        //console.log("move right " + startf + " -> " + startt)
+		    	for (var i = 0; i < length; i++)
+		        	this.move(startf, startt);
+		    }
+		    else
+		    	for (var i = 0; i < length; i++)
 		        	this.move(startf + i, startt + i);
 		};
 
