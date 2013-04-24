@@ -187,7 +187,7 @@ module NOA {
 			this.debug("live", this.noabase.refcount);
 
 			if (this.destroyed)
-				throw this + " Attempt to resurrect!"
+				throw new Error(this + " Attempt to resurrect!");
 
 			return this;
 		}

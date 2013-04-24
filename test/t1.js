@@ -351,9 +351,71 @@ exports.test5 = function(test) {
 
 };
 
+exports.testjoin = function(test) {
+    var x = new NOA.List().debugName("x");
+    var y = new NOA.List().debugName("y");
+    var xy = new NOA.List().debugName("xy");
+    xy.add(x);
+    xy.add(y);
+    x.add(1).add(2);
+    y.add(3).add(4);
+
+    test.equal(x, xy.get(0));
+    test.equal(y, xy.get(1));
+    testIndexes(xy, test);
+    //test.equal(xy.toArray, [x,y]);
+
+    var j = xy.join().live();
+    test.deepEqual(j.toArray(), [1,2,3,4]);
+    testIndexes(j, test);
+
+    test.equal(x, xy.get(0));
+    test.equal(y, xy.get(1));
+    testIndexes(xy, test);
+
+    xy.move(1,0);
+    
+    test.equal(y, xy.get(0));
+    test.equal(x, xy.get(1));
+    testIndexes(xy, test);
+
+    test.deepEqual(j.toArray(), [3,4,1,2]);
+    testIndexes(j, test);
+
+    xy.move(0,1);
+    test.deepEqual(j.toArray(), [1,2,3,4]);
+    testIndexes(j, test);
+
+    x.live();
+    xy.remove(0);
+    test.deepEqual(j.toArray(), [3,4]);
+    testIndexes(j, test);
+
+    xy.add(x);
+    test.deepEqual(j.toArray(), [3,4,1,2]);
+    testIndexes(j, test);
+    x.die(); //see  6 lines up
+
+    y.live();
+    xy.set(0, x);
+    test.deepEqual(j.toArray(), [1,2,1,2]);
+    testIndexes(j, test);
+
+    xy.insert(1, y);
+    test.deepEqual(j.toArray(), [1,2,3,4,1,2]);
+    testIndexes(j, test);
+    y.die(); //see 6 lines up
+
+    j.die();
+    test.equal(NOA.List.count, 0);
+    test.equal(NOA.Cell.count, 0);
+
+    test.done();
+}
+
 exports.test6a = function(test) {
     var x = new NOA.List().debugName("x");
-    var y = new NOA.List().debugName("x");
+    var y = new NOA.List().debugName("y");
 
     var xy = x.map("xvar", function() {
         var tmp = this.variable("xvar");
