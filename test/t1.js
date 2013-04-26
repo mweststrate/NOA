@@ -4,6 +4,18 @@ NOA = require("../build/noa.js");
 function testIndexes(x, test) {
     for(var i = 0; i < x.cells.length; i++)
         test.equal(x.cells[i].index, i);
+    if (x instanceof NOA.JoinedList) {
+        console.log(JSON.stringify(x.lmap))
+        var start = 0;
+        for(var i = 0; i < x.source.cells.length; i++) {
+            test.equal(x.lmap[i][0], start);
+            var l = 1;
+            if (x.source.get(i) instanceof NOA.List)
+                l = x.source.get(i).cells.length;
+            test.equal(x.lmap[i][1], l);
+            start += l;
+        }
+    }
 }
 
 exports.test1 = function(test) {
@@ -357,15 +369,26 @@ exports.testjoin = function(test) {
     var xy = new NOA.List().debugName("xy");
     xy.add(x);
     xy.add(y);
-    x.add(1).add(2);
-    y.add(3).add(4);
+    x.add(1)
+    y.add(3)
+
+    var j = xy.join().live();
+    test.deepEqual(j.toArray(), [1,3]);
+    testIndexes(j, test);
+
+    x.add(2);
+    test.deepEqual(j.toArray(), [1,2,3]);
+    testIndexes(j, test);
+
+    y.add(4);
+    test.deepEqual(j.toArray(), [1,2,3,4]);
+    testIndexes(j, test);
 
     test.equal(x, xy.get(0));
     test.equal(y, xy.get(1));
     testIndexes(xy, test);
     //test.equal(xy.toArray, [x,y]);
 
-    var j = xy.join().live();
     test.deepEqual(j.toArray(), [1,2,3,4]);
     testIndexes(j, test);
 
@@ -480,14 +503,14 @@ exports.test6b1 = function(test) {
     test.deepEqual(j.toArray(), [6, 8, 3, 4])
 
     x.move(1, 0);
-    test.deepEqual(j.toArray(), [6, 8, 3, 4])
+    test.deepEqual(j.toArray(), [3, 4, 6, 8])
 
     j.die();
     test.equal(NOA.List.count, 0);
     test.done();
 }
 
-exports.test6b = function(test) {
+exports.test6b2 = function(test) {
     var x = new NOA.List().live().debugName("x");;
 
     console.info(x.toString());

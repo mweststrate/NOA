@@ -13,6 +13,9 @@ module NOA {
 			super();
 		}
 
+		//TODO: define invariant class and verify it after each call if in debug mode. 
+		//Inherit invariant for internal mappings in for example filter and join. 
+		
 		/** core functions */
 		insert(index: number, value: ValueContainer): List;
 		insert(index: number, value: any, origin: CellContainer): List;

@@ -435,9 +435,12 @@ module NOA {
 				throw new Error("out of bounds: " + index);
 
 		    if (index == 0)
-		        return 0;
-		    if (index == this.lmap.length)
+		        return 0 + subindex;
+		    if (index == this.lmap.length) {
+		    	if (subindex != 0)
+		    		throw new Error("Out of bounds")
 		    	return this.lmap[index - 1][0] + this.lmap[index - 1][1];
+		    }
 		    return this.lmap[index][0] + subindex;
 		}
 

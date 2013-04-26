@@ -73,6 +73,7 @@ module NOA {
             return this.value instanceof ValueContainer;
         }
 
+        //TODO: parse new value to List / Record if Array / Object
         set(newvalue) {
             if(this.destroyed)
                 return;
