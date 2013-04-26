@@ -40,7 +40,7 @@ module NOA{
 
         get(key : string, caller?: Base, onchange? : (newvalue, oldvalue) => void) {
             if (!this.has(key))
-                throw "Value for '" + key + "' is not yet defined!"
+                throw new Error("Value for '" + key + "' is not yet defined!")
             //	return null;
             return (<Cell>this.data[key]).get(caller, onchange);
         }

@@ -571,7 +571,7 @@ exports.test6b2 = function(test) {
 //TODO: test exception
 
 exports.test7 = function(test) {
-    /*
+    
     var o = new NOA.Record().live();
     o.set("a", 2);
     o.set("b", 2);
@@ -584,25 +584,30 @@ exports.test7 = function(test) {
 
     o.set("b", 2);
 
-    var f = new NOA.Expression(o.cell("c"), function() {
-        return this.variable("this").get("a") + this.variable("this").get("b");
-    }, null, o).live();
+    var scope = NOA.Scope.newScope();
+    scope.set("this", o);
+
+    var f = new NOA.Expression(function() {
+        return this.variable("this","a") + this.variable("this","b");
+    }, scope);
+    o.set("c", f);
 
     test.equal(o.get("c"), '3');
+
     o.set("a", 10);
     o.set("b", 7);
     //TODO: will fail as changin a and b does not fire the application; this is not changed. There should be a NOA.get which is used inside the operation?
     //Probably shoulde be like: Expression(o.cell("c"), ["this", "this.a", "this.b"], function(a, b) { return a + b }, null, o)
     test.equal(o.get("c"), '17');
 
-    f.die();
+    //f.die();
     o.die();
 
     test.equal(NOA.List.count, 0);
     test.equal(NOA.Record.count, 0);
     test.equal(NOA.Cell.count, 0);
     test.equal(NOA.Expression.count, 0);
-    */
+    
     test.done();
 
 };

@@ -30,24 +30,40 @@ module NOA {
             this.parent = parentscope;
         }
 
-        get (varname: string, readTracker: Object): ValueContainer {
+        get (varname: string, readTracker: Object);
+        get (varname: string, field: string, readTracker: Object);
+        get (...args: any[]): ValueContainer {
+        	var varname : string = args[0], 
+        		field, readTracker;
+        	if (args.length == 2)
+        		readTracker = args[1];
+        	else if (args.length == 3) {
+        		field = args[1];
+        		readTracker = args[2];
+        	}
+
             if (varname in this.vars) {
                 var thing = this.vars[varname];
+                if (field) //MWE: field is temporarily expression? it own't trigger a change if varname updates...
+                	thing = thing.cell(field);
+                if (!thing)
+                	throw new Error("Not in scope: field: '" + field+"'");
                 readTracker[thing.noaid] = thing;
                 return thing;
             }
+
             if (this.parent)
 	            return this.parent.get(varname, readTracker);
 
-            throw "Undefined variable: '" + varname + "'"
+            throw new Error("Undefined variable: '" + varname + "'")
         }
 
         set (varname: string, value : ValueContainer) {
         	if (varname in this.vars)
-        		throw  "Already declared: '" + varname + "'"
+        		throw new Error("Already declared: '" + varname + "'")
 
         	if (!value)
-        		throw "No value provided to Scope.set!"
+        		throw new Error("No value provided to Scope.set!")
 
         	this.vars[varname] = value;
         }
@@ -103,8 +119,10 @@ module NOA {
 			}
 		};
 
-		variable (name: string) {
-		    var thing = Scope.getCurrentScope().get(name, this.readTracker);
+		variable (name: string, field? : string) { //TODO: typed
+		    var thing = field 
+		    	? Scope.getCurrentScope().get(name, field, this.readTracker)
+		    	: Scope.getCurrentScope().get(name, this.readTracker);
 			Util.assert(!thing.destroyed);
 			return thing.get(); //TODO: could registered values being read here instead of in cell?
 			/*
