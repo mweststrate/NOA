@@ -601,10 +601,25 @@ module NOA {
 
 	//TODO:
 	//NumberFilter, and use it inside, min,max,avg and such. Numberfilter is just List.map(NOA.util.isNumber)
+
+	//AttributeMap(list, attr): 
+	//  list.filter(x, x instanceof NOA.Record)
+	//      .filter(y, y.getKeys().contains(attr))
+	//      .map(z, z.get(attr));
+	
 	//Unmap
-	//Contains
+	
+	//Contains(col, value)
+	//  if (col instanceof List) -> col.distinct().contains(value) //assumes distinct is sorted and has effecient contains
+	//  if (col instanceof Record) -> col.getKeys().contains(col, value) //Note: can be made more effecient by not using distinct but direclty operate getKeys
+	//  else -> ImmutableValue(false)
+	//  If result is list, subscribe to insert and remove
+
 	//Intersect
+	
 	//Union
+	
 	//Substract
+	
 	//Other list math
 }
