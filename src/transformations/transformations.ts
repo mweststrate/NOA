@@ -1,5 +1,4 @@
-///<reference path='noa.ts'/>
-//TODO: move to own namespace: NOA.transformations
+///<reference path='../noa.ts'/>
 module NOA {
 
 	export class ListTransformation extends List {

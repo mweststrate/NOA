@@ -6,7 +6,7 @@ module.exports = function(grunt) {
     
     typescript: {
       base: {
-        src: ['src/*.ts'],
+        src: ['src/**/*.ts'],
         dest: 'build/noa.js',
         options: {
           module: 'commonjs', //or commonjs

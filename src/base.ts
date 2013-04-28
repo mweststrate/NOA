@@ -248,32 +248,4 @@ module NOA {
 		}
 	}
 
-	//TODO: no, no global events, but a tracker 
-	//that creates living lists and objects, whcih are trackeed
-	//and fires/ receive events in a normalized structure
-	export class GlobalEvents extends Base {
-
-	    onListMove() { }
-
-	    onListSet() { }
-
-	    onListInsert() { }
-
-	    onListRemove() { }
-
-	    onRecordPut() { }
-
-	    fireListMove() { }
-
-	    fireListSet() { }
-
-	    fireListRemove() { }
-
-	    fireListInsert() { }
-
-	    fireRecordPut() { }
-	}
-
-	export var Events : GlobalEvents = new GlobalEvents();
-
 }
