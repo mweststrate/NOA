@@ -1,20 +1,28 @@
 {
-  "name": "node-example",
-  "version": "0.0.1",
-  "dependencies": {
-    "express"  : "latest",
-    "requirejs": "latest",
-    "sqlite3"  : "latest",
-    "mocha"    : "latest", 
-    "request"  : "latest",
-    "should"   : "latest",
-    "socket.io": "latest"
+  "name": "NOA",
+  "version": "0.0.0",
+  "description": "A reflective data and calculating model for javascript",
+  "main": "build/noa.js",
+  "directories": {
+    "test": "test"
   },
-  "engines": {
-    "node": "0.8.x",
-    "npm": "1.1.x"
+  "scripts": {
+    "test": "grunt test"
   },
-  "scripts" : {
-    "test" : "scripts/make test"
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mweststrate/NOA.git"
+  },
+  "keywords": [
+    "reflective",
+    "data"
+  ],
+  "author": "Michel Weststrate",
+  "license": "BSD",
+  "gitHead": "3de9852dadcadb46c59f10715128442ec618190b",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-typescript": "~0.1.3",
+    "grunt-contrib-nodeunit": "~0.1.2"
   }
 }

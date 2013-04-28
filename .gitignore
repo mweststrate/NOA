@@ -1,6 +1,7 @@
-node_modules/
-.env
-.project
-*.*~
-npm-debug.log
 .idea/workspace.xml
+node_modules
+npm-debug.log
+*.suo
+obj/
+noa.csproj.user
+build/*
