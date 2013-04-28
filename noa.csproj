@@ -65,6 +65,14 @@
     <Content Include="src\noa.ts" />
     <Content Include="src\record.ts" />
     <Content Include="src\scope.ts" />
+    <Content Include="src\transformations\distinct.ts" />
+    <Content Include="src\transformations\filter.ts" />
+    <Content Include="src\transformations\join.ts" />
+    <Content Include="src\transformations\map.ts" />
+    <Content Include="src\transformations\reverse.ts" />
+    <Content Include="src\transformations\sort.ts" />
+    <Content Include="src\transformations\subset.ts" />
+    <Content Include="src\transformations\tail.ts" />
     <Content Include="src\transformations\transformations.ts" />
     <Content Include="src\util.ts" />
   </ItemGroup>
