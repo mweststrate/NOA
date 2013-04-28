@@ -1,14 +1,13 @@
 ///<reference path='noa.ts'/>
-
 module NOA {
 
 	export class Binding {
-        static bindingcount = 0;
+		static bindingcount = 0;
 
 		event : string;
 		source : Base;
-        
-        public id : string; //MWE: should be number, but number is not supported as object index
+
+		public id : string; //MWE: should be number, but number is not supported as object index
 		private dest : Base;
 		private callback : Function;
 		private _firing : bool = false;
@@ -17,7 +16,7 @@ module NOA {
 			if (!callback)
 				throw this.toString() + ": no callback provided!";
 
-            this.id = "" + (++Binding.bindingcount);
+			this.id = "" + (++Binding.bindingcount);
 			this.event = event;
 
 			this.source = source;
@@ -25,7 +24,7 @@ module NOA {
 
 			this.dest = dest instanceof Base ? dest : null;
 			if (this.dest)
-                this.dest.noabase.addSubscription(this);
+				this.dest.noabase.addSubscription(this);
 
 			//console.info("Listening: " + this.source + " -> " +  this.event + " -> " + (this.dest ? this.dest : "(unknown)"));
 
@@ -52,7 +51,7 @@ module NOA {
 		free (){
 			if (this.dest)
 				this.dest.noabase.removeSubscription(this);
-			this.source.noabase.removeEventListener(this); 
+			this.source.noabase.removeEventListener(this);
 		};
 
 		toString () {

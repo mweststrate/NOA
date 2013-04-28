@@ -1,5 +1,6 @@
 ///<reference path='../noa.ts'/>
 module NOA {
+
 	export class SubSetList extends ListTransformation {
 		begin : number;
 		end : number;
@@ -29,7 +30,6 @@ module NOA {
 		removeFirst() {
 			if (this.end - this.begin > 0)
 				this.remove(0); //remove the first
-
 		}
 
 		addFirst() {
@@ -93,7 +93,5 @@ module NOA {
 				}
 			}
 		};
-
 	}
-
 }

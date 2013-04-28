@@ -55,15 +55,18 @@
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="src\aggregations.ts" />
+    <Content Include="src\aggregations\aggregations.ts" />
     <Content Include="src\base.ts" />
     <Content Include="src\binding.ts" />
     <Content Include="src\cell.ts" />
+    <Content Include="src\containers.ts" />
     <Content Include="src\expression.ts" />
     <Content Include="src\list.ts" />
     <Content Include="src\noa.ts" />
     <Content Include="src\record.ts" />
-    <Content Include="src\transformations.ts" />
+    <Content Include="src\scope.ts" />
+    <Content Include="src\transformations\transformations.ts" />
+    <Content Include="src\util.ts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TypeScript\Microsoft.TypeScript.targets" />
 </Project>

@@ -2,7 +2,8 @@
 //TODO: move to own namespace: NOA.expessions
 module NOA {
 
-	
+	//TODO: support expression like:
+	//New Expression(function(cb, args1...), args2)
 
 	export class Expression extends ValueContainer {
 		func : Function;
@@ -55,9 +56,9 @@ module NOA {
 		};
 
 		variable (name: string, field? : string) { //TODO: typed
-		    var thing = field 
-		    	? Scope.getCurrentScope().get(name, field, this.readTracker)
-		    	: Scope.getCurrentScope().get(name, this.readTracker);
+			var thing = field
+				? Scope.getCurrentScope().get(name, field, this.readTracker)
+				: Scope.getCurrentScope().get(name, this.readTracker);
 			Util.assert(!thing.destroyed);
 			return thing.get(); //TODO: could registered values being read here instead of in cell?
 			/*
@@ -92,5 +93,4 @@ module NOA {
 			super.free();
 		}
 	}
-
 }

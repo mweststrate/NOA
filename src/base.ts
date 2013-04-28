@@ -10,44 +10,43 @@ module NOA {
 		public debugname : string = null;
 		public refcount = 0;
 
-
 		public removeSubscription(binding: Binding) {
-		    delete this.subscriptions[binding.id];
+			delete this.subscriptions[binding.id];
 		}
 
 		public addSubscription(binding: Binding) {
-		    this.subscriptions[binding.id] = binding;
+			this.subscriptions[binding.id] = binding;
 		}
 
 		public getSubscriptions(): Binding[] {
-		    var res = [];
-		    for (var key in this.subscriptions)
-		        res.push(this.subscriptions[key]);
-		    return res;
+			var res = [];
+			for (var key in this.subscriptions)
+				res.push(this.subscriptions[key]);
+			return res;
 		}
 
 		public getListeners(eventname: string): {} {
-            if (this.events[eventname])
-                return this.events[eventname];
-            return {};
+			if (this.events[eventname])
+				return this.events[eventname];
+			return {};
 		}
 
 		public addEventListener(binding: Binding) {
-		    var eventname = binding.event;
-		    if (!this.events[eventname])
-		        this.events[eventname] = {};
-		    this.events[eventname][binding.id] = binding;
+			var eventname = binding.event;
+			if (!this.events[eventname])
+				this.events[eventname] = {};
+			this.events[eventname][binding.id] = binding;
 		}
 
 		public removeEventListener(binding: Binding) {
-		    delete this.events[binding.event][binding.id];
+			delete this.events[binding.event][binding.id];
 		}
 
 		public free() {
-		    Util.each(this.events, listeners =>
-                Util.each(listeners, listener => listener.free())); //Does JS behave as expected under concurrent modifications?
+			Util.each(this.events, listeners =>
+				Util.each(listeners, listener => listener.free())); //Does JS behave as expected under concurrent modifications?
 
-		    Util.each(this.subscriptions, h => h.free());
+			Util.each(this.subscriptions, h => h.free());
 		}
 	}
 
@@ -61,18 +60,17 @@ module NOA {
 		private freeing : bool = false;
 
 		constructor() {
-		    this.noabase = new BaseData();
+			this.noabase = new BaseData();
 			this.noaid = Base.noaid += 1;
 
 			//TODO: expensive? use global debug flag
- 			var x : any = this;
-            while(x = x['__proto__']) {
-            	if (!x.constructor.count)
-            		x.constructor.count = 0;
-            	x.constructor.count += 1;
-            }
+			var x : any = this;
+			while(x = x['__proto__']) {
+				if (!x.constructor.count)
+					x.constructor.count = 0;
+				x.constructor.count += 1;
+			}
 		}
-
 
 		/*
 		 * fires an event, invoking all registered callbacks (see onEvent)
@@ -110,7 +108,7 @@ module NOA {
 		 * Returns object, including a free method to destroy the listener (on both sides)
 		 */
 		on(ev : string, caller : Base, callback : Function) : Binding {
-            //TODO: revise this method. Is it ever freed from the other side? introduce second argument owner?
+			//TODO: revise this method. Is it ever freed from the other side? introduce second argument owner?
 			var a = Util.makeArray(arguments);
 			var event = a.shift();
 			var f = a.shift();
@@ -166,11 +164,11 @@ module NOA {
 			//this.noabase = null; //forget the handlers, hope GC picks them up :)
 
 			//TODO: expensive; only do this if special debug flag is set?
-            var x : any = this;
-            while(x = x['__proto__']) {
-                if(x.constructor.count !== undefined) 
-                   x.constructor.count -= 1;
-            }
+			var x : any = this;
+			while(x = x['__proto__']) {
+				if(x.constructor.count !== undefined)
+				   x.constructor.count -= 1;
+			}
 		}
 
 		/*
@@ -247,5 +245,4 @@ module NOA {
 				return "[" + (<any>this).constructor.name + ":" + this.noaid + "]";
 		}
 	}
-
 }

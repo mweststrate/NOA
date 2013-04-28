@@ -1,7 +1,6 @@
 ///<reference path='noa.ts'/>
 
 module NOA {
-
 	export class List extends CellContainer {
 
 		static Aggregates = { count : "count", numbercount: "numbercount", sum : "sum", min: "min", max : "max", vag : "avg", first : "first", last : "last" };
@@ -13,9 +12,9 @@ module NOA {
 			super();
 		}
 
-		//TODO: define invariant class and verify it after each call if in debug mode. 
-		//Inherit invariant for internal mappings in for example filter and join. 
-		
+		//TODO: define invariant class and verify it after each call if in debug mode.
+		//Inherit invariant for internal mappings in for example filter and join.
+
 		/** core functions */
 		insert(index: number, value: ValueContainer): List;
 		insert(index: number, value: any, origin: CellContainer): List;
@@ -41,7 +40,7 @@ module NOA {
 			this.debugIn("Set at " + index + ": " + value);
 			if (index < 0 || index >= this.cells.length)
 				throw new Error("Set out of bounds: " + index + " not in 0.." + this.cells.length)
-			
+
 
 			this.cells[index].set(value);
 
@@ -50,7 +49,7 @@ module NOA {
 		}
 
 		fireCellChanged(index: any, newvalue: any, oldvalue: any, cell : Cell) {
-		    this.fire('set', index, newvalue, oldvalue, cell);
+			this.fire('set', index, newvalue, oldvalue, cell);
 		};
 
 		remove (index : number) : any {
@@ -99,7 +98,6 @@ module NOA {
 		}
 
 		/** events */
-
 		onInsert(caller: Base, cb : (index: number, value, cell: Cell) => void) : List {
 			this.on('insert', caller, cb);
 			return this;
@@ -121,11 +119,10 @@ module NOA {
 		}
 
 		/** householding */
-
 		_updateIndexes (start : number, end? : number) : List {
 			if (start >= this.cells.length)
 				return this; //updating after adding the last does need no further processing
-			if (end === undefined) 
+			if (end === undefined)
 				return this._updateIndexes(start, this.cells.length -1);
 			if (end < start)
 				return this._updateIndexes(end, start);
@@ -141,63 +138,61 @@ module NOA {
 				cb.call(scope, i, this.get(i), this.cells[i]);
 		}
 
-
-        /** util functions */
-
+		/** util functions */
 		add(value: ValueContainer);
 		add(value: any, origin: CellContainer);
 		add(value: any, origin?: CellContainer) {
-		    this.insert(this.cells.length, value, origin);
-		    //return this.cells.length - 1;
-		    return this;
+			this.insert(this.cells.length, value, origin);
+			//return this.cells.length - 1;
+			return this;
 		}
 
 		aggregate(index: string, caller?: Base, onchange?: (newvalue, oldvalue) => void ) {
-		    if (this.aggregates[index])
-		        return this.aggregates[index].get(caller, onchange)
+			if (this.aggregates[index])
+				return this.aggregates[index].get(caller, onchange)
 
-		    //check if index is a known aggregate class?
-		    if (!(Util[index] && Util[index].prototype == ListAggregation))
-		        throw "Unknown aggregate: " + index;
+			//check if index is a known aggregate class?
+			if (!(Util[index] && Util[index].prototype == ListAggregation))
+				throw "Unknown aggregate: " + index;
 
-		    var a = this.aggregates[index] = this[index](); //invokes aggregation
-		    return a.get(onchange);
+			var a = this.aggregates[index] = this[index](); //invokes aggregation
+			return a.get(onchange);
 		}
 
-        //TODO: if caller & onchange, should it follow the cell or follow the value at the specified index?!
-        //Todo should it follow atIndex?
+		//TODO: if caller & onchange, should it follow the cell or follow the value at the specified index?!
+		//Todo should it follow atIndex?
 		get (index: number /*, caller?: Base, onchange? : (newvalue, oldvalue)=>void*/) {
 			if (index < 0 || index >= this.cells.length)
 				throw new Error("Get out of bounds: " + index + " not in 0.." + this.cells.length)
 
-		    return this.cells[index].get(/*caller, onchange*/);
+			return this.cells[index].get(/*caller, onchange*/);
 		}
 
 		toArray(recurse?: bool) { //TODO: implement recurse
-		    var res = [];
-		    var l = this.cells.length;
-		    for (var i = 0; i < l; i++)
-		        res.push(this.get(i));
-		    return res;
+			var res = [];
+			var l = this.cells.length;
+			for (var i = 0; i < l; i++)
+				res.push(this.get(i));
+			return res;
 		}
 
 		removeAll(value) {
-		    for (var i = this.cells.length - 1 ; i >= 0; i--) {
-		        if (this.get(i) == value)
-		            this.remove(i);
-		    }
+			for (var i = this.cells.length - 1 ; i >= 0; i--) {
+				if (this.get(i) == value)
+					this.remove(i);
+			}
 		}
 
 		free() {
-		    console.log("freeing " + this.cells.length)
-		    for (var i = this.cells.length - 1; i >= 0; i--)
-		        this.cells[i].free();
+			console.log("freeing " + this.cells.length)
+			for (var i = this.cells.length - 1; i >= 0; i--)
+				this.cells[i].free();
 
-		    //TODO: free aggregates
-		    super.free();
+			//TODO: free aggregates
+			super.free();
 		}
 
-        /* toString : function() {
+		/* toString : function() {
 		 var res = [];
 		 var l = this.cells.length;
 		 for(var i = 0; i < l; i++)
@@ -206,15 +201,12 @@ module NOA {
 		 }
 		 */
 
-
 		/** transform functions */
-
 		map(name: string, func: any /*funciton or Expression */): List {
-		    return new MappedList(this, name, func);
+			return new MappedList(this, name, func);
 		}
 
-
-        /**
+		/**
 		 * Constructs a new list with all the items of which func applies true. If name is defined, the current value to which the filter is applied is available
 		 * in func as this.variable(x), or, as the first argument
 		 * @param  {[type]} name of the variable in the scope [description]
@@ -222,10 +214,10 @@ module NOA {
 		 * @return {[type]}
 		 */
 		filter(name: string, func: any /* Expression or function */): List {
-		    return new FilteredList(this, name, func)
+			return new FilteredList(this, name, func)
 		}
 
-        /**
+		/**
 		 *
 		 *
 		 * Was here..
@@ -235,71 +227,70 @@ module NOA {
 		 * @return {[type]}       [description]
 		 */
 		subset(begin: number, end?: number): List {
-            if (end === undefined)
-		    	return new ListTail(this, begin);
-		    return new SubSetList(this, begin, end);
+			if (end === undefined)
+				return new ListTail(this, begin);
+			return new SubSetList(this, begin, end);
 		}
 
 		tail() {
-		    return new ListTail(this, 1);
+			return new ListTail(this, 1);
 		}
 
 		last() {
-		    return new ListTail(this, -1);
+			return new ListTail(this, -1);
 		}
 
 		reverse(): List {
 			//TODO: if this is a reversed list, return this.getSource()
-		    return new ReversedList(this);
+			return new ReversedList(this);
 		}
 
 		//TODO: introduce sort and sortby (map(getfield).order.ummap)
-		sort(comperator): List { 
-		    return new SortedList(this, comperator);
+		sort(comperator): List {
+			return new SortedList(this, comperator);
 		}
 
 		distinct(): List {
 			//TODO: return sorted version of the list!
-		    return new DistinctList(this);
+			return new DistinctList(this);
 		}
-		
+
 		join(): List {
-		    return new JoinedList(this);
+			return new JoinedList(this);
 		}
 
 		/** aggregate */
 
 		sum () {
-		    return new ListSum(this);
+			return new ListSum(this);
 		}
 
 		min () {
-		    return new ListMin(this);
+			return new ListMin(this);
 		}
 
 		max () {
-		    return new ListMax(this);
+			return new ListMax(this);
 		}
 
 		avg () {
-		    return new ListAverage(this);
+			return new ListAverage(this);
 		}
 
 		count () {
-		    return new ListCount(this);
+			return new ListCount(this);
 		}
 
 		first () {
-		    return new ListFirst(this);
+			return new ListFirst(this);
 		}
 
 		numbercount () {
-		    return new ListNumberCount(this);
+			return new ListNumberCount(this);
 		}
 
 		atIndex(index: number) { //TODO: bleghname
-		    return new ListIndex(this, index);
+			return new ListIndex(this, index);
 		}
 	}
-
 }

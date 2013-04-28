@@ -1,7 +1,6 @@
 ///<reference path='../noa.ts'/>
 module NOA {
 
-
 	export class SortedList extends ListTransformation {
 
 		mapping : number[] = []; //maps original number to the new index
@@ -68,5 +67,4 @@ module NOA {
 				this.set(index, value);
 		};
 	}
-
 }

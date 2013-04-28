@@ -40,6 +40,5 @@ module NOA {
 					this.set(to - this.start, this.source.get(to))
 			}
 		}
-
 	}
 }

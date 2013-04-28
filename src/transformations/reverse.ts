@@ -1,7 +1,6 @@
 ///<reference path='../noa.ts'/>
 module NOA {
 
-
 	export class ReversedList extends ListTransformation {
 		constructor(source: List) {
 			super(source);
@@ -27,5 +26,4 @@ module NOA {
 			this.move(this.cells.length - from - 1, this.cells.length - to - 1);
 		};
 	}
-
 }
