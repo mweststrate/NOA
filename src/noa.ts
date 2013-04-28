@@ -6,9 +6,18 @@
 ///<reference path='expression.ts'/>
 ///<reference path='list.ts'/>
 ///<reference path='record.ts'/>
-///<reference path='transformations/transformations.ts'/>
-///<reference path='aggregations/aggregations.ts'/>
 ///<reference path='scope.ts'/>
+///<reference path='aggregations/aggregations.ts'/>
+
+///<reference path='transformations/transformations.ts'/>
+///<reference path='transformations/distinct.ts'/>
+///<reference path='transformations/filter.ts'/>
+///<reference path='transformations/join.ts'/>
+///<reference path='transformations/map.ts'/>
+///<reference path='transformations/reverse.ts'/>
+///<reference path='transformations/sort.ts'/>
+///<reference path='transformations/subset.ts'/>
+///<reference path='transformations/tail.ts'/>
 
 declare var require : Function;
 declare var process : any;
