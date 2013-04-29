@@ -17,9 +17,14 @@ module NOA {
 			this.origin = origin;
 		}
 
-		public get (caller?: Base, onChange?: (newvalue: any, oldvalue: any) => void ): any {
+		public get (): any;
+		public get (caller : Base, onChange : (newvalue: any, oldvalue: any) => void, supressInitialEvent?: bool): any;
+		public get (caller?: Base, onChange?: (newvalue: any, oldvalue: any) => void, supressInitialEvent?: bool): any {
 			if (onChange)
 				this.onChange(caller, onChange);
+
+			if (onChange && !supressInitialEvent)
+			    onChange.call(caller, this.value, undefined);
 
 			return this.value;
 		};

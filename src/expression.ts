@@ -12,7 +12,7 @@ module NOA {
 		params = {}; //contains bound value containers
 		readTracker = null;
 
-
+        //TODO: scope should not be argument tot the expression, but assigned by Cell.Set
 		constructor (func, scope) {
 			super();
 			this.func = func;

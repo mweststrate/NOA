@@ -127,7 +127,9 @@ module NOA {
 		}
 	}
 
+
 	//TODO: just use an experssion for this based on count and sum
+    /*
 	export class ListAverage extends ListAggregation {
 
 		value: number = 0;
@@ -168,6 +170,7 @@ module NOA {
 		}
 
 	}
+    */
 
 	export class ListMax extends ListAggregation {
 

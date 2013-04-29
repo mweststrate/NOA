@@ -160,12 +160,14 @@ module NOA {
 		}
 
 		//TODO: if caller & onchange, should it follow the cell or follow the value at the specified index?!
-		//Todo should it follow atIndex?
-		get (index: number /*, caller?: Base, onchange? : (newvalue, oldvalue)=>void*/) {
+        //Todo should it follow atIndex?
+		get (index: number): any;
+		get (index: number, caller : Base, onchange : (newvalue, oldvalue) => void, supressInitialEvent?: bool): any;
+		get (index: number, caller?: Base, onchange?: (newvalue, oldvalue) => void, supressInitialEvent?: bool): any {
 			if (index < 0 || index >= this.cells.length)
 				throw new Error("Get out of bounds: " + index + " not in 0.." + this.cells.length)
 
-			return this.cells[index].get(/*caller, onchange*/);
+			return this.cells[index].get(caller, onchange, supressInitialEvent);
 		}
 
 		toArray(recurse?: bool) { //TODO: implement recurse
@@ -273,8 +275,17 @@ module NOA {
 			return new ListMax(this);
 		}
 
-		avg () {
-			return new ListAverage(this);
+		avg () : Expression {
+		    return new Expression(function (cb, list) {
+		        list.numbercount.get(this, function (count, _) {
+		            if (count == 0)
+		                cb(0);
+
+		            list.sum.get(this, function (sum, _) {
+		                cb(sum / count);
+		            });
+		        });
+		    }, this);
 		}
 
 		count () {

@@ -38,11 +38,13 @@ module NOA{
             return this.data[key];
         }
 
-        get(key : string, caller?: Base, onchange? : (newvalue, oldvalue) => void) {
+        get (key: string) : any;
+        get (key: string, caller : Base, onchange : (newvalue, oldvalue) => void, supressInitialEvent?: bool): any;
+        get (key: string, caller?: Base, onchange?: (newvalue, oldvalue) => void, supressInitialEvent?: bool): any {
             if (!this.has(key))
                 throw new Error("Value for '" + key + "' is not yet defined!")
-            //	return null;
-            return (<Cell>this.data[key]).get(caller, onchange);
+
+            return (<Cell>this.data[key]).get(caller, onchange, supressInitialEvent);
         }
 
         has (key: string): bool {
