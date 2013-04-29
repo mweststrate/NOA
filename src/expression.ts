@@ -8,14 +8,24 @@ module NOA {
 	export class Expression extends ValueContainer {
 		func : Function;
 		scope : Object;
-		value : any ;
+		value : any = undefined;
 		params = {}; //contains bound value containers
 		readTracker = null;
 
         //TODO: scope should not be argument tot the expression, but assigned by Cell.Set
-		constructor (func, scope) {
+        /**
+            func supports both synchronous and asynchronos invocation pattern. In the latter case, undefined should be return to indicate that we should wait on the callback
+        */
+        
+        //Sync pattern
+		constructor(func: () => any, scope?: Scope);
+        
+        //A-sync pattern
+		constructor(func: (callback: (newvalue: any) => void ) => void , scope?: Scope);
+
+        constructor(func, scope?: Scope) {
 			super();
-			this.func = func;
+			this.func = func; //TODO: func should have a callback which is invoked!
 			this.scope = scope; //TODO: if scope is null then create empty scope. If record, start scope with 'this' as record
 
 			this._apply();
@@ -24,35 +34,49 @@ module NOA {
 		_apply () {
 			if (this.destroyed)
 				return;
-			 try {
-				Scope.pushScope(this.scope);
 
-				var reads = this.readTracker = {}; //Setup readtracker for this.variable() mwe: bwegh..
+			Scope.pushScope(this.scope);
 
-				var origvalue = this.value;
-				this.value = this.func.apply(this);
-				if (origvalue != this.value)
-					this.changed(this.value, origvalue);
+			var reads = this.readTracker = {}; //Setup readtracker for this.variable() mwe: bwegh..
+
+			var origvalue = this.value;
+			var cbcalled = false;
+
+			var functioncallback = (newvalue) => {
+			    cbcalled = true;
 
 				//cleanup existing params //TODO: use abstract util. compare function for this?
-				for(var noaid in this.params)
-					if (!reads[noaid]) {
-						var cell = this.params[noaid]
-						this.unlisten(cell, "change");
-					}
+				for (var noaid in this.params)
+				    if (!reads[noaid]) {
+				        var cell = this.params[noaid]
+				        this.unlisten(cell, "change");
+				    }
+
 				//register new parents
-				for(var noaid in reads) {
-					if (!this.params[noaid]) {
-						var cell = reads[noaid];
-						this.params[cell.noaid] = cell;
-						this.debug("Added expression dependency: " + cell.debugName());
-						this.listen(cell, "change", this._apply);
-					}
+				for (var noaid in reads) {
+				    if (!this.params[noaid]) {
+				        var cell = reads[noaid];
+				        this.params[cell.noaid] = cell;
+				        this.debug("Added expression dependency: " + cell.debugName());
+				        this.listen(cell, "change", this._apply);
+				    }
 				}
-			}
-			finally {
-				Scope.popScope();
-			}
+
+				Scope.popScope(); //MWE: TODO: FIXME: can be totally other scope than the one defined above! Use a reference of some kind!
+
+				//update known value and invoke callbacks
+				this.value = newvalue;
+				if (origvalue != this.value)
+				    this.changed(this.value, origvalue);
+
+			};
+
+            //invoke the function
+			var res = this.func.apply(this, functioncallback);
+
+            //check whether the function follows sync or async pattern
+			if (res !== undefined && cbcalled === false)
+			    functioncallback(res);
 		};
 
 		variable (name: string, field? : string) { //TODO: typed

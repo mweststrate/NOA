@@ -276,16 +276,17 @@ module NOA {
 		}
 
 		avg () : Expression {
-		    return new Expression(function (cb, list) {
-		        list.numbercount.get(this, function (count, _) {
+		    return <Expression> new Expression((cb) => {
+                //TODO: make sure cb is called by expression!
+		        this.numbercount().get(null, (count, _) => {
 		            if (count == 0)
 		                cb(0);
 
-		            list.sum.get(this, function (sum, _) {
+		            this.sum().get(null, function (sum, _) {
 		                cb(sum / count);
 		            });
 		        });
-		    }, this);
+		    }).uses(this);
 		}
 
 		count () {
@@ -296,7 +297,7 @@ module NOA {
 			return new ListFirst(this);
 		}
 
-		numbercount () {
+		numbercount () : ValueContainer {
 			return new ListNumberCount(this);
 		}
 
