@@ -93,5 +93,9 @@ module NOA {
 				}
 			}
 		};
+
+		toAST(): Object {
+			return this.toASTHelper("subset", this.begin, this.end);
+		}
 	}
 }

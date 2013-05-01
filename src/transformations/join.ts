@@ -141,6 +141,9 @@ module NOA {
 					this.move(startf + i, startt + i);
 		};
 
+		toAST(): Object {
+			return this.toASTHelper("join");
+		}
 	}
 
 }

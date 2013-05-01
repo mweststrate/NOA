@@ -66,5 +66,9 @@ module NOA {
 			else //just update
 				this.set(index, value);
 		};
+
+		toAST(): Object { 
+			return this.toASTHelper("sort"); //TODO: pass in argumetns
+		}
 	}
 }

@@ -8,7 +8,7 @@ module NOA {
 
 		replayInserts should have an variant which does not care about ordering
 	*/
-	export class Cell extends ValueContainer {
+	export class Cell extends ValueContainer implements IValue {
 
 		private parent : CellContainer;
 		index  : any = -1; //int or string
@@ -84,18 +84,18 @@ module NOA {
 		get (caller : Base, onchange : (newvalue: any, oldvalue: any) => void, supressInitialEvent?: bool): any;
 		get (caller?: Base, onchange?: (newvalue: any, oldvalue: any) => void, supressInitialEvent?: bool): any {
 
-		    if (this.hasExpression()) {
-		        var expr = <ValueContainer> super.get(caller, onchange, true);
-		        //MWE: note, we do not have to listen to the expression, because the expression onChange already causes this cell to update :), so we would be listening twice;
-		        var value = expr.get();
+			if (this.hasExpression()) {
+				var expr = <ValueContainer> super.get(caller, onchange, true);
+				//MWE: note, we do not have to listen to the expression, because the expression onChange already causes this cell to update :), so we would be listening twice;
+				var value = expr.get();
 
-		        if (onchange && !supressInitialEvent)
-		            onchange.call(caller, value);
+				if (onchange && !supressInitialEvent)
+					onchange.call(caller, value);
 
-		        return value;
-		    }
+				return value;
+			}
 
-		    return super.get(caller, onchange, supressInitialEvent);
+			return super.get(caller, onchange, supressInitialEvent);
 		}
 
 		live () {
@@ -123,6 +123,21 @@ module NOA {
 
 			//this.changed(undefined); //or fireChanged?
 			super.free();
+		}
+
+		toAST(): Object {
+			/*if (this.hasExpression())
+				return (<ValueContainer>this.get()).toAST();
+			*/
+
+			var value = this.get();
+			if (value instanceof CellContainer) {
+				if (value.prototype == NOA.List || value.prototype == NOA.Record) //TODO: better check for persistable objects
+					return (<CellContainer> value).getRef(); //we do not want to embed references in here!
+				return (<CellContainer> value).toAST();
+			}
+
+			return value;
 		}
 
 		toString () : string {

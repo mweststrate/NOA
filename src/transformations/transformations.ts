@@ -31,6 +31,20 @@ module NOA {
 		onSourceMove(from : number, to : number) { }
 
 		onSourceSet(index: number, newvalue, oldvalue, cell: Cell) { }
+
+		toAST(): Object {
+			Util.notImplemented();
+			return null;
+		}
+
+		toASTHelper(name : string, ...args: any[]) : Object {
+			return {
+				type: 'function',
+				name : name,
+				source : this.source.getRef(),
+				args : args
+			}
+		}
 	}
 
 	//TODO:

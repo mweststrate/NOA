@@ -2,7 +2,7 @@
 
 module NOA{
 
-    export class Record extends CellContainer {
+    export class Record extends CellContainer implements IValue {
 
         data = {};
         keys = new List();
@@ -70,6 +70,17 @@ module NOA{
                 res[key] = this.get(key);
             return res;
         }
+
+		toAST(): Object { //TODO: implement recurse
+			var res = {
+				type: 'Record',
+				noaid: this.noaid,
+				values: {}
+			};
+			for (var key in this.data)
+				res.values[key] = this.cell(key).toAST();
+			return res;
+		}
 
         free () {
             for(var key in this.data)

@@ -47,5 +47,9 @@ module NOA {
 			this.onSourceRemove(index, origvalue);
 			this.onSourceInsert(index, newvalue, cell);
 		};
+
+		toAST(): Object {
+			return this.toASTHelper("distinct");
+		}
 	}
 }

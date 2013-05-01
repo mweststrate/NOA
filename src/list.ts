@@ -1,7 +1,7 @@
 ///<reference path='noa.ts'/>
 
 module NOA {
-	export class List extends CellContainer {
+	export class List extends CellContainer implements IValue {
 
 		static Aggregates = { count : "count", numbercount: "numbercount", sum : "sum", min: "min", max : "max", vag : "avg", first : "first", last : "last" };
 
@@ -160,7 +160,7 @@ module NOA {
 		}
 
 		//TODO: if caller & onchange, should it follow the cell or follow the value at the specified index?!
-        //Todo should it follow atIndex?
+		//Todo should it follow atIndex?
 		get (index: number): any;
 		get (index: number, caller : Base, onchange : (newvalue, oldvalue) => void, supressInitialEvent?: bool): any;
 		get (index: number, caller?: Base, onchange?: (newvalue, oldvalue) => void, supressInitialEvent?: bool): any {
@@ -175,6 +175,17 @@ module NOA {
 			var l = this.cells.length;
 			for (var i = 0; i < l; i++)
 				res.push(this.get(i));
+			return res;
+		}
+
+		toAST(): Object { //TODO: implement recurse
+			var res = {
+				type: 'List',
+				id: this.noaid,
+				values: []
+			};
+			for (var i = 0; i < this.cells.length; i++)
+				res.values.push(this.cells[i].toAST());
 			return res;
 		}
 
@@ -276,17 +287,17 @@ module NOA {
 		}
 
 		avg () : Expression {
-		    return <Expression> new Expression((cb) => {
-                //TODO: make sure cb is called by expression!
-		        this.numbercount().get(null, (count, _) => {
-		            if (count == 0)
-		                cb(0);
+			return <Expression> new Expression((cb) => {
+				//TODO: make sure cb is called by expression!
+				this.numbercount().get(null, (count, _) => {
+					if (count == 0)
+						cb(0);
 
-		            this.sum().get(null, function (sum, _) {
-		                cb(sum / count);
-		            });
-		        });
-		    }).uses(this);
+					this.sum().get(null, function (sum, _) {
+						cb(sum / count);
+					});
+				});
+			}).uses(this);
 		}
 
 		count () {

@@ -94,6 +94,12 @@ module NOA {
 				this.updateMapping(index + 1, -1);
 			}
 		}
+
+		toAST(): Object {
+			var res = this.parent.toAST();
+			(<any>res).name = 'map';
+			return res;
+		}
 	}
 
 }

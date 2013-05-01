@@ -46,5 +46,9 @@ module NOA {
 			this.move(from, to)
 		}
 
+		toAST(): Object {
+			return this.toASTHelper("map", this.varname); //TODO: function
+		}
+
 	}
 }

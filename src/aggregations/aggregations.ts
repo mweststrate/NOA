@@ -46,6 +46,20 @@ module NOA {
 			}
 		}
 
+		toAST(): Object {
+			Util.notImplemented();
+			return null;
+		}
+
+		toASTHelper(name: string, ...args: any[]): Object { //MWE: note, similar to transformation!
+			return {
+				type: 'function',
+				name: name,
+				source: this.source.getRef(),
+				args: args
+			}
+		}
+
 	}
 
 	export class ListCount extends ListAggregation {
@@ -64,6 +78,10 @@ module NOA {
 
 		onSourceRemove(index: number, value) {
 			this.updateValue(this.value - 1)
+		}
+
+		toAST(): Object {
+			return this.toASTHelper("count");
 		}
 
 	}
@@ -96,6 +114,10 @@ module NOA {
 			else if (rin && !lin)
 				this.updateValue(this.value - 1);
 		}
+
+		toAST(): Object {
+			return this.toASTHelper("numbercount");
+		}
 	}
 
 	export class ListSum extends ListAggregation {
@@ -125,11 +147,15 @@ module NOA {
 				delta -= oldvalue;
 			this.updateValue(this.value + delta);
 		}
+
+		toAST(): Object {
+			return this.toASTHelper("sum");
+		}
 	}
 
 
 	//TODO: just use an experssion for this based on count and sum
-    /*
+	/*
 	export class ListAverage extends ListAggregation {
 
 		value: number = 0;
@@ -169,8 +195,12 @@ module NOA {
 			super.free();
 		}
 
+		toAST(): Object {
+			return this.toASTHelper("avg");
+		}
+
 	}
-    */
+	*/
 
 	export class ListMax extends ListAggregation {
 
@@ -211,6 +241,10 @@ module NOA {
 		onSourceSet(index: number, newvalue, oldvalue) {
 			if (Util.isNumber(oldvalue) && oldvalue >= this.value)
 				this.findNewMax();
+		}
+
+		toAST(): Object {
+			return this.toASTHelper("max");
 		}
 	}
 
@@ -253,6 +287,10 @@ module NOA {
 		onSourceSet(index: number, newvalue, oldvalue) {
 			if (Util.isNumber(oldvalue) && oldvalue <= this.value)
 				this.findNewMin();
+		}
+
+		toAST(): Object {
+			return this.toASTHelper("min");
 		}
 	}
 
@@ -300,17 +338,29 @@ module NOA {
 			if (index == this.realindex)
 				this.updateValue(newvalue);
 		}*/
+
+		toAST(): Object {
+			return this.toASTHelper("index", this.index);
+		}
 	}
 
 	export class ListFirst extends ListIndex {
 		constructor(source: List) {
 			super(source, 0);
 		}
+
+		toAST(): Object {
+			return this.toASTHelper("first");
+		}
 	}
 
 	export class ListLast extends ListIndex {
 		constructor(source: List) {
 			super(source, -1);
+		}
+
+		toAST(): Object {
+			return this.toASTHelper("last");
 		}
 	}
 }

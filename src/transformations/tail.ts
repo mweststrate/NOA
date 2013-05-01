@@ -40,5 +40,9 @@ module NOA {
 					this.set(to - this.start, this.source.get(to))
 			}
 		}
+
+		toAST(): Object {
+			return this.toASTHelper("tail", this.start);
+		}
 	}
 }

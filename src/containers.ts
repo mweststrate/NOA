@@ -1,11 +1,36 @@
 ///<reference path='noa.ts'/>
 module NOA {
-	export class CellContainer extends Base {
-		fireCellChanged(index: any, newvalue: any, oldvalue: any, cell: Cell) { Util.notImplemented() };
-		cell(index: any): Cell { Util.notImplemented(); return null; };
+
+	export interface IValue {
+
+		/*get (): any;
+		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
+		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , supressInitialEvent: bool): any;
+		*/
+
+		toAST(): Object;
+
+		//TODO: getScope?
+
+		//TODO: static unserialize()
 	}
 
-	export class ValueContainer extends Base {
+	export class CellContainer extends Base implements IValue {
+		fireCellChanged(index: any, newvalue: any, oldvalue: any, cell: Cell) { Util.notImplemented() };
+
+		cell(index: any): Cell { Util.notImplemented(); return null; };
+
+		getRef(): Object {
+			return {
+				type: "id",
+				id: this.noaid
+			}
+		}
+
+		toAST(): Object { Util.notImplemented(); return null; };
+	}
+
+	export class ValueContainer extends Base implements IValue {
 		public value: any; //TODO: private / protected?
 		origin: CellContainer;
 
@@ -18,13 +43,14 @@ module NOA {
 		}
 
 		public get (): any;
-		public get (caller : Base, onChange : (newvalue: any, oldvalue: any) => void, supressInitialEvent?: bool): any;
+		public get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
+		public get (caller : Base, onChange : (newvalue: any, oldvalue: any) => void, supressInitialEvent: bool): any;
 		public get (caller?: Base, onChange?: (newvalue: any, oldvalue: any) => void, supressInitialEvent?: bool): any {
 			if (onChange)
 				this.onChange(caller, onChange);
 
 			if (onChange && !supressInitialEvent)
-			    onChange.call(caller, this.value, undefined);
+				onChange.call(caller, this.value, undefined);
 
 			return this.value;
 		};
@@ -39,5 +65,7 @@ module NOA {
 		onChange(caller: Base, callback: (newvalue: any, oldvalue: any) => void ) {
 			return this.on('change', caller, callback);
 		}
+
+		toAST(): Object { Util.notImplemented(); return null; };
 	}
 }
