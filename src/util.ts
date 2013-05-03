@@ -156,34 +156,56 @@ module NOA {
 			}
 		}
 
-		static parallelMap(collection : any, onItem : (item: any, index: any, cb : function(result: any)) => void, callback : function(items: any) => callback) {
-			var res = Util.isArray(collection) ? [] : {};
+		static parallel(collection : Function[], callback : () => void);
+		static parallel(collection : any, onItem : (item: any, index: any, cb : () => void) => void, callback : () => void);
+		static parallel(collection : any, func1 : Function, func2? : Function) {
 			var left = 0;
-			NOA.each(collection, (item, index) => {
-				left +=1;
-				onItem(item, index, (result) => {
-					res[index] = result;
-					left -= 1;
+			var onItem   = func1;
+			var callback = func2;
+
+			function itemdone() {
+				left -= 1;
 					if (left == 0)
-						cb(result);
-				})
+						callback();
+			}
+
+			if (arguments.length == 2) {
+				callback = func1;
+				onItem = function(fun) {
+					fun(itemdone);
+				}
+			}
+
+			Util.each(collection, (item, index) => {
+				left +=1;
+				onItem(item, index, itemdone)
 			})
 		}
 
 		//equals parallelMap, but preserves order, only supports array
-		static sequenceMap(collection : any[], onItem : (item: any, index: any, cb : function(result: any)) => void, callback : function(items: any) => callback) {
-			var res =[];
-			var index = 0;
+		static sequence(collection : Function[], callback : () => void);
+		static sequence(collection : any[], onItem : (item: any, index: any, cb : () => void) => void, callback : () => void);
+		static sequence(collection : any[], onItem : Function, callback? : Function) {
 
-			NOA.each(collection, (item, index) => {
-				left +=1;
-				onItem(item, index, (result) => {
-					res[index] = result;
-					left -= 1;
-					if (left == 0)
-						cb(result);
-				})
-			})
+			var iter = arguments.length == 3
+			?	function (index: number) {
+					if (index == collection.length)
+						callback();
+					else
+						onItem(collection[index], index, () => {
+							iter(index + 1); //MWE: TODO: watch stack depth for large lists! apply tail recursion by using timeouts
+						});
+				}
+			: 	function (index : number) {
+				if (index == collection.length)
+					onItem(); //the callback
+				else
+					collection[index](() => { //collections are functions, provide ccallback
+						iter(index + 1);
+					})
+			};
+
+			iter(0);
 		}
 
 		/** makes a path available, given a context

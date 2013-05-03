@@ -2,15 +2,7 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/public/noa/expression.js" />
-        <item url="file://$PROJECT_DIR$/public/noa/list.js" />
-        <item url="file://$PROJECT_DIR$/public/noa/aggregations.js" />
-        <item url="file://$PROJECT_DIR$/public/noa/base.js" />
-        <item url="file://$PROJECT_DIR$/public/noa/transformations.js" />
-        <item url="file://$PROJECT_DIR$/public/noa/record.js" />
-        <item url="file://$PROJECT_DIR$/public/noa/binding.js" />
-        <item url="file://$PROJECT_DIR$/public/noa/noa.js" />
-        <item url="file://$PROJECT_DIR$/public/noa/cell.js" />
+        <item url="file://$PROJECT_DIR$/src/util.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
@@ -23,6 +15,7 @@
       <root url="file://$PROJECT_DIR$/public/noa/noa.js" />
       <root url="file://$PROJECT_DIR$/public/noa/binding.js" />
       <root url="file://$PROJECT_DIR$/public/noa/cell.js" />
+      <root url="file://$PROJECT_DIR$/src/util.js" />
     </CLASSES>
     <SOURCES />
   </library>
