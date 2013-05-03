@@ -178,7 +178,7 @@ module NOA {
 			return res;
 		}
 
-		toAST(): Object { //TODO: implement recurse
+		toFullAST(): Object { 
 			var res = {
 				type: 'List',
 				id: this.noaid,

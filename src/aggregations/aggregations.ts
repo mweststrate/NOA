@@ -52,14 +52,9 @@ module NOA {
 		}
 
 		toASTHelper(name: string, ...args: any[]): Object { //MWE: note, similar to transformation!
-			return {
-				type: 'function',
-				name: name,
-				source: this.source.getRef(),
-				args: args
-			}
+			args.unshift(this.source);
+			return Serializer.serializeFunction(name, args);
 		}
-
 	}
 
 	export class ListCount extends ListAggregation {

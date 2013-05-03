@@ -156,6 +156,35 @@ module NOA {
 			}
 		}
 
+		static parallelMap(collection : any, onItem : (item: any, index: any, cb : function(result: any)) => void, callback : function(items: any) => callback) {
+			var res = Util.isArray(collection) ? [] : {};
+			var left = 0;
+			NOA.each(collection, (item, index) => {
+				left +=1;
+				onItem(item, index, (result) => {
+					res[index] = result;
+					left -= 1;
+					if (left == 0)
+						cb(result);
+				})
+			})
+		}
+
+		//equals parallelMap, but preserves order, only supports array
+		static sequenceMap(collection : any[], onItem : (item: any, index: any, cb : function(result: any)) => void, callback : function(items: any) => callback) {
+			var res =[];
+			var index = 0;
+
+			NOA.each(collection, (item, index) => {
+				left +=1;
+				onItem(item, index, (result) => {
+					res[index] = result;
+					left -= 1;
+					if (left == 0)
+						cb(result);
+				})
+			})
+		}
 
 		/** makes a path available, given a context
 		 *  path: string or array
@@ -211,6 +240,10 @@ module NOA {
 
 		static isArray (thing : any) : bool {
 			return Object.prototype.toString.call( thing ) === '[object Array]'
+		}
+
+		static isObject(thing: any): bool {
+			return Object.prototype.toString.call(thing) === '[object Object]'
 		}
 
 		static inArray (thing : any, array : any[]) {

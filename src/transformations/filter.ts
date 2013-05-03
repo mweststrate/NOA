@@ -96,8 +96,9 @@ module NOA {
 		}
 
 		toAST(): Object {
-			var res = this.parent.toAST();
-			(<any>res).name = 'map';
+			var res : any = this.parent.toAST();
+			res.name = 'filter';
+			res.args[0] = (<MappedList>this.source).source.toAST();
 			return res;
 		}
 	}

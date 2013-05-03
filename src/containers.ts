@@ -20,14 +20,12 @@ module NOA {
 
 		cell(index: any): Cell { Util.notImplemented(); return null; };
 
-		getRef(): Object {
+		toAST(): Object {
 			return {
 				type: "id",
 				id: this.noaid
 			}
 		}
-
-		toAST(): Object { Util.notImplemented(); return null; };
 	}
 
 	export class ValueContainer extends Base implements IValue {

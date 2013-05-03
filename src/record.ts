@@ -71,7 +71,7 @@ module NOA{
 			return res;
 		}
 
-		toAST(): Object { //TODO: implement recurse
+		toFullAST(): Object { 
 			var res = {
 				type: 'Record',
 				noaid: this.noaid,

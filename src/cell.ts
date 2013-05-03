@@ -126,18 +126,7 @@ module NOA {
 		}
 
 		toAST(): Object {
-			/*if (this.hasExpression())
-				return (<ValueContainer>this.get()).toAST();
-			*/
-
-			var value = this.get();
-			if (value instanceof CellContainer) {
-				if (value.prototype == NOA.List || value.prototype == NOA.Record) //TODO: better check for persistable objects
-					return (<CellContainer> value).getRef(); //we do not want to embed references in here!
-				return (<CellContainer> value).toAST();
-			}
-
-			return value;
+			return Serializer.serialize(this.get());
 		}
 
 		toString () : string {

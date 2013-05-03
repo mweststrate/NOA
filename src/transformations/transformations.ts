@@ -38,12 +38,7 @@ module NOA {
 		}
 
 		toASTHelper(name : string, ...args: any[]) : Object {
-			return {
-				type: 'function',
-				name : name,
-				source : this.source.getRef(),
-				args : args
-			}
+			return Serializer.serializeFunction(name, args);
 		}
 	}
 

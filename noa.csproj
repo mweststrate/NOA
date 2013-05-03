@@ -65,6 +65,7 @@
     <Content Include="src\noa.ts" />
     <Content Include="src\record.ts" />
     <Content Include="src\scope.ts" />
+    <Content Include="src\serializer.ts" />
     <Content Include="src\transformations\distinct.ts" />
     <Content Include="src\transformations\filter.ts" />
     <Content Include="src\transformations\join.ts" />

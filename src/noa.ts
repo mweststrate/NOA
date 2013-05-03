@@ -7,6 +7,7 @@
 ///<reference path='list.ts'/>
 ///<reference path='record.ts'/>
 ///<reference path='scope.ts'/>
+///<reference path='serializer.ts'/>
 ///<reference path='aggregations/aggregations.ts'/>
 
 ///<reference path='transformations/transformations.ts'/>
