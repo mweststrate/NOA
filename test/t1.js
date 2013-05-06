@@ -24,8 +24,8 @@ exports.test1 = function(test) {
     x.debugName("x");
 
 	//base set
-	x.add(3); 
-	x.add(2);  
+	x.add(3);
+	x.add(2);
 	x.add(6);
     testIndexes(x, test);
 
@@ -40,23 +40,23 @@ exports.test1 = function(test) {
     testIndexes(x, test);
 
     x.move(1,0);
-    test.deepEqual(x.toArray(), [7,3,1]);
+    test.deepEqual(x.toJSON(), [7,3,1]);
     testIndexes(x, test);
 
     x.move(2,0)
-    test.deepEqual(x.toArray(), [1,7,3]);
+    test.deepEqual(x.toJSON(), [1,7,3]);
     testIndexes(x, test);
-    
+
     x.move(0,2)
-    test.deepEqual(x.toArray(), [7,3,1]);
+    test.deepEqual(x.toJSON(), [7,3,1]);
     testIndexes(x, test);
 
     x.move(0,1)
-    test.deepEqual(x.toArray(), [3,7,1]);
+    test.deepEqual(x.toJSON(), [3,7,1]);
     testIndexes(x, test);
 
     x.move(2,1)
-    test.deepEqual(x.toArray(), [3,1,7]);
+    test.deepEqual(x.toJSON(), [3,1,7]);
     testIndexes(x, test);
 
     x.die();
@@ -70,18 +70,18 @@ exports.test1 = function(test) {
 exports.test2 = function(test) {
 	var x = new NOA.List().live();//.debugName("x");;
 
-   	var y = x.map("x", function() { 
+   	var y = x.map("x", function() {
         //debugger;
 		var v = this.variable('x');
 		//console.log("DOUBLEMAP: " + v + " * 2 = " + (v * 2));
-		return v * 2; 
+		return v * 2;
 	}).live();
 
     y.debugName("y");
 
 	//base set
-	x.add(3); 
-	x.add(2);  
+	x.add(3);
+	x.add(2);
 	x.add(6);
 
 	//mutations
@@ -91,8 +91,8 @@ exports.test2 = function(test) {
 	x.cell(2).set(1);
 	x.move(1,0); //JOIN fails if this is not disabled
 
-	test.deepEqual(x.toArray(), [7,3,1]);
-	test.deepEqual(y.toArray(), [14,6,2])
+	test.deepEqual(x.toJSON(), [7,3,1]);
+	test.deepEqual(y.toJSON(), [14,6,2])
 
 	x.die();
 	y.die();
@@ -133,7 +133,7 @@ exports.filterlive = function(test) {
     }).live();
     x.add(3);
 
-    test.deepEqual(z.toArray(), [3])
+    test.deepEqual(z.toJSON(), [3])
 
     test.equal(NOA.List.count, 3);
     test.equal(NOA.Cell.count, 3);
@@ -147,7 +147,7 @@ exports.filterlive = function(test) {
     test.equal(NOA.Expression.count,0);
 
     test.done();
-} 
+}
 
 exports.test3filter = function(test) {
     var x = new NOA.List().live();
@@ -160,38 +160,38 @@ exports.test3filter = function(test) {
     z.debugName("z");
 
     x.add(3);
-    test.deepEqual( x.toArray(), [3]);
-    test.deepEqual( z.toArray(), [3]);
+    test.deepEqual( x.toJSON(), [3]);
+    test.deepEqual( z.toJSON(), [3]);
 
     x.add(2);
-    test.deepEqual( x.toArray(), [3,2]);
-    test.deepEqual( z.toArray(), [3,2]);
-    
+    test.deepEqual( x.toJSON(), [3,2]);
+    test.deepEqual( z.toJSON(), [3,2]);
+
     x.add(6);
-    test.deepEqual( x.toArray(), [3,2,6]);
-    test.deepEqual( z.toArray(), [3,2]);
+    test.deepEqual( x.toJSON(), [3,2,6]);
+    test.deepEqual( z.toJSON(), [3,2]);
 
     //mutations
     x.insert(1,1);
-    test.deepEqual( x.toArray(), [3,1,2,6]);
-    test.deepEqual( z.toArray(), [3,1,2]);
+    test.deepEqual( x.toJSON(), [3,1,2,6]);
+    test.deepEqual( z.toJSON(), [3,1,2]);
 
     x.remove(1);
-    test.deepEqual( x.toArray(), [3,2,6]);
-    test.deepEqual( z.toArray(), [3,2]);
+    test.deepEqual( x.toJSON(), [3,2,6]);
+    test.deepEqual( z.toJSON(), [3,2]);
 
     x.cell(2).set(1);
-    test.deepEqual( x.toArray(), [3,2,1]);
-    test.deepEqual( z.toArray(), [3,2,1]);
+    test.deepEqual( x.toJSON(), [3,2,1]);
+    test.deepEqual( z.toJSON(), [3,2,1]);
 
     x.move(1,0);
 
-    test.deepEqual( x.toArray(), [2,3,1]);
-    test.deepEqual( z.toArray(), [2,3,1]);
+    test.deepEqual( x.toJSON(), [2,3,1]);
+    test.deepEqual( z.toJSON(), [2,3,1]);
 
     x.set(0, 4);
-    test.deepEqual( x.toArray(), [4,3,1]);
-    test.deepEqual( z.toArray(), [3,1]);
+    test.deepEqual( x.toJSON(), [4,3,1]);
+    test.deepEqual( z.toJSON(), [3,1]);
 
     x.die();
     z.die();
@@ -231,9 +231,9 @@ exports.test3 = function(test) {
     x.cell(2).set(1);
     x.move(1,0);
 
-    test.deepEqual( x.toArray(), [7,3,1]);
-    test.deepEqual( y.toArray(), [14,6,2]);
-    test.deepEqual( z.toArray(), [6,2]);
+    test.deepEqual( x.toJSON(), [7,3,1]);
+    test.deepEqual( y.toJSON(), [14,6,2]);
+    test.deepEqual( z.toJSON(), [6,2]);
 
     x.die();
     y.die();
@@ -262,7 +262,7 @@ exports.test4 = function(test) {
 
     var a = z.join().live();
 
-    test.deepEqual(a.toArray(), [1,2,3,4]);
+    test.deepEqual(a.toJSON(), [1,2,3,4]);
 
     a.die(); //should kill z
     //z.live().die();
@@ -314,9 +314,9 @@ exports.test5 = function(test) {
     x.add(6);
 
     //mutations
-    x.insert(2,7); 
+    x.insert(2,7);
 
-    test.deepEqual( x.toArray(), [3,2,7,6]);
+    test.deepEqual( x.toJSON(), [3,2,7,6]);
 
     var e = new NOA.List()
         .debugName("e")
@@ -331,20 +331,20 @@ exports.test5 = function(test) {
         .live();//-> z x y
 
     x.remove(1); //super fails if ONLY this is disabled
-    test.deepEqual( x.toArray(), [3,7,6]);
+    test.deepEqual( x.toJSON(), [3,7,6]);
 
     x.cell(2).set(1);
-    test.deepEqual( x.toArray(), [3,7,1]);
-    x.move(1,0); 
+    test.deepEqual( x.toJSON(), [3,7,1]);
+    x.move(1,0);
 
-    test.deepEqual( x.toArray(), [7,3,1]);
-    test.deepEqual( y.toArray(), [14,6,2]);
-    test.deepEqual( z.toArray(), [6,2]);
-    test.deepEqual( a.toArray(), [3,1]);
-    test.deepEqual( b.toArray(), [1,3,7]);
-    test.deepEqual( c.toArray(), [7,3,1]);
-    test.deepEqual( d.toArray(), [3,7,1]);//Not the best test.., only the contained elements should be the same, not the order..
-    test.deepEqual( e.toArray(), [14,6,2,7,3,1,3,1,6,2]);
+    test.deepEqual( x.toJSON(), [7,3,1]);
+    test.deepEqual( y.toJSON(), [14,6,2]);
+    test.deepEqual( z.toJSON(), [6,2]);
+    test.deepEqual( a.toJSON(), [3,1]);
+    test.deepEqual( b.toJSON(), [1,3,7]);
+    test.deepEqual( c.toJSON(), [7,3,1]);
+    test.deepEqual( d.toJSON(), [3,7,1]);//Not the best test.., only the contained elements should be the same, not the order..
+    test.deepEqual( e.toJSON(), [14,6,2,7,3,1,3,1,6,2]);
 
     x.die();
     y.die();
@@ -373,23 +373,23 @@ exports.testjoin = function(test) {
     y.add(3)
 
     var j = xy.join().live();
-    test.deepEqual(j.toArray(), [1,3]);
+    test.deepEqual(j.toJSON(), [1,3]);
     testIndexes(j, test);
 
     x.add(2);
-    test.deepEqual(j.toArray(), [1,2,3]);
+    test.deepEqual(j.toJSON(), [1,2,3]);
     testIndexes(j, test);
 
     y.add(4);
-    test.deepEqual(j.toArray(), [1,2,3,4]);
+    test.deepEqual(j.toJSON(), [1,2,3,4]);
     testIndexes(j, test);
 
     test.equal(x, xy.get(0));
     test.equal(y, xy.get(1));
     testIndexes(xy, test);
-    //test.equal(xy.toArray, [x,y]);
+    //test.equal(xy.toJSON, [x,y]);
 
-    test.deepEqual(j.toArray(), [1,2,3,4]);
+    test.deepEqual(j.toJSON(), [1,2,3,4]);
     testIndexes(j, test);
 
     test.equal(x, xy.get(0));
@@ -397,35 +397,35 @@ exports.testjoin = function(test) {
     testIndexes(xy, test);
 
     xy.move(1,0);
-    
+
     test.equal(y, xy.get(0));
     test.equal(x, xy.get(1));
     testIndexes(xy, test);
 
-    test.deepEqual(j.toArray(), [3,4,1,2]);
+    test.deepEqual(j.toJSON(), [3,4,1,2]);
     testIndexes(j, test);
 
     xy.move(0,1);
-    test.deepEqual(j.toArray(), [1,2,3,4]);
+    test.deepEqual(j.toJSON(), [1,2,3,4]);
     testIndexes(j, test);
 
     x.live();
     xy.remove(0);
-    test.deepEqual(j.toArray(), [3,4]);
+    test.deepEqual(j.toJSON(), [3,4]);
     testIndexes(j, test);
 
     xy.add(x);
-    test.deepEqual(j.toArray(), [3,4,1,2]);
+    test.deepEqual(j.toJSON(), [3,4,1,2]);
     testIndexes(j, test);
     x.die(); //see  6 lines up
 
     y.live();
     xy.set(0, x);
-    test.deepEqual(j.toArray(), [1,2,1,2]);
+    test.deepEqual(j.toJSON(), [1,2,1,2]);
     testIndexes(j, test);
 
     xy.insert(1, y);
-    test.deepEqual(j.toArray(), [1,2,3,4,1,2]);
+    test.deepEqual(j.toJSON(), [1,2,3,4,1,2]);
     testIndexes(j, test);
     y.die(); //see 6 lines up
 
@@ -452,19 +452,19 @@ exports.test6a = function(test) {
 
     var xyj = xy.join().debugName("xyjoin").live();
 
-    test.deepEqual(xyj.toArray(),[]);
+    test.deepEqual(xyj.toJSON(),[]);
     x.add(3);
-    test.deepEqual(xyj.toArray(),[]);
+    test.deepEqual(xyj.toJSON(),[]);
     y.add(2)
-    test.deepEqual(x.toArray(),[3]);
-    test.deepEqual(y.toArray(),[2]);
-    test.deepEqual(xyj.toArray(),[6]);
+    test.deepEqual(x.toJSON(),[3]);
+    test.deepEqual(y.toJSON(),[2]);
+    test.deepEqual(xyj.toJSON(),[6]);
     y.add(4);
     y.add(8);
-    test.deepEqual(xyj.toArray(),[6,12,24]);
+    test.deepEqual(xyj.toJSON(),[6,12,24]);
     x.add(30);
     x.add(300)
-    test.deepEqual(xyj.toArray(),[6,12,24,60,120,240,600,1200,2400]);
+    test.deepEqual(xyj.toJSON(),[6,12,24,60,120,240,600,1200,2400]);
 
     xyj.die()
     test.equal(NOA.List.count, 0)
@@ -491,19 +491,19 @@ exports.test6b1 = function(test) {
     x.add(2);
     y.add(3);
     y.add(4);
-    test.deepEqual(j.toArray(), [3, 4, 6, 8])
+    test.deepEqual(j.toJSON(), [3, 4, 6, 8])
 
     y.move(1,0);
-    test.deepEqual(j.toArray(), [4, 3, 8, 6])
-    
+    test.deepEqual(j.toJSON(), [4, 3, 8, 6])
+
     y.move(0,1);
-    test.deepEqual(j.toArray(), [3, 4, 6, 8])
+    test.deepEqual(j.toJSON(), [3, 4, 6, 8])
 
     x.move(0,1);
-    test.deepEqual(j.toArray(), [6, 8, 3, 4])
+    test.deepEqual(j.toJSON(), [6, 8, 3, 4])
 
     x.move(1, 0);
-    test.deepEqual(j.toArray(), [3, 4, 6, 8])
+    test.deepEqual(j.toJSON(), [3, 4, 6, 8])
 
     j.die();
     test.equal(NOA.List.count, 0);
@@ -522,7 +522,7 @@ exports.test6b2 = function(test) {
 
             console.log("\n\nSUPERMAP: " + x + " * " + y + ' = ' + (x * y));
             return x * y;
-        });        
+        });
     }).debugName("xsuper").live();
 
     var xjoin = xsuper.join().debugName("xjoin").live();
@@ -532,28 +532,28 @@ exports.test6b2 = function(test) {
     x.add(2);
     x.add(6);
 
-    test.deepEqual( x.toArray(), [3,2,6]);
-    test.deepEqual(xjoin.toArray(), [9,6,18,6,4,12,18,12,36])
+    test.deepEqual( x.toJSON(), [3,2,6]);
+    test.deepEqual(xjoin.toJSON(), [9,6,18,6,4,12,18,12,36])
 
     //mutations
     x.insert(2,7);
 
-    test.deepEqual( x.toArray(), [3,2,7,6]);
-    test.deepEqual(xjoin.toArray(), [9,6,21,18, 6,4,14,12, 21,14,49,42, 18,12,42,36])
+    test.deepEqual( x.toJSON(), [3,2,7,6]);
+    test.deepEqual(xjoin.toJSON(), [9,6,21,18, 6,4,14,12, 21,14,49,42, 18,12,42,36])
 
-    x.remove(1); 
-    test.deepEqual( x.toArray(), [3,7,6]);
-    test.deepEqual(xjoin.toArray(), [9,21,18, 21,49,42, 18,42,36])
+    x.remove(1);
+    test.deepEqual( x.toJSON(), [3,7,6]);
+    test.deepEqual(xjoin.toJSON(), [9,21,18, 21,49,42, 18,42,36])
 
     x.cell(2).set(1);
-    test.deepEqual( x.toArray(), [3,7,1]);
-    test.deepEqual(xjoin.toArray(), [9,21,3, 21,49,7, 3,7,1])
+    test.deepEqual( x.toJSON(), [3,7,1]);
+    test.deepEqual(xjoin.toJSON(), [9,21,3, 21,49,7, 3,7,1])
 
     x.move(1,0); //JOIN fails if this is not disabled
 
-    test.deepEqual( x.toArray(), [7,3,1]);
+    test.deepEqual( x.toJSON(), [7,3,1]);
     // Was:                         [ 9,21,3, 21,49,7, 3,7,1]
-    test.deepEqual(xjoin.toArray(), [49,21,7, 21, 9,3, 7,3,1])
+    test.deepEqual(xjoin.toJSON(), [49,21,7, 21, 9,3, 7,3,1])
     // Is:                          [21, 9,3,  9,21,3, 7,3,1]
 
     x.die();
@@ -571,7 +571,7 @@ exports.test6b2 = function(test) {
 //TODO: test exception
 
 exports.test7 = function(test) {
-    
+
     var o = new NOA.Record().live();
     o.set("a", 2);
     o.set("b", 2);
@@ -580,7 +580,7 @@ exports.test7 = function(test) {
     o.remove("b");
 
     test.equal(JSON.stringify(o.toObject()), '{"a":1,"c":5}');
-    test.deepEqual(o.keys.toArray(), ["a","c"]);
+    test.deepEqual(o.keys.toJSON(), ["a","c"]);
 
     o.set("b", 2);
 
@@ -608,7 +608,7 @@ exports.test7 = function(test) {
     test.equal(NOA.Record.count, 0);
     test.equal(NOA.Cell.count, 0);
     test.equal(NOA.Expression.count, 0);
-    
+
     test.done();
 
 };

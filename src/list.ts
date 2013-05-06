@@ -170,15 +170,15 @@ module NOA {
 			return this.cells[index].get(caller, onchange, supressInitialEvent);
 		}
 
-		toArray(recurse?: bool) { //TODO: implement recurse
+		toJSON() {
 			var res = [];
 			var l = this.cells.length;
 			for (var i = 0; i < l; i++)
-				res.push(this.get(i));
+				res.push(this.cell(i).toJSON());
 			return res;
 		}
 
-		toFullAST(): Object { 
+		toFullAST(): Object {
 			var res = {
 				type: 'List',
 				id: this.noaid,

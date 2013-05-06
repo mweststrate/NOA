@@ -10,6 +10,8 @@ module NOA {
 
 		toAST(): Object;
 
+		toJSON() : any;
+
 		//TODO: getScope?
 
 		//TODO: static unserialize()
@@ -19,6 +21,7 @@ module NOA {
 		fireCellChanged(index: any, newvalue: any, oldvalue: any, cell: Cell) { Util.notImplemented() };
 
 		cell(index: any): Cell { Util.notImplemented(); return null; };
+		toJSON() : any { Util.notImplemented(); return null; }
 
 		toAST(): Object {
 			return {
@@ -65,5 +68,19 @@ module NOA {
 		}
 
 		toAST(): Object { Util.notImplemented(); return null; };
+
+
+		toJSON(): any {
+			var value = this.get();
+			if (value === undefined || value === null)
+				return value;
+			switch(Util.type(value)) {
+				case "boolean":
+				case "string":
+				case "number":
+					return value;
+			}
+			return value.toJSON();
+		}
 	}
 }

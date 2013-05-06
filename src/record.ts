@@ -64,14 +64,14 @@ module NOA{
 			return this.on('remove', caller, callback);
 		}
 
-		toObject (recurse?: bool): Object { //TODO: implement recurse
+		toJSON (): Object {
 			var res = {};
 			for(var key in this.data)
-				res[key] = this.get(key);
+				res[key] = this.cell(key).toJSON();
 			return res;
 		}
 
-		toFullAST(): Object { 
+		toFullAST(): Object {
 			var res = {
 				type: 'Record',
 				noaid: this.noaid,

@@ -37,11 +37,18 @@ function createTest(name, func, args, result) {
 
 			base.set(6, "is");
 			base.move(6, 4);
-			base.remove(5);
+			base.remove(6);
+			base.move(3,0);
+			base.move(1,3);
 
+			test.deepEqual(base.toJSON(), [1,3,3,7,"is","leet"]);
+
+			var freshlist = base[func].apply(base, args).live();
+			test.deepEqual(freshlist.toJSON(), result);
 			test.deepEqual(list.toJSON(), result);
 			test.deepEqual(copy.toJSON(), result);
 
+			freshlist.die();
 			copy.die();
 			list.die();
 
