@@ -92,6 +92,10 @@ module NOA {
 		static each (ar : any, cb : (any, int /*, any, Object*/) => bool, scope? : Object, flags? : string) : any {
 			scope = scope || GLOBALSCOPE;
 			flags = flags || "";
+			if (arguments.length == 3 && Util.type(scope) == "string") {
+				flags = <any>scope;
+				scope = GLOBALSCOPE;
+			}
 
 			//valid flags are (m)ap, (f)filter, (s)parse, (r)everse
 			//sparse skips the callback for non-values

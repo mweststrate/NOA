@@ -1,6 +1,9 @@
 ///<reference path='../noa.ts'/>
 module NOA {
 
+//TODO: transformations should listen to input arguments if applicable
+
+
 	export class ListTransformation extends List {
 		source : List; //TODO: remove parent?
 
@@ -50,7 +53,8 @@ module NOA {
 	//      .filter(y, y.getKeys().contains(attr))
 	//      .map(z, z.get(attr));
 
-	//Unmap
+	//Unmap. Todo: is unmap useful? Seems to especially useful in combination with max or sort for example.
+	//Is its mapping not to extensively implemented now? Can we avoid it being a parameter to many standard functions?
 
 	//Contains(col, value)
 	//  if (col instanceof List) -> col.distinct().contains(value) //assumes distinct is sorted and has effecient contains
@@ -65,4 +69,8 @@ module NOA {
 	//Substract
 
 	//Other list math
+
+	//Copy. Useful for example timestamp() = copy(now())
+
+	//next(x) or previous(x) : Something  to compare with prevous and next value in list
 }

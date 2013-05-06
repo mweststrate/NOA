@@ -5,6 +5,9 @@ module NOA {
 	//TODO: support expression like:
 	//New Expression(function(cb, args1...), args2)
 
+	//TODO: input arguments which are not NOA objects, should be converted to static values automatically,
+	//which support a get callback which is in fact ignored always.
+
 	export class Expression extends ValueContainer implements IValue {
 		func : Function;
 		scope : Object;

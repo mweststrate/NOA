@@ -1,5 +1,8 @@
 ///<reference path='../noa.ts'/>
 module NOA {
+
+	//TODO: aggregations should listen to input arguments if applicable
+
 	export class ListAggregation extends ValueContainer { //Generic on return type!
 		source: List; //TODO: remove parent?
 		value;

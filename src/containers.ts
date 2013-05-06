@@ -22,7 +22,7 @@ module NOA {
 
 		toAST(): Object {
 			return {
-				type: "id",
+				type: "ref",
 				id: this.noaid
 			}
 		}
