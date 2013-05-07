@@ -3,6 +3,11 @@ NOA = require("../build/noa.js");
 
 function createTest(name, func, args, result) {
 	exports[name] = function(test) {
+		//Dirty...
+		NOA.List.count = 0;
+		NOA.Cell.count = 0;
+		NOA.Expression.count = 0;
+
 		var base = new NOA.List();
 
 		var resolver = function(id, cb) {
@@ -54,15 +59,59 @@ function createTest(name, func, args, result) {
 
 			test.equal(NOA.List.count, 0);
 			test.equal(NOA.Cell.count, 0);
-			if (NOA.Expression.count !== undefined)
-				test.equal(NOA.Expression.count, 0);
+			test.equal(NOA.Expression.count, 0);
 
 			test.done();
 		});
 	}
 }
 
+// 1 3 3 7 is leet
+
 createTest("count", "count", [], 6);
+
+createTest("numbercount", "numbercount", [], 4);
+
+createTest("sum", "sum", [], 14);
+
+//TODO: not implemted
+createTest("avg", "avg", [], 14 / 4);
+
+createTest("max", "max", [], 7);
+
+createTest("min", "min", [], 1);
+
+createTest("index0", "index", [0], 1);
+createTest("index4", "index", [4], "is");
+createTest("index4b", "index", [-2], "is");
+createTest("index6", "index", [6], undefined);
+createTest("index6b", "index", [-6], undefined);
+
+createTest("first", "first", [], 1);
+
+createTest("last", "last", [], "leet");
+
+createTest("distinct", "distinct", [], [1,3,7,"is","leet"]);
+
+createTest("filter", "filter", ["x", "function() { return this.variable('x') == 3; }"], [3,3]);
+
+createTest("join", "join", [], [1,3,3,7,"is","leet"]);
+
+createTest("map", "map", ["x", "function() { return 'foo' + this.variable('x'); }"], ["foo1", "foo3", "foo3", "foo7", "foois", "fooleet"]);
+
+createTest("reverse", "reverse", [], ["leet", "is", 7, 3, 3, 1]);
+
+createTest("sort", "sort", [], [1,3,3,7,"is","leet"]);
+
+createTest("subset1", "subset", [2,4], [3, 7, "is"]);
+createTest("subset2", "subset", [2,2], []);
+createTest("subset3", "subset", [-1,8], [1,3,3,7,"is","leet"]);
+
+createTest("tail1", "tail", [], [3,3,7,"is","leet"]);
+createTest("tail2", "tail", [2], [3,7,"is","leet"]);
+createTest("tail3", "tail", [6], []);
+createTest("tail4", "tail", [0], [1,3,3,7,"is","leet"]);
+createTest("tail5", "tail", [-2], [1,3,3,7,"is","leet"]);
 
 if (!module.parent)
 	NOA.Util.runtests(exports);

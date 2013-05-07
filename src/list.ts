@@ -249,8 +249,8 @@ module NOA {
 			return new SubSetList(this, begin, end);
 		}
 
-		tail() {
-			return new ListTail(this, 1);
+		tail(start : number = 1):List {
+			return new ListTail(this, start);
 		}
 
 		last() {
