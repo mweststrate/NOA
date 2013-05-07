@@ -84,7 +84,7 @@ module NOA{
 
 		free () {
 			for(var key in this.data)
-				(<Cell>this.data[key]).die().free();
+				(<Cell>this.data[key]).free();
 
 			this.keys.free();
 			super.free();

@@ -600,7 +600,7 @@ exports.test7 = function(test) {
     o.set("b", 7);
     test.equal(o.get("c"), '17');
 
-    //f.die();
+    //f.live().die();
     o.die();
 
     test.equal(NOA.List.count, 0);
