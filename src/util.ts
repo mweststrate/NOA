@@ -89,7 +89,21 @@ module NOA {
 			}
 		}
 
-		static each (ar : any, cb : (any, int /*, any, Object*/) => bool, scope? : Object, flags? : string) : any {
+		static map (collection : Object, cb : (value : any, key : string) => any, scope? : Object) : Object;
+		static map (collection : any[], cb : (value : any, index : number) => any, scope? : Object) : any[];
+		static map (collection : any, cb : (value : any, key : any) => any, scope? : Object) : any {
+			return Util.each(collection, cb, scope, 'm');
+		}
+
+		static filter(collection : Object, cb : (value : any, key : string) => bool, scope? : Object) : Object;
+		static filter(collection : any[], cb : (value : any, index : number) => bool, scope? : Object) : any[];
+		static filter(collection : any, cb : (value : any, key : any) => bool, scope? : Object) : any {
+			return Util.each(collection, cb, scope, 'f');
+		}
+
+		static each (ar : Object, cb : (value : any, key : string) => any, scope? : Object, flags? : string) : any;
+		static each (ar : any[], cb : (value : any, index : number) => any, scope? : Object, flags? : string) : any;
+		static each (ar : any, cb : (value : any, key : any) => any, scope? : Object, flags? : string) : any {
 			scope = scope || GLOBALSCOPE;
 			flags = flags || "";
 			if (arguments.length == 3 && Util.type(scope) == "string") {
@@ -115,7 +129,7 @@ module NOA {
 					if (ar[i] == null && sparse)
 						continue;
 
-					var value = cb.call(scope, ar[i], i, ar, scope);
+					var value = cb.call(scope, ar[i], i); //, ar, scope);
 
 					//TODO: awful conditions
 					if (map) {
@@ -145,7 +159,7 @@ module NOA {
 					if (ar[key] == null && sparse)
 						continue;
 
-					var value = cb.call(scope, ar[key], key, ar, scope);
+					var value = cb.call(scope, ar[key], key); //, ar, scope);
 
 					if (map)
 						res[key] = value;
@@ -161,7 +175,8 @@ module NOA {
 		}
 
 		static parallel(collection : Function[], callback : () => void);
-		static parallel(collection : any, onItem : (item: any, index: any, cb : () => void) => void, callback : () => void);
+		static parallel(collection : Object, onItem : (item: any, index: string, cb : () => void) => void, callback : () => void);
+		static parallel(collection : any[], onItem : (item: any, index: number, cb : () => void) => void, callback : () => void);
 		static parallel(collection : any, func1 : Function, func2? : Function) {
 			var left = 0;
 			var onItem   = func1;
@@ -188,7 +203,7 @@ module NOA {
 
 		//equals parallelMap, but preserves order, only supports array
 		static sequence(collection : Function[], callback : () => void);
-		static sequence(collection : any[], onItem : (item: any, index: any, cb : () => void) => void, callback : () => void);
+		static sequence(collection : any[], onItem : (item : any, index : number, cb : () => void) => void, callback : () => void);
 		static sequence(collection : any[], onItem : Function, callback? : Function) {
 
 			var iter = arguments.length == 3

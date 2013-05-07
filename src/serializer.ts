@@ -23,7 +23,7 @@ module NOA{
 			return {
 				type: 'function',
 				name: name,
-				args: Util.each(args, arg => serialize(arg),'m')
+				args: Util.map(args, arg => serialize(arg))
 			}
 		}
 
