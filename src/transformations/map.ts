@@ -13,7 +13,7 @@ module NOA {
 		 * @return {[type]}
 		 */
 		constructor(source: List, name: string, func: any /* Function or Expression */) {
-			super(source);
+			super(source, true);
 
 			this.basescope = Scope.getCurrentScope();
 			this.func = func;

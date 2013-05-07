@@ -7,7 +7,7 @@ module NOA {
 		func : any;
 
 		constructor(source: List, comperator) {
-			super(source);
+			super(source, true);
 			this.func = comperator;
 
 			//Comperator function

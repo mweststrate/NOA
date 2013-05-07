@@ -45,12 +45,12 @@ module NOA {
 
 		public get (): any;
 		public get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
-		public get (caller : Base, onChange : (newvalue: any, oldvalue: any) => void, supressInitialEvent: bool): any;
-		public get (caller?: Base, onChange?: (newvalue: any, oldvalue: any) => void, supressInitialEvent?: bool): any {
+		public get (caller : Base, onChange : (newvalue: any, oldvalue: any) => void, fireInitialEvent: bool): any;
+		public get (caller?: Base, onChange?: (newvalue: any, oldvalue: any) => void, fireInitialEvent?: bool): any {
 			if (onChange)
 				this.onChange(caller, onChange);
 
-			if (onChange && !supressInitialEvent)
+			if (onChange && fireInitialEvent !== false)
 				onChange.call(caller, this.value, undefined);
 
 			return this.value;

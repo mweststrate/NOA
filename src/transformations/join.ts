@@ -7,7 +7,6 @@ module NOA {
 
 		constructor(source: List) {
 			super(source);
-			source.replayInserts(this, this.onSourceInsert);
 		}
 
 		updateLmap(index : number, delta : number) {
@@ -63,7 +62,7 @@ module NOA {
 				this.insert(start + subindex, subcell);
 			});
 
-			sublist.onInsert(this, sublistInsert);
+			sublist.onInsert(this, sublistInsert, false);
 			sublist.onMove(this, function (sf : number, st : number) {
 				this.move(this.getOffset(cell.index, sf), this.getOffset(cell.index, st));
 			});

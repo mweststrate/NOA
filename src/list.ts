@@ -98,8 +98,12 @@ module NOA {
 		}
 
 		/** events */
-		onInsert(caller: Base, cb : (index: number, value, cell: Cell) => void) : List {
+		onInsert(caller: Base, cb: (index: number, value, cell: Cell) => void , fireInitialEvents? : bool) : List {
 			this.on('insert', caller, cb);
+
+			if (fireInitialEvents !== false)
+				this.replayInserts(caller, cb);
+
 			return this;
 		}
 

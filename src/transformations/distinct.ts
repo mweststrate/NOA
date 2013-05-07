@@ -7,7 +7,6 @@ module NOA {
 
 		constructor(source: List) {
 			super(source);
-			source.replayInserts(this, this.onSourceInsert)
 			this.unlisten(source, 'move')
 		}
 

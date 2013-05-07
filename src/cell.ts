@@ -81,21 +81,21 @@ module NOA {
 		}
 
 		get (): any;
-		get (caller : Base, onchange : (newvalue: any, oldvalue: any) => void, supressInitialEvent?: bool): any;
-		get (caller?: Base, onchange?: (newvalue: any, oldvalue: any) => void, supressInitialEvent?: bool): any {
+		get (caller: Base, onchange: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any;
+		get (caller?: Base, onchange?: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any {
 
 			if (this.hasExpression()) {
 				var expr = <ValueContainer> super.get(caller, onchange, true);
 				//MWE: note, we do not have to listen to the expression, because the expression onChange already causes this cell to update :), so we would be listening twice;
 				var value = expr.get();
 
-				if (onchange && !supressInitialEvent)
+				if (onchange && fireInitialEvent !== false)
 					onchange.call(caller, value);
 
 				return value;
 			}
-
-			return super.get(caller, onchange, supressInitialEvent);
+			else
+				return super.get(caller, onchange, fireInitialEvent);
 		}
 
 		live () {

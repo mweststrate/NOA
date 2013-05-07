@@ -7,7 +7,7 @@ module NOA {
 	export class ListTransformation extends List {
 		source : List; //TODO: remove parent?
 
-		constructor (source : List) {
+		constructor(source: List, fireInitialEvents?: bool) {
 			super();
 			this.source = source;
 			this.uses(source);
@@ -17,7 +17,7 @@ module NOA {
 				this.free()
 			})
 
-			source.onInsert(this, this.onSourceInsert);
+			source.onInsert(this, this.onSourceInsert, fireInitialEvents);
 
 			source.onSet(this, this.onSourceSet);
 

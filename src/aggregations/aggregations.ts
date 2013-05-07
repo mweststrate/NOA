@@ -7,7 +7,7 @@ module NOA {
 		source: List; //TODO: remove parent?
 		value;
 
-		constructor(source: List) {
+		constructor(source: List, supressInitialEvent? : bool) {
 			super();
 			//TODO: register at parent so the aggregate can be freed
 			this.source = source;
@@ -15,7 +15,7 @@ module NOA {
 
 			source.onFree(this, () => this.free())
 
-			source.onInsert(this, this.onSourceInsert);
+			source.onInsert(this, this.onSourceInsert, supressInitialEvent);
 
 			source.onSet(this, this.onSourceSet);
 
@@ -205,7 +205,7 @@ module NOA {
 		value: number = 0;
 
 		constructor(source: List) {
-			super(source);
+			super(source, false);
 			this.unlisten(source, 'move')
 
 			this.findNewMax();
@@ -251,7 +251,7 @@ module NOA {
 		value: number = 0;
 
 		constructor(source: List) {
-			super(source);
+			super(source, false);
 			this.unlisten(source, 'move')
 
 			this.findNewMin();
@@ -299,7 +299,7 @@ module NOA {
 		realindex : number;
 
 		constructor(source: List, index: number) {
-			super(source);
+			super(source, false);
 			this.unlisten(source, 'set')
 			this.index = index;
 			this.updateRealIndex();

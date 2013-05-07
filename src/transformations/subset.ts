@@ -6,7 +6,7 @@ module NOA {
 		end : number;
 
 		constructor(source: List, begin: number, end: number) {
-			super(source);
+			super(source, true);
 			this.begin = begin;
 			this.end = end;
 
