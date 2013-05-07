@@ -3,7 +3,7 @@ module NOA {
 
 	export class ReversedList extends ListTransformation {
 		constructor(source: List) {
-			super(source, true);
+			super(source);
 
 			var l = source.cells.length;
 

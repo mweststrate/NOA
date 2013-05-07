@@ -8,6 +8,7 @@ module NOA {
 		constructor(source: List) {
 			super(source);
 			this.unlisten(source, 'move')
+			this.startup();
 		}
 
 		toKey (value) {

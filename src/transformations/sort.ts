@@ -7,7 +7,7 @@ module NOA {
 		func : any;
 
 		constructor(source: List, comperator) {
-			super(source, true);
+			super(source);
 			this.func = comperator;
 
 			//Comperator function
@@ -21,9 +21,9 @@ module NOA {
 						return 1;
 				};
 
-			source.each(this, this.onSourceInsert);
-
 			this.unlisten(source, 'move');
+
+			this.startup();
 		}
 
 		updateMapping(from : number, delta : number) {

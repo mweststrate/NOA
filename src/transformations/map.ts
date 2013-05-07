@@ -13,14 +13,13 @@ module NOA {
 		 * @return {[type]}
 		 */
 		constructor(source: List, name: string, func: any /* Function or Expression */) {
-			super(source, false);
+			super(source);
 
 			this.basescope = Scope.getCurrentScope();
 			this.func = func;
 			this.varname = name;
 
-			this.source.each(this, this.onSourceInsert);
-
+			this.startup();
 		}
 
 		onSourceInsert (index : number, _, source) {

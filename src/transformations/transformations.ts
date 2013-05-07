@@ -7,7 +7,7 @@ module NOA {
 	export class ListTransformation extends List {
 		source : List; //TODO: remove parent?
 
-		constructor(source: List, fireInitialEvents?: bool) {
+		constructor(source: List) {
 			super();
 			this.source = source;
 			this.uses(source);
@@ -17,7 +17,7 @@ module NOA {
 				this.free()
 			})
 
-			source.onInsert(this, this.onSourceInsert, fireInitialEvents);
+			source.onInsert(this, this.onSourceInsert, false);
 
 			source.onSet(this, this.onSourceSet);
 
@@ -25,6 +25,11 @@ module NOA {
 
 			source.onRemove(this, this.onSourceRemove);
 
+		}
+
+		startup() {
+			//MWE: needed, because super constructs are always called before any local fiels are initialized :-(
+			this.source.each(this, this.onSourceInsert);
 		}
 
 		onSourceInsert (index : number, value, cell: Cell) { }

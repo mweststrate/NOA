@@ -5,13 +5,13 @@ module NOA {
 		start : number; //sublist from
 
 		constructor(source: List, start? : number) {
-			super(source, true);
+			super(source);
 			if (start === undefined)
 				this.start = 1;
 			this.start = start;
 			this.unlisten(source, 'set');
 
-			this.source.each(this, this.onSourceInsert);
+			this.startup();
 		}
 
 		onSourceInsert(index: number, _, cell) {

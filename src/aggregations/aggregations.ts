@@ -7,7 +7,7 @@ module NOA {
 		source: List; //TODO: remove parent?
 		value;
 
-		constructor(source: List, supressInitialEvent? : bool) {
+		constructor(source: List) {
 			super();
 			//TODO: register at parent so the aggregate can be freed
 			this.source = source;
@@ -15,7 +15,7 @@ module NOA {
 
 			source.onFree(this, () => this.free())
 
-			source.onInsert(this, this.onSourceInsert, supressInitialEvent);
+			source.onInsert(this, this.onSourceInsert, false);
 
 			source.onSet(this, this.onSourceSet);
 
@@ -23,6 +23,11 @@ module NOA {
 
 			source.onRemove(this, this.onSourceRemove);
 
+		}
+
+		startup() {
+			//MWE: needed, because super constructs are always called before any local fiels are initialized :-(
+			this.source.each(this, this.onSourceInsert);
 		}
 
 		onSourceInsert(index: number, value, cell: Cell) { }
@@ -68,6 +73,7 @@ module NOA {
 			super(source);
 			this.unlisten(source, 'move')
 			this.unlisten(source, 'set')
+			this.startup();
 		}
 
 		onSourceInsert(index: number, value) {
@@ -92,6 +98,7 @@ module NOA {
 		constructor(source: List) {
 			super(source);
 			this.unlisten(source, 'move')
+			this.startup();
 		}
 
 		onSourceInsert(index: number, value) {
@@ -125,6 +132,7 @@ module NOA {
 		constructor(source: List) {
 			super(source);
 			this.unlisten(source, 'move')
+			this.startup();
 		}
 
 		onSourceInsert(index: number, value) {
@@ -205,7 +213,7 @@ module NOA {
 		value: number = 0;
 
 		constructor(source: List) {
-			super(source, false);
+			super(source);
 			this.unlisten(source, 'move')
 
 			this.findNewMax();
@@ -251,7 +259,7 @@ module NOA {
 		value: number = 0;
 
 		constructor(source: List) {
-			super(source, false);
+			super(source);
 			this.unlisten(source, 'move')
 
 			this.findNewMin();
@@ -299,7 +307,7 @@ module NOA {
 		realindex : number;
 
 		constructor(source: List, index: number) {
-			super(source, false);
+			super(source);
 			this.unlisten(source, 'set')
 			this.index = index;
 			this.updateRealIndex();
