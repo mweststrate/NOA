@@ -52,9 +52,11 @@ function createTest(name, func, args, result) {
 			copy.die();
 			list.die();
 
-			test.assertEqual(NOA.List.count, 0);
-			test.assertEqual(NOA.Cell.count, 0);
-			test.assertEqual(NOA.Expression.count, 0);
+			test.equal(NOA.List.count, 0);
+			test.equal(NOA.Cell.count, 0);
+			if (NOA.Expression.count !== undefined)
+				test.equal(NOA.Expression.count, 0);
+
 			test.done();
 		});
 	}
