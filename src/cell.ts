@@ -65,7 +65,7 @@ module NOA {
 
 					newvalue = (<ValueContainer>newvalue).get(newvalue, (newv, oldv) => {
 						this.fireChanged(newv, oldv);
-					}, true);
+					}, false);
 				}
 
 				if (this.initialized)

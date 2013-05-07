@@ -6,7 +6,8 @@ module NOA {
 		lmap : any[] = []; //list with [startindex, length]
 
 		constructor(source: List) {
-			super(source);
+			super(source, false); //MWE: blegh, field are not initialized before super constructor is called
+			this.source.each(this, this.onSourceInsert);
 		}
 
 		updateLmap(index : number, delta : number) {

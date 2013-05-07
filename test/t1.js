@@ -106,7 +106,6 @@ exports.test2 = function(test) {
 };
 
 exports.filterlive = function(test) {
-    debugger;
     //test.equal(NOA.List.count, 0);
     var x = new NOA.List().live();
     x.debugName("x");
@@ -579,7 +578,7 @@ exports.test7 = function(test) {
     o.set("a", 1);
     o.remove("b");
 
-    test.equal(JSON.stringify(o.toObject()), '{"a":1,"c":5}');
+    test.equal(JSON.stringify(o.toJSON()), '{"a":1,"c":5}');
     test.deepEqual(o.keys.toJSON(), ["a","c"]);
 
     o.set("b", 2);
