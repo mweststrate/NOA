@@ -12,7 +12,7 @@ module NOA {
 			this.parent = source;
 			this.parent.debugName = (_?: string): any => "FilterMap-for-" + this.debugName();
 
-			this.source.replayInserts(this, this.onSourceInsert);
+			this.source.each(this, this.onSourceInsert);
 		}
 
 		updateMapping (index: number, delta: number, to?: number) {

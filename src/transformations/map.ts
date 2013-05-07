@@ -19,7 +19,7 @@ module NOA {
 			this.func = func;
 			this.varname = name;
 
-			this.source.replayInserts(this, this.onSourceInsert);
+			this.source.each(this, this.onSourceInsert);
 
 		}
 

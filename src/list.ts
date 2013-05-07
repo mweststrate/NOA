@@ -102,7 +102,7 @@ module NOA {
 			this.on('insert', caller, cb);
 
 			if (fireInitialEvents !== false)
-				this.replayInserts(caller, cb);
+				this.each(caller, cb);
 
 			return this;
 		}
@@ -136,7 +136,7 @@ module NOA {
 			return this;
 		}
 
-		replayInserts(scope, cb : (index: number, value: any, cell: Cell) => void) {
+		each(scope, cb : (index: number, value: any, cell: Cell) => void) {
 			var l= this.cells.length;
 			for(var i = 0; i < l; i++)
 				cb.call(scope, i, this.get(i), this.cells[i]);

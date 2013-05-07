@@ -11,7 +11,7 @@ module NOA {
 			this.start = start;
 			this.unlisten(source, 'set');
 
-			this.source.replayInserts(this, this.onSourceInsert);
+			this.source.each(this, this.onSourceInsert);
 		}
 
 		onSourceInsert(index: number, _, cell) {

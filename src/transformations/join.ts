@@ -58,7 +58,7 @@ module NOA {
 			}
 
 			var start = this.lmap[index][0];
-			sublist.replayInserts(this, (subindex, _, subcell) => {
+			sublist.each(this, (subindex, _, subcell) => {
 				this.insert(start + subindex, subcell);
 			});
 

@@ -21,7 +21,7 @@ module NOA {
 						return 1;
 				};
 
-			source.replayInserts(this, this.onSourceInsert);
+			source.each(this, this.onSourceInsert);
 
 			this.unlisten(source, 'move');
 		}
@@ -67,7 +67,7 @@ module NOA {
 				this.set(index, value);
 		};
 
-		toAST(): Object { 
+		toAST(): Object {
 			return this.toASTHelper("sort"); //TODO: pass in argumetns
 		}
 	}
