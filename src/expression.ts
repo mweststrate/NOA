@@ -12,6 +12,7 @@ module NOA {
 		func : Function;
 		scope : Object;
 		value : any = undefined;
+		ast : Object;
 		params = {}; //contains bound value containers
 		readTracker = null;
 
@@ -76,7 +77,7 @@ module NOA {
 			};
 
 			//invoke the function
-			var res = this.func.apply(this, functioncallback);
+			var res = this.func.call(this, functioncallback);
 
 			//check whether the function follows sync or async pattern
 			if (res !== undefined && cbcalled === false)
@@ -121,7 +122,14 @@ module NOA {
 			super.free();
 		}
 
+		setAST(ast : Object) : Expression {
+			this.ast = ast;
+			return this;
+		}
+
 		toAST(): Object {
+			if (this.ast)
+				return this.ast;
 			throw new Error("toAST of expression should be prevented!");
 		}
 	}

@@ -43,7 +43,10 @@ module NOA {
 
 			if (varname in this.vars) {
 				var thing = this.vars[varname];
-				if (field) //MWE: field is temporarily expression? it own't trigger a change if varname updates...
+				//TODO: causes uberlivign as well!
+				if (field && thing.get() && (field in thing.get())) //MWE: TODO: FIXME: this one is not scalable either!
+					thing = (thing.get())[field]();
+				else if (field) //MWE: field is temporarily expression? it own't trigger a change if varname updates...
 					thing = thing.cell(field);
 				if (!thing)
 					throw new Error("Not in scope: field: '" + field + "'");

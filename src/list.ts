@@ -291,17 +291,13 @@ module NOA {
 		}
 
 		avg () : Expression {
-			return <Expression> new Expression((cb) => {
-				//TODO: make sure cb is called by expression!
-				this.numbercount().get(null, (count, _) => {
-					if (count == 0)
-						cb(0);
-
-					this.sum().get(null, function (sum, _) {
-						cb(sum / count);
-					});
-				});
-			}).uses(this);
+			var scope = Scope.newScope(null);
+			scope.set("this", new Constant(this));
+			return <Expression> new Expression(function() {
+				var count = this.variable("this", "numbercount");
+				var sum = this.variable("this", "sum");
+				return count > 0 ? (sum / count) : 0; //MWE: wrong div result?
+			}, scope).setAST(Serializer.serializeFunction("avg",[this])).uses(this);
 		}
 
 		count () {

@@ -63,8 +63,8 @@ module NOA {
 			return this;
 		}
 
-		onChange(caller: Base, callback: (newvalue: any, oldvalue: any) => void ) {
-			return this.on('change', caller, callback);
+		onChange(caller: Base, callback: (newvalue: any, oldvalue: any) => void ) : void{
+			this.on('change', caller, callback);
 		}
 
 		toAST(): Object { Util.notImplemented(); return null; };
@@ -81,6 +81,23 @@ module NOA {
 					return value;
 			}
 			return value.toJSON();
+		}
+	}
+
+	export class Constant extends ValueContainer {
+
+		constructor(value : any) {
+			super();
+			this.value = value;
+		}
+
+		public changed(...args: any[]) {
+			throw new Error("Constant value should never change!");
+			return this;
+		}
+
+		onChange(caller: Base, callback: (newvalue: any, oldvalue: any) => void ): void {
+			//onChange is never triggered, so do not register an event
 		}
 	}
 }

@@ -113,5 +113,7 @@ createTest("tail3", "tail", [6], []);
 createTest("tail4", "tail", [0], [1,3,3,7,"is","leet"]);
 createTest("tail5", "tail", [-2], [1,3,3,7,"is","leet"]);
 
+//TODO: unmap tests (probably in t3 or t1)
+
 if (!module.parent)
 	NOA.Util.runtests(exports);
