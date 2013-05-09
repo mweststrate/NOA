@@ -38,13 +38,23 @@ module NOA{
 			return this.data[key];
 		}
 
+		get (): any;
+		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
+		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , supressInitialEvent: bool): any;
+
 		get (key: string) : any;
 		get (key: string, caller : Base, onchange : (newvalue, oldvalue) => void, supressInitialEvent?: bool): any;
-		get (key: string, caller?: Base, onchange?: (newvalue, oldvalue) => void, supressInitialEvent?: bool): any {
-			if (!this.has(key))
-				throw new Error("Value for '" + key + "' is not yet defined!")
+		get (key?: string, caller?: Base, onchange?: (newvalue, oldvalue) => void , supressInitialEvent?: bool): any {
+			//access value
+			if (arguments.length > 0 && Util.type(key) === "string") {
+				if (!this.has(key))
+					throw new Error("Value for '" + key + "' is not yet defined!")
 
-			return (<Cell>this.data[key]).get(caller, onchange, supressInitialEvent);
+				return (<Cell>this.data[key]).get(caller, onchange, supressInitialEvent);
+			}
+			//access self
+			else
+				return super.get.apply(this, arguments);
 		}
 
 		has (key: string): bool {

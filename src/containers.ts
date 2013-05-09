@@ -3,11 +3,10 @@ module NOA {
 
 	export interface IValue {
 
-		/*get (): any;
+		get (): any;
 		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
 		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , supressInitialEvent: bool): any;
-		*/
-
+		
 		toAST(): Object;
 
 		toJSON() : any;
@@ -22,6 +21,15 @@ module NOA {
 
 		cell(index: any): Cell { Util.notImplemented(); return null; };
 		toJSON() : any { Util.notImplemented(); return null; }
+
+		get (): any;
+		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
+		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , supressInitialEvent: bool): any;
+		get (caller?: Base, onChange?: (newvalue: any, oldvalue: any) => void , supressInitialEvent?: bool): any {
+			//TODO: memoize
+			return new Constant(this);
+		}
+
 
 		toAST(): Object {
 			return {
