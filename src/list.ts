@@ -167,17 +167,17 @@ module NOA {
 		//Todo should it follow atIndex?
 		get (): any;
 		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
-		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , supressInitialEvent: bool): any;
+		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent: bool): any;
 
 		get (index: number): any;
-		get (index: number, caller : Base, onchange : (newvalue, oldvalue) => void, supressInitialEvent?: bool): any;
-		get (index?: number, caller?: Base, onchange?: (newvalue, oldvalue) => void, supressInitialEvent?: bool): any {
+		get (index: number, caller: Base, onchange: (newvalue, oldvalue) => void , fireInitialEvent?: bool): any;
+		get (index?: number, caller?: Base, onchange?: (newvalue, oldvalue) => void , fireInitialEvent?: bool): any {
 			//access value
 			if (arguments.length > 0 && Util.isNumber(index)) {
 				if (index < 0 || index >= this.cells.length)
 					throw new Error("Get out of bounds: " + index + " not in 0.." + this.cells.length)
 
-				return this.cells[index].get(caller, onchange, supressInitialEvent);
+				return this.cells[index].get(caller, onchange, fireInitialEvent);
 			}
 			//access self
 			else

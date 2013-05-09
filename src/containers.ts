@@ -5,7 +5,7 @@ module NOA {
 
 		get (): any;
 		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
-		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , supressInitialEvent: bool): any;
+		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent: bool): any;
 		
 		toAST(): Object;
 
@@ -24,9 +24,12 @@ module NOA {
 
 		get (): any;
 		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
-		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , supressInitialEvent: bool): any;
-		get (caller?: Base, onChange?: (newvalue: any, oldvalue: any) => void , supressInitialEvent?: bool): any {
+		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent: bool): any;
+		get (caller?: Base, onChange?: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any {
 			//TODO: memoize
+			if (onChange && fireInitialEvent !== false)
+				onChange.call(caller, this);
+
 			return new Constant(this);
 		}
 
@@ -106,6 +109,13 @@ module NOA {
 
 		onChange(caller: Base, callback: (newvalue: any, oldvalue: any) => void ): void {
 			//onChange is never triggered, so do not register an event
+		}
+	}
+
+	export class Variable extends ValueContainer {
+		//TODO: copy logic from expression.scope stuff
+		constructor(private varname: string) {
+			super();
 		}
 	}
 }
