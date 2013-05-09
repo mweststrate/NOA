@@ -5,6 +5,8 @@ module NOA {
 
 
 	export class ListTransformation extends List {
+		//TODO: make transformation evaluate on first evaluation (that is, first 'cell' call)?
+
 		source : List; //TODO: remove parent?
 
 		constructor(source: List) {

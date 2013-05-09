@@ -4,6 +4,8 @@ module NOA {
 	//TODO: aggregations should listen to input arguments if applicable
 
 	export class ListAggregation extends ValueContainer { //Generic on return type!
+		//TODO: make aggregations evaluate on first evaluation
+
 		source: List; //TODO: remove parent?
 		value;
 
