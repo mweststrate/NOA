@@ -36,7 +36,7 @@ module NOA {
 		//Comperator wrap function
 		searcher (a, b : Cell) {
 			return this.func(a, b.get()); //b is a cell, so unwrap the value
-		};
+		}
 
 		//reusable insert function
 		onSourceInsert (baseindex: number, value, cell : Cell, _knownindex? : number) {
@@ -47,7 +47,7 @@ module NOA {
 			this.insert(nidx, value, cell.getOrigin());
 			this.updateMapping(nidx, 1);
 			this.mapping.splice(baseindex, 0, nidx);
-		};
+		}
 
 		onSourceRemove(baseindex: number, _?) {
 			var idx = this.mapping[baseindex];
@@ -65,7 +65,7 @@ module NOA {
 			}
 			else //just update
 				this.set(index, value);
-		};
+		}
 
 		toAST(): Object {
 			return this.toASTHelper("sort"); //TODO: pass in argumetns

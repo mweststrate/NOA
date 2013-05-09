@@ -33,7 +33,7 @@ module NOA {
 			this.scope = scope; //TODO: if scope is null then create empty scope. If record, start scope with 'this' as record
 
 			this._apply(); //TODO: defer apply until needed
-		};
+		}
 
 		_apply () {
 			if (this.destroyed)
@@ -82,7 +82,7 @@ module NOA {
 			//check whether the function follows sync or async pattern
 			if (res !== undefined && cbcalled === false)
 				functioncallback(res);
-		};
+		}
 
 		variable (name: string, field? : string) { //TODO: typed
 			var thing = field
@@ -110,7 +110,7 @@ module NOA {
 			 return this.params[name] =  thing;
 			 */
 
-		};
+		}
 
 		free() {
 			this.debug("freeing expression " + this.noaid);

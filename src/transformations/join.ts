@@ -116,7 +116,7 @@ module NOA {
 				this.remove(start);
 
 			this.setupSublist(index, newvalue);
-		};
+		}
 
 		onSourceMove(from: number, to: number) {
 			var length = this.getLength(from);
@@ -139,7 +139,7 @@ module NOA {
 			else
 				for (var i = 0; i < length; i++)
 					this.move(startf + i, startt + i);
-		};
+		}
 
 		toAST(): Object {
 			return this.toASTHelper("join");

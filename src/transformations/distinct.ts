@@ -28,9 +28,9 @@ module NOA {
 			}
 			else
 				this.occ[key] += 1;
-		};
+		}
 
-		onSourceRemove (index : number, value) {
+		onSourceRemove (index : number, value: any) {
 			var key = this.toKey(value);
 			var has = key in this.occ;
 			if (has) {
@@ -40,13 +40,13 @@ module NOA {
 					delete this.occ[key];
 				}
 			}
-		};
+		}
 
 
 		onSourceSet(index: number, newvalue, origvalue, cell) {
 			this.onSourceRemove(index, origvalue);
 			this.onSourceInsert(index, newvalue, cell);
-		};
+		}
 
 		toAST(): Object {
 			return this.toASTHelper("distinct");

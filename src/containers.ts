@@ -2,11 +2,11 @@
 module NOA {
 
 	export interface IValue {
-
+/*		TODO: need list / record support for get() ? probably not. 
 		get (): any;
 		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
 		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent: bool): any;
-		
+*/		
 		toAST(): Object;
 
 		toJSON() : any;
@@ -17,9 +17,14 @@ module NOA {
 	}
 
 	export class CellContainer extends Base implements IValue {
-		fireCellChanged(index: any, newvalue: any, oldvalue: any, cell: Cell) { Util.notImplemented() };
+		
+		constructor() {
+			super();
+		}
 
-		cell(index: any): Cell { Util.notImplemented(); return null; };
+		fireCellChanged(index: any, newvalue: any, oldvalue: any, cell: Cell) { Util.notImplemented() }
+
+		cell(index: any): Cell { Util.notImplemented(); return null; }
 		toJSON() : any { Util.notImplemented(); return null; }
 
 		get (): any;
@@ -46,6 +51,10 @@ module NOA {
 		public value: any; //TODO: private / protected?
 		origin: CellContainer;
 
+		constructor() {
+			super();
+		}
+
 		public getOrigin(): CellContainer {
 			return this.origin;
 		}
@@ -65,7 +74,7 @@ module NOA {
 				onChange.call(caller, this.value, undefined);
 
 			return this.value;
-		};
+		}
 
 		public changed(...args: any[]) {
 			var a = Util.makeArray(arguments);
@@ -78,7 +87,7 @@ module NOA {
 			this.on('change', caller, callback);
 		}
 
-		toAST(): Object { Util.notImplemented(); return null; };
+		toAST(): Object { Util.notImplemented(); return null; }
 
 
 		toJSON(): any {
@@ -112,10 +121,59 @@ module NOA {
 		}
 	}
 
-	export class Variable extends ValueContainer {
+	/**
+	This class just follows some IValue and just wraps it. The advantage is that others can just register events
+	on this object, regardless whether the thing that represents this variable is reassigned later
+	//TODO: maybe should be typed for lists, records and single values? That makes these classes a lot easier
+	*/
+	export class Variable extends ValueContainer { //TODO: implements IList, IRecord, search for instance of's
 		//TODO: copy logic from expression.scope stuff
-		constructor(private varname: string) {
+		constructor(value : IValue) {
 			super();
+			this.value = value;
+		}
+
+		public set (newvalue: IValue) {
+			if (newvalue != this.value) {
+				var oldvalue = this.value;
+				this.value = newvalue;
+
+				if (oldvalue instanceof List) {
+					this.unlisten(<Base> oldvalue);
+
+					var l = (<List>oldvalue).cells.length;
+					for (var i = 0; i < l; i++)
+						this.fire('remove', l - 1 - i, oldvalue.get(l - 1 - i));
+				}
+				//TODO: same for record
+
+				else {
+					this.changed(newvalue instanceof List || newvalue instanceof Record ? undefined : newvalue, oldvalue);
+				}
+
+				if (newvalue instanceof List) {
+					(<List>newvalue).each(this, (index, value) => this.fire('insert', index, value));
+
+					//TODO: listen to all events
+				}
+				//TODO: same for record
+
+				//No else for primitives; unless previous value was a list or record
+				else if (oldvalue instanceof List || oldvalue instanceof Record) {
+					this.changed(newvalue, undefined);
+				}
+
+				if (newvalue instanceof Base)
+					(<Base><any>newvalue).live();
+				if (oldvalue instanceof Base)
+					(<Base>oldvalue).die();
+			}
+		}
+
+		public free() {
+			super.free();
+			if (this.value instanceof Base)
+				this.value.die();
 		}
 	}
 }

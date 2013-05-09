@@ -23,7 +23,7 @@ module NOA{
 			return {
 				type: 'function',
 				name: name,
-				args: Util.map(args, arg => serialize(arg))
+				args: Util.map(args, arg => Serializer.serialize(arg))
 			}
 		}
 
@@ -69,10 +69,10 @@ module NOA{
 		}
 
 		unserializeRecord(ast, cb) {
-			var res = new NOA.Record();
+			var res : Record = new NOA.Record();
 			res.noaid = ast.id;
 
-			Util.parallel(ast.values, (ast, key, cb) => {
+			Util.parallel(ast.values, (ast, key : string, cb) => {
 				this.unserialize(ast, (value) => {
 					res.set(key, value);
 					cb();

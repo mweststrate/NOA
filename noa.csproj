@@ -61,6 +61,10 @@
     <Content Include="src\cell.ts" />
     <Content Include="src\containers.ts" />
     <Content Include="src\expression.ts" />
+    <TypeScriptCompile Include="src\lang.ts" />
+    <Content Include="src\lang.js">
+      <DependentUpon>lang.ts</DependentUpon>
+    </Content>
     <Content Include="src\list.ts" />
     <Content Include="src\noa.ts" />
     <Content Include="src\record.ts" />

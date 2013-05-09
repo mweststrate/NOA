@@ -6,20 +6,20 @@ module NOA {
 		private static SCOPE: Scope[] = [];
 
 		static getCurrentScope(): Scope {
-			return SCOPE[0];
-		};
+			return Scope.SCOPE[0];
+		}
 
 		static newScope(basescope: Scope): Scope {
 			return new Scope(basescope);
 		}
 
 		static pushScope(scope) {
-			SCOPE.unshift(scope);
-		};
+			Scope.SCOPE.unshift(scope);
+		}
 
 		static popScope() {
-			SCOPE.shift();
-		};
+			Scope.SCOPE.shift();
+		}
 
 		// - End static members -//
 		private vars = {};

@@ -50,7 +50,7 @@ module NOA {
 
 		fireCellChanged(index: any, newvalue: any, oldvalue: any, cell : Cell) {
 			this.fire('set', index, newvalue, oldvalue, cell);
-		};
+		}
 
 		remove (index : number) : any {
 			this.debugIn("Remove at " + index);
@@ -163,25 +163,13 @@ module NOA {
 			return a.get(onchange);
 		}
 
-		//TODO: if caller & onchange, should it follow the cell or follow the value at the specified index?!
-		//Todo should it follow atIndex?
-		get (): any;
-		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
-		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent: bool): any;
-
 		get (index: number): any;
 		get (index: number, caller: Base, onchange: (newvalue, oldvalue) => void , fireInitialEvent?: bool): any;
 		get (index?: number, caller?: Base, onchange?: (newvalue, oldvalue) => void , fireInitialEvent?: bool): any {
-			//access value
-			if (arguments.length > 0 && Util.isNumber(index)) {
-				if (index < 0 || index >= this.cells.length)
-					throw new Error("Get out of bounds: " + index + " not in 0.." + this.cells.length)
+			if (index < 0 || index >= this.cells.length)
+				throw new Error("Get out of bounds: " + index + " not in 0.." + this.cells.length)
 
-				return this.cells[index].get(caller, onchange, fireInitialEvent);
-			}
-			//access self
-			else
-				return super.get.apply(this, arguments);
+			return this.cells[index].get(caller, onchange, fireInitialEvent);
 		}
 
 		toJSON() {
@@ -203,7 +191,7 @@ module NOA {
 			return res;
 		}
 
-		removeAll(value) {
+		removeAll(value : any) {
 			for (var i = this.cells.length - 1 ; i >= 0; i--) {
 				if (this.get(i) == value)
 					this.remove(i);

@@ -29,7 +29,7 @@ module NOA {
 			//console.info("Listening: " + this.source + " -> " +  this.event + " -> " + (this.dest ? this.dest : "(unknown)"));
 
 			this.callback = callback;
-		};
+		}
 
 		fire () {
 			if (this._firing) {
@@ -46,13 +46,13 @@ module NOA {
 			finally {
 				this._firing = false;
 			}
-		};
+		}
 
 		free (){
 			if (this.dest)
 				this.dest.noabase.removeSubscription(this);
 			this.source.noabase.removeEventListener(this);
-		};
+		}
 
 		toString () {
 			return "[NOA.util.Binding on '"+ this.event +"']";

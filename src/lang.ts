@@ -26,22 +26,18 @@ module NOA {
 			);
 		}
 
-		static div(left: IValue, right: IValue): IValue {
-			return new Expression((cb) => {
-				var leftv, rightv;
-
+		static div(left: ValueContainer, right: ValueContainer): IValue {
+			return <IValue> <any> /*TODO: return ValueContainer*/ new Expression((cb) => {
 				return (
-					left.get(this, (newright, _) => {
-						rightv = newright;
-						cb(leftv / rightv);
+					left.get(this, (newleft, _) => {
+						cb(newleft / right.get());
 					}, false)
 				/
-					left.get(this, (newleft, _) => {
-						leftv = newleft;
-						cb(leftv / rightv);
+					right.get(this, (newright, _) => {
+						cb(left.get() / newright);
 					}, false)
 				);
-			}); //TODO: .uses(left).uses(right);
+			}).uses(left).uses(right);
 		}
 
 		static variable(varname: string): IValue {
@@ -52,18 +48,18 @@ module NOA {
 			return null;
 		}
 
-		static sum(list: List) : IValue {
+		static sum(list: List) : ValueContainer {
 			//TODO: memoize
 			return new ListSum(list);
 		}
 
-		static numbercount(list: List): IValue {
+		static numbercount(list: List): ValueContainer {
 			//TODO: memoize
 			return new ListNumberCount(list);
 		}
 
-		static avg(list: List, cb : (value: IValue) => void) : IValue {
-			return (
+		static avg(list: List/*TODO: ListVariable*/, cb : (value: IValue) => void) : IValue {
+			return <IValue><any> (<Base><any>(
 				Lang.let(
 					Lang.numbercount(list),
 					"count",
@@ -72,11 +68,11 @@ module NOA {
 						new Constant(0),
 						Lang.div(
 							Lang.sum(list),
-							Lang.variable("count")
+							<ValueContainer> Lang.variable("count") //TODO: make cast-or-default functions
 						)
 					)
 				)
-			);
+			)).uses(list);
 		}
 
 	}

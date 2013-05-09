@@ -46,7 +46,7 @@ module NOA {
 				this.removeLast();
 				this.insert(index - this.begin, cell);
 			}
-		};
+		}
 
 		onSourceRemove (index) {
 			if (index < this.begin) {
@@ -59,7 +59,7 @@ module NOA {
 
 				this.addLast();
 			}
-		};
+		}
 
 		onSourceMove (from, to) {
 			if ((from < this.begin && to < this.begin) || (from > this.end && to > this.end))
@@ -92,7 +92,7 @@ module NOA {
 						this.addLast();
 				}
 			}
-		};
+		}
 
 		toAST(): Object {
 			return this.toASTHelper("subset", this.begin, this.end);

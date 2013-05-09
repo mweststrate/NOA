@@ -7,7 +7,7 @@ module NOA {
 		mapping : any[] = [];
 
 		constructor(source: List, name: string, func: any /* Expression or function */) {
-			super(source.map(name, func)); //do not follow the source but to the filtermap!
+			super(<List>source.map(name, func)); //do not follow the source but to the filtermap!
 
 			this.parent = source;
 			this.parent.debugName = (_?: string): any => "FilterMap-for-" + this.debugName();

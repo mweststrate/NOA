@@ -16,15 +16,15 @@ module NOA {
 
 		onSourceInsert (index, value, cell) {
 			this.insert(this.cells.length - index, cell);
-		};
+		}
 
 		onSourceRemove (index) {
 			this.remove(this.cells.length - index - 1);
-		};
+		}
 
 		onSourceMove(from, to) {
 			this.move(this.cells.length - from - 1, this.cells.length - to - 1);
-		};
+		}
 
 		toAST(): Object {
 			return this.toASTHelper("reverse");

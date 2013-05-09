@@ -22,14 +22,14 @@ module NOA {
 		static debugIn(...args: any[]) {
 			depth += 1;
 			Util.debug.apply(Util, arguments);
-		};
+		}
 
 		/**
 		 reduces the debug indentation depth (see debugIn)
 		 */
 		static debugOut(...args: any[]) {
 			depth = Math.max(depth - 1, 0);
-		};
+		}
 
 		/**
 		 accepts an arbitrary list of things and prints them to the console
@@ -60,7 +60,7 @@ module NOA {
 			if (count == Util.debugbreakon) {
 				debugger;
 			}
-		};
+		}
 
 		static warn(...args: any[]) {
 			console.warn.apply(console, arguments);
@@ -72,7 +72,7 @@ module NOA {
 		static assert (value : any) {
 			if (!value)
 				throw "NOA assertion failed!";
-		};
+		}
 
 		/**
 		 * [test description]
@@ -250,7 +250,7 @@ module NOA {
 
 			}
 			return scope;
-		};
+		}
 
 		static exists(path : string, scope? : Object) : bool {
 			var parts;
@@ -268,11 +268,11 @@ module NOA {
 				scope = scope[parts[i]];
 			}
 			return true;
-		};
+		}
 
 		static isFunction (thing : any) : bool {
 			return Util.type(thing) === "function";
-		};
+		}
 
 
 		static isNumber(thing: any): bool {
@@ -348,15 +348,15 @@ module NOA {
 			else if (comperator(needle, list[lower]) < 0) //edge case, see prev comment
 				return lower;
 			return upper;
-		};
+		}
 
-		static identity (x) { return x };
-		static noop () {};
+		static identity (x) { return x }
+		static noop () {}
 		public static notImplemented() { throw "Not implemented. This function is TODO or supposed to be abstract"}
 
 		static randomUUID () {
 			return "todo";
-		};
+		}
 
 		static runtests(tests : Object) {
 			var report : string[] = ["\n==[ TEST REPORT ]=="]

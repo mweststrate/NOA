@@ -136,11 +136,11 @@ module NOA {
 			return this;
 		}
 
-		unlisten (other: Base, event: string){
+		unlisten (other: Base, event?: string){
 			if (!this.destroyed && !this.freeing) {
 				var ar = this.noabase.getSubscriptions(), l = ar.length;
 				for(var i = 0; i < l; i++)
-					if (ar[i] && ar[i].source == other && ar[i].event == event)
+					if (ar[i] && ar[i].source == other && (!event || ar[i].event == event))
 						ar[i].free();
 			}
 			return this;
