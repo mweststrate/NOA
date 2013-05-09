@@ -9,7 +9,7 @@ module NOA {
 		getType(): ValueType;
 	}
 
-	export interface IPlainValue extends IValue {
+	export interface IPlainValue extends IValue { //TODO: cell and expression implement IPlainValue
 		get(): any;
 		get(caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any;
 	}
@@ -19,6 +19,10 @@ module NOA {
 		onMove(caller: Base, cb: (from: number, to: number) => void );
 		onRemove(caller: Base, cb: (from: number, value) => void );
 		onSet(caller: Base, cb: (index: number, newvalue, oldvalue, cell: Cell) => void );
+
+		each(scope, cb: (index: number, value: any, cell: Cell) => void );
+		size(): number;
+		getValue(index: number): IValue;
 	}
 
 	export interface IRecord extends IValue {
@@ -96,6 +100,16 @@ module NOA {
 				cb.call(caller, 0, this, null);
 		}
 
+		each(scope, cb: (index: number, value: any, cell: Cell) => void ) { }
+
+		size(): number {
+			return 0;
+		}
+
+		getValue(index: number): IValue {
+			return this;
+		}
+
 		/*equals(other: IValue) {
 			return false; //Too pessimistic?
 		}*/
@@ -119,10 +133,6 @@ module NOA {
 			return this.value !== null && this.value !== undefined && this.value.getType() == this.targetType();
 		}
 
-		targetType(): ValueType {
-			throw new Error("Variable.targetType() should be overridden");
-		}
-
 		set(newvalue: T) {
 			if (this.value != newvalue) {
 				var oldvalue = this.value;
@@ -135,14 +145,6 @@ module NOA {
 				if (oldvalue)
 					oldvalue.die();
 			}
-		}
-
-		teardown(value: T) {
-			throw new Error("Variable.teardown() should be overridden");
-		}
-
-		setup(value: T) {
-			throw new Error("Variable.setup() should be overridden");
 		}
 
 		toJSON() {
@@ -163,23 +165,99 @@ module NOA {
 			if (this.value)
 				this.value.die();
 		}
+
+		teardown(value: T) {
+			throw new Error("Variable.teardown() should be overridden");
+		}
+
+		setup(value: T) {
+			throw new Error("Variable.setup() should be overridden");
+		}
+
+		targetType(): ValueType {
+			throw new Error("Variable.targetType() should be overridden");
+		}
 	}
 
 	export class ListVariable extends Variable<IList> implements IList {
+
+		teardown(value: IList) {
+			if (value) {
+				this.unlisten(value);
+				
+				//empty current listeners. TODO: maybe a clear / removeRange operation should be more efficient :)
+				var l = value.size();
+				for (var i = l - 1; i >= 0; i--)
+					this.fire('remove', i, value.getValue(i));
+			}
+		}
+
+		setup(value: IList) {
+			if (value) {
+				value.onInsert(this, this.onSourceInsert, true);
+				value.onMove(this, this.onSourceMove);
+				value.onRemove(this, this.onSourceRemove);
+				value.onSet(this, this.onSourceSet);
+			}
+		}
+
+		targetType(): ValueType {
+			return ValueType.List;
+		}
+
+		//Event and interface wrappers
+
 		onInsert(caller: Base, cb: (index: number, value, cell: Cell) => void , fireInitialEvents?: bool) {
-			this.value.onInsert.apply(this.value, arguments);
+			this.on('insert', caller, cb);
+			if (fireInitialEvents !== false)
+				this.value.each(caller, cb);
+		}
+
+		onSourceInsert(...args: any[]) {
+			args.unshift('insert');
+			this.fire.apply(this, args);
 		}
 
 		onMove(caller: Base, cb: (from: number, to: number) => void ) {
-			this.value.onMove.apply(this.value, arguments);
+			this.on('move', caller, cb);
+		}
+
+		onSourceMove(...args: any[]) {
+			args.unshift('move');
+			this.fire.apply(this, args);
 		}
 
 		onRemove(caller: Base, cb: (from: number, value) => void ) {
-			this.value.onRemove.apply(this.value, arguments);
+			this.on('remove', caller, cb);
+		}
+
+		onSourceRemove(...args: any[]) {
+			args.unshift('remove');
+			this.fire.apply(this, args);
 		}
 
 		onSet(caller: Base, cb: (index: number, newvalue, oldvalue, cell: Cell) => void ) {
-			this.value.onSet.apply(this.value, arguments);
+			this.on('set', caller, cb);
+		}
+
+		onSourceSet(...args: any[]) {
+			args.unshift('set');
+			this.fire.apply(this, args);
+		}
+
+		//Listen to free? Nope, value should not be able to free as long as at least we are listening to it :) Otherwise, it should be handled in Variable.
+
+		size(): number {
+			return this.value ? this.value.size() : 0;
+		}
+
+		each(...args: any[]) {
+			if (this.value)
+				this.value.each.apply(this.value, args);
+		}
+
+		getValue(index: number): IValue {
+			return this.value.getValue(index);
 		}
 	}
 
