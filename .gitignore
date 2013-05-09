@@ -5,3 +5,7 @@ npm-debug.log
 obj/
 noa.csproj.user
 build/*
+bin/
+src/*.js*
+src/aggregations/*.js*
+src/transformations/*.js*

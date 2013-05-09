@@ -3,11 +3,6 @@
 /** basic class with init, events etc */
 module NOA {
 
-	export interface IBase {
-		live(): IBase;
-		die(): IBase;
-	}
-
 	export class BaseData {
 		private events : Object = {}; //map of string -> Binding[] with listeners
 		private subscriptions: Object = {}; //map of string -> Binding with listening to..
@@ -55,7 +50,7 @@ module NOA {
 		}
 	}
 
-	export class Base implements IBase {
+	export class Base {
 
 		static noaid : number = 0;
 

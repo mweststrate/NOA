@@ -34,10 +34,14 @@ module NOA {
 				id: this.noaid
 			}
 		}
+
+		getType() : ValueType {
+			throw new Error("CellContainer.getType() is abstract");
+		}
 	}
 
 	export class ValueContainer extends Base implements IValue {
-		public value: any; //TODO: private / protected?
+		value: any; 
 		origin: CellContainer;
 
 		constructor() {
@@ -91,6 +95,10 @@ module NOA {
 			}
 			return value.toJSON();
 		}
+
+		getType() {
+			return ValueType.PlainValue;
+		}
 	}
 
 	export class Constant extends ValueContainer {
@@ -115,6 +123,7 @@ module NOA {
 	on this object, regardless whether the thing that represents this variable is reassigned later
 	//TODO: maybe should be typed for lists, records and single values? That makes these classes a lot easier
 	*/
+	/*
 	export class Variable extends ValueContainer { //TODO: implements IList, IRecord, search for instance of's
 		//TODO: copy logic from expression.scope stuff
 		constructor(value : IValue) {
@@ -164,5 +173,5 @@ module NOA {
 			if (this.value instanceof Base)
 				this.value.die();
 		}
-	}
+	}*/
 }
