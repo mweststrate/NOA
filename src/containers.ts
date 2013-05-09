@@ -1,13 +1,13 @@
 ///<reference path='noa.ts'/>
 module NOA {
 
-	export interface IValue {
+//	export interface IValue {
 /*		TODO: need list / record support for get() ? probably not. 
 		get (): any;
 		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
 		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent: bool): any;
 */		
-		toAST(): Object;
+/*		toAST(): Object;
 
 		toJSON() : any;
 
@@ -15,6 +15,7 @@ module NOA {
 
 		//TODO: static unserialize()
 	}
+	*/
 
 	export class CellContainer extends Base implements IValue {
 		
@@ -26,18 +27,6 @@ module NOA {
 
 		cell(index: any): Cell { Util.notImplemented(); return null; }
 		toJSON() : any { Util.notImplemented(); return null; }
-
-		get (): any;
-		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
-		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent: bool): any;
-		get (caller?: Base, onChange?: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any {
-			//TODO: memoize
-			if (onChange && fireInitialEvent !== false)
-				onChange.call(caller, this);
-
-			return new Constant(this);
-		}
-
 
 		toAST(): Object {
 			return {

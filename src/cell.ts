@@ -49,7 +49,7 @@ module NOA {
 				var oldvalue = orig;
 				if(this.hasExpression()) {
 					oldvalue = orig.get();
-					this.unlisten(orig, 'change');
+					this.unlisten(<Base>orig, 'change');
 				}
 
 				if(newvalue instanceof Base)

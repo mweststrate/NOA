@@ -4,6 +4,8 @@ module NOA{
 
 	export class Serializer {
 
+		constructor() { }
+
 		static serialize(thing: any) {
 			if (thing === null)
 				return null;

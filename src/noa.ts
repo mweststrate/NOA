@@ -8,6 +8,7 @@
 ///<reference path='record.ts'/>
 ///<reference path='scope.ts'/>
 ///<reference path='serializer.ts'/>
+///<reference path='interfaces.ts'/>
 ///<reference path='lang.ts'/>
 ///<reference path='aggregations/aggregations.ts'/>
 

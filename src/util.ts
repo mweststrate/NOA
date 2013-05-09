@@ -20,7 +20,7 @@ module NOA {
 		 writes debug data to the console (see NOA.debug) and increases the indentation depth before doing so
 		 */
 		static debugIn(...args: any[]) {
-			depth += 1;
+			Util.depth += 1;
 			Util.debug.apply(Util, arguments);
 		}
 
@@ -28,16 +28,16 @@ module NOA {
 		 reduces the debug indentation depth (see debugIn)
 		 */
 		static debugOut(...args: any[]) {
-			depth = Math.max(depth - 1, 0);
+			Util.depth = Math.max(Util.depth - 1, 0);
 		}
 
 		/**
 		 accepts an arbitrary list of things and prints them to the console
 		 */
 		static debug(...args: any[]) {
-			count += 1;
+			Util.count += 1;
 			var p = '';
-			for(var i = depth; i >= 0; i--, p+=' ')
+			for (var i = Util.depth; i >= 0; i--, p+=' ')
 				;//EMPTY LOOP
 
 			var stuff = [];
@@ -56,8 +56,8 @@ module NOA {
 					stuff.push(a.toString());
 			}
 
-			console.log(count + ':' + p + stuff.join(' '));
-			if (count == Util.debugbreakon) {
+			console.log(Util.count + ':' + p + stuff.join(' '));
+			if (Util.count == Util.debugbreakon) {
 				debugger;
 			}
 		}
@@ -81,9 +81,9 @@ module NOA {
 		 * @return {[type]}
 		 */
 		static test(test : any, expected: any) : void {
-			testnr += 1;
+			Util.testnr += 1;
 			if (('' + test) != ('' + expected)) {
-				var msg = "Test #" + testnr + " failed: '" + test + "' expected '" + expected + "'";
+				var msg = "Test #" + Util.testnr + " failed: '" + test + "' expected '" + expected + "'";
 				console.error(msg);
 				document.write("<br/>" + msg);
 			}
@@ -104,11 +104,11 @@ module NOA {
 		static each (ar : Object, cb : (value : any, key : string) => any, scope? : Object, flags? : string) : any;
 		static each (ar : any[], cb : (value : any, index : number) => any, scope? : Object, flags? : string) : any;
 		static each (ar : any, cb : (value : any, key : any) => any, scope? : Object, flags? : string) : any {
-			scope = scope || GLOBALSCOPE;
+			scope = scope || Util.GLOBALSCOPE;
 			flags = flags || "";
 			if (arguments.length == 3 && Util.type(scope) == "string") {
 				flags = <any>scope;
-				scope = GLOBALSCOPE;
+				scope = Util.GLOBALSCOPE;
 			}
 
 			//valid flags are (m)ap, (f)filter, (s)parse, (r)everse
@@ -241,7 +241,7 @@ module NOA {
 				parts = path.split(".");
 
 			if (scope == undefined)
-				scope = GLOBALSCOPE;
+				scope = Util.GLOBALSCOPE;
 
 			for(var i = 0; i < parts.length; i++) {
 				if (!scope[parts[i]])
@@ -260,7 +260,7 @@ module NOA {
 				parts = path.split(".");
 
 			if (!scope)
-				scope = GLOBALSCOPE;
+				scope = Util.GLOBALSCOPE;
 
 			for(var i = 0; i < parts.length; i++) {
 				if (!scope[parts[i]])
@@ -276,7 +276,7 @@ module NOA {
 
 
 		static isNumber(thing: any): bool {
-			return type(thing) == "number";
+			return Util.type(thing) == "number";
 		}
 
 		static isArray (thing : any) : bool {

@@ -62,6 +62,7 @@
     <Content Include="src\containers.ts" />
     <Content Include="src\expression.ts" />
     <TypeScriptCompile Include="src\lang.ts" />
+    <Content Include="src\interfaces.ts" />
     <Content Include="src\lang.js">
       <DependentUpon>lang.ts</DependentUpon>
     </Content>
