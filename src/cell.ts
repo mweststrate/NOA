@@ -8,7 +8,7 @@ module NOA {
 
 		replayInserts should have an variant which does not care about ordering
 	*/
-	export class Cell extends ValueContainer implements IValue {
+	export class Cell extends ValueContainer implements IValue , IPlainValue {
 
 		private parent : CellContainer;
 		index  : any = -1; //int or string
@@ -133,6 +133,15 @@ module NOA {
 			return ("[Cell(" + this.noaid +"): " +
 			   (this.parent ? this.parent.toString() + "#" + this.index : "") +
 			   "=" + this.value +"]");
+		}
+
+		
+		isError(): boolean {
+			return false; //TODO: check expression?
+		}
+
+		asError(): Error {
+			return <Error> Util.notImplemented();
 		}
 
 	}

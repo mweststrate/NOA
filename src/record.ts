@@ -1,8 +1,10 @@
 ///<reference path='noa.ts'/>
 
 module NOA{
+	
+	export enum RecordEvent { PUT, FREE }
 
-	export class Record extends CellContainer implements IValue {
+	export class Record extends CellContainer implements IValue, IRecord {
 
 		data = {};
 		keys = new List();
@@ -11,7 +13,7 @@ module NOA{
 			if (!this.has(key)) {
 				this.data[key] = new Cell(this, key, value, this);
 				this.keys.add(key, this);
-				this.fire('set',key, value, undefined); //todo, needs to fire or is done automatically?
+				this.fire(RecordEvent.PUT.toString() ,key, value, undefined); //todo, needs to fire or is done automatically?
 			}
 
 			else if (this.get(key) != value) {
@@ -20,14 +22,14 @@ module NOA{
 		}
 
 		fireCellChanged(index: any, newvalue: any, oldvalue: any) {
-			this.fire('set', index, newvalue, oldvalue);
+			this.fire(RecordEvent.PUT.toString(), index, newvalue, oldvalue);
 		}
 
 		remove(key : string) {
 			if (!this.has(key))
 				return;
 
-			this.fire('remove', key);
+			this.fire(RecordEvent.PUT.toString(), key, undefined, this.get(key));
 			(<Cell>this.data[key]).free();
 
 			this.keys.removeAll(key);
@@ -56,12 +58,8 @@ module NOA{
 				handler.call(key, this.get(key));
 		}
 
-		onSet (caller: Base, callback: (key : string,  newvalue : any, oldvalue : any) => void) {
-			return this.on('set', caller, callback);
-		}
-
-		onRemove(caller: Base, callback: (key: string, oldvalue: any) => void ) {
-			return this.on('remove', caller, callback);
+		onPut (caller: Base, callback: (key : string,  newvalue : any, oldvalue : any) => void) {
+			return this.on(RecordEvent.PUT.toString(), caller, callback);
 		}
 
 		toJSON (): Object {
@@ -69,6 +67,10 @@ module NOA{
 			for(var key in this.data)
 				res[key] = this.cell(key).toJSON();
 			return res;
+		}
+
+		isError(): boolean {
+			return false;
 		}
 
 		toFullAST(): Object {

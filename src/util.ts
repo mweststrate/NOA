@@ -352,7 +352,7 @@ module NOA {
 
 		static identity (x) { return x }
 		static noop () {}
-		public static notImplemented() { throw "Not implemented. This function is TODO or supposed to be abstract"}
+		public static notImplemented(): any { throw new Error("Not implemented. This function is TODO or supposed to be abstract"); }
 
 		static randomUUID () {
 			return "todo";

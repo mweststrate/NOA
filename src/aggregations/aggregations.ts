@@ -73,8 +73,8 @@ module NOA {
 
 		constructor(source: List) {
 			super(source);
-			this.unlisten(source, 'move')
-			this.unlisten(source, 'set')
+			this.unlisten(source, ListEvent.MOVE.toString())
+			this.unlisten(source, ListEvent.SET.toString())
 			this.startup();
 		}
 
@@ -99,7 +99,7 @@ module NOA {
 
 		constructor(source: List) {
 			super(source);
-			this.unlisten(source, 'move')
+			this.unlisten(source, ListEvent.MOVE.toString())
 			this.startup();
 		}
 
@@ -133,7 +133,7 @@ module NOA {
 
 		constructor(source: List) {
 			super(source);
-			this.unlisten(source, 'move')
+			this.unlisten(source, ListEvent.MOVE.toString())
 			this.startup();
 		}
 
@@ -172,10 +172,10 @@ module NOA {
 
 		constructor(source: List) {
 			super(source);
-			this.unlisten(source, 'move')
-			this.unlisten(source, 'set')
-			this.unlisten(source, 'remove')
-			this.unlisten(source, 'insert')
+			this.unlisten(source, ListEvent.MOVE.toString())
+			this.unlisten(source, ListEvent.SET.toString())
+			this.unlisten(source, ListEvent.REMOVE.toString())
+			this.unlisten(source, ListEvent.INSERT.toString())
 
 			source.aggregate(List.Aggregates.sum);
 			this.sum = source.aggregates[List.Aggregates.sum];
@@ -216,7 +216,7 @@ module NOA {
 
 		constructor(source: List) {
 			super(source);
-			this.unlisten(source, 'move')
+			this.unlisten(source, ListEvent.MOVE.toString())
 
 			this.findNewMax();
 		}
@@ -262,7 +262,7 @@ module NOA {
 
 		constructor(source: List) {
 			super(source);
-			this.unlisten(source, 'move')
+			this.unlisten(source, ListEvent.MOVE.toString())
 
 			this.findNewMin();
 		}
@@ -310,7 +310,7 @@ module NOA {
 
 		constructor(source: List, index: number) {
 			super(source);
-			this.unlisten(source, 'set')
+			this.unlisten(source, ListEvent.SET.toString())
 			this.index = index;
 			this.updateRealIndex();
 			this.update();

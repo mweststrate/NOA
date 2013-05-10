@@ -1,12 +1,21 @@
 ///<reference path='noa.ts'/>
 module NOA {
 
-	export enum ValueType { Error, List, Record, PlainValue }
+	export enum ValueType {
+		Error,
+		List,
+		Record,
+		PlainValue,
+		Any
+	}
 
 	export interface IValue extends Base {
 		toJSON(): any;
 		toAST(): Object;
 		getType(): ValueType;
+
+		isError() : boolean;
+		asError() : Error;
 	}
 
 	export interface IPlainValue extends IValue { //TODO: cell and expression implement IPlainValue
@@ -20,6 +29,8 @@ module NOA {
 		onRemove(caller: Base, cb: (from: number, value) => void );
 		onSet(caller: Base, cb: (index: number, newvalue, oldvalue, cell: Cell) => void );
 
+		insert(index: number, value: IValue);
+
 		each(scope, cb: (index: number, value: any, cell: Cell) => void );
 		size(): number;
 		getValue(index: number): IValue;
@@ -27,97 +38,21 @@ module NOA {
 
 	export interface IRecord extends IValue {
 		onPut(caller: Base, callback: (key: string, newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool);
+
+		put(key: string, value: IValue);
 	}
 
-	export class Error extends Base implements IValue, IList, IRecord, IPlainValue {
-		
-		constructor(private error: string, private cause?: Error) {
-			super();
+	export class LangUtils {
+		static is(value: IValue, type: ValueType) {
+			return true; //TODO:
 		}
-
-		getError(): string {
-			return this.error;
-		}
-
-		toJSON() {
-			return {
-				"error": this.error,
-				"stack": Util.map(this.getStack(), e => e.getError()).join(",\n")
-			}
-		}
-
-		toAST(): Object {
-			return { "type": "error", "error": this.error };
-		}
-
-		getType(): ValueType {
-			return ValueType.Error;
-		}
-
-		getCause(): Error {
-			return this.cause;
-		}
-
-		getRootCause(): Error {
-			if (this.cause)
-				return this.cause.getRootCause();
-			else
-				return this;
-		}
-
-		getStack(): Error[] {
-			var v = this;
-			var res = new Array<Error>();
-			while (v) {
-				res.push(v);
-				v = v.getCause();
-			}
-			return res;
-		}
-
-		//* Interface implementations */
-		onInsert(caller: Base, cb: (index: number, value, cell: Cell) => void , fireInitialEvents?: bool) {
-			if (cb && fireInitialEvents !== undefined)
-				cb.call(caller, 0, this, null);
-		}
-
-		onMove(caller: Base, cb: (from: number, to: number) => void ) { }
-		onRemove(caller: Base, cb: (from: number, value) => void ) { }
-		onSet(caller: Base, cb: (index: number, newvalue, oldvalue, cell: Cell) => void ) { }
-
-		get(): any;
-		get(caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any;
-		get(caller?: Base, onChange?: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any {
-			if (onChange && fireInitialEvent !== undefined) {
-				onChange.call(caller, this, undefined);
-				return undefined;
-			}
-			return this;
-		}
-
-		onPut(caller: Base, cb: (index: string, value, cell: Cell) => void, fireInitialEvents?: bool) {
-			if (cb && fireInitialEvents !== undefined)
-				cb.call(caller, 0, this, null);
-		}
-
-		each(scope, cb: (index: number, value: any, cell: Cell) => void ) { }
-
-		size(): number {
-			return 0;
-		}
-
-		getValue(index: number): IValue {
-			return this;
-		}
-
-		/*equals(other: IValue) {
-			return false; //Too pessimistic?
-		}*/
 	}
+	
 
 	export class Variable<T extends IValue> extends Base {
 
-		constructor(private value: T) {
+		constructor(private expectedType : ValueType, private value: T) {
+			//TODO: null type?
 			super();
 			this.setup(value);
 		}
@@ -133,12 +68,29 @@ module NOA {
 			return this.value !== null && this.value !== undefined && this.value.getType() == this.targetType();
 		}
 
+		isError(): boolean {
+			return this.value.isError();
+		}
+
+		asError(): Error {
+			return this.value.asError();
+		}
+
 		set(newvalue: T) {
 			if (this.value != newvalue) {
 				var oldvalue = this.value;
-				
+
 				this.teardown(oldvalue);
-				this.setup(newvalue);
+
+				if (newvalue.isError()) {
+					//TODO: creating new errors for each new type might be expensive?
+					this.setup(newvalue.asError().wrap("Expected ", this.expectedType, "but found error", newvalue.asError().getRootCause()));
+				}
+				else if (!LangUtils.is(newvalue, this.expectedType)) {
+					this.setup(new Error("Expected ", this.expectedType, "but found:", newvalue)); 
+				}
+				else
+					this.setup(newvalue);
 
 				if (newvalue)
 					newvalue.live();
@@ -161,7 +113,7 @@ module NOA {
 
 		free() {
 			super.free();
-			
+
 			if (this.value)
 				this.value.die();
 		}
@@ -184,7 +136,7 @@ module NOA {
 		teardown(value: IList) {
 			if (value) {
 				this.unlisten(value);
-				
+
 				//empty current listeners. TODO: maybe a clear / removeRange operation should be more efficient :)
 				var l = value.size();
 				for (var i = l - 1; i >= 0; i--)
@@ -267,5 +219,5 @@ module NOA {
 
 	}
 */
-	
+
 }

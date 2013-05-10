@@ -6,3 +6,5 @@ get (field, args: 1, 2) -> //onchange: this, or field, or parameter or ...
 -->
 
 get ( this, that, xparam, yparam) ... -> update on any change, from left to right, evaluate the others, but, xparam // yparam are always params to that!
+
+primitives can be errors

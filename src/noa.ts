@@ -10,6 +10,7 @@
 ///<reference path='serializer.ts'/>
 ///<reference path='interfaces.ts'/>
 ///<reference path='lang.ts'/>
+///<reference path='error.ts'/>
 ///<reference path='aggregations/aggregations.ts'/>
 
 ///<reference path='transformations/transformations.ts'/>

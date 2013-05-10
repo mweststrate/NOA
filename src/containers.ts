@@ -101,7 +101,7 @@ module NOA {
 		}
 	}
 
-	export class Constant extends ValueContainer {
+	export class Constant extends ValueContainer implements IPlainValue {
 
 		constructor(value : any) {
 			super();

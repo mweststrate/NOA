@@ -1,7 +1,10 @@
 ///<reference path='noa.ts'/>
 
 module NOA {
-	export class List extends CellContainer implements IValue {
+
+	export enum ListEvent { INSERT, REMOVE, MOVE, SET, FREE }
+
+	export class List extends CellContainer implements IValue, IList {
 
 		static Aggregates = { count : "count", numbercount: "numbercount", sum : "sum", min: "min", max : "max", vag : "avg", first : "first", last : "last" };
 
@@ -28,7 +31,7 @@ module NOA {
 			this.cells.splice(index, 0, cell);
 
 			this._updateIndexes(index +1);
-			this.fire('insert', index, cell.get(), cell);
+			this.fire(ListEvent.INSERT.toString(), index, cell.get(), cell);
 
 			this.debugOut();
 			return this;
@@ -49,7 +52,7 @@ module NOA {
 		}
 
 		fireCellChanged(index: any, newvalue: any, oldvalue: any, cell : Cell) {
-			this.fire('set', index, newvalue, oldvalue, cell);
+			this.fire(ListEvent.SET.toString(), index, newvalue, oldvalue, cell);
 		}
 
 		remove (index : number) : any {
@@ -63,7 +66,7 @@ module NOA {
 			this.cells.splice(index, 1);
 			this._updateIndexes(index);
 
-			this.fire('remove', index, origvalue);
+			this.fire(ListEvent.REMOVE.toString(), index, origvalue);
 
 			origcell.free();
 			this.debugOut();
@@ -84,7 +87,7 @@ module NOA {
 			this.cells.splice(to,0,c);
 			this._updateIndexes(to, from);
 
-			this.fire('move', from, to);
+			this.fire(ListEvent.MOVE.toString(), from, to);
 
 			this.debugOut();
 			return this;
@@ -99,7 +102,7 @@ module NOA {
 
 		/** events */
 		onInsert(caller: Base, cb: (index: number, value, cell: Cell) => void , fireInitialEvents? : bool) : List {
-			this.on('insert', caller, cb);
+			this.on(ListEvent.INSERT.toString(), caller, cb);
 
 			if (fireInitialEvents !== false)
 				this.each(caller, cb);
@@ -108,17 +111,17 @@ module NOA {
 		}
 
 		onMove(caller: Base, cb : (from : number, to: number) => void) : List {
-			this.on('move', caller, cb);
+			this.on(ListEvent.MOVE.toString(), caller, cb);
 			return this;
 		}
 
 		onRemove(caller: Base, cb : (from : number, value) => void): List {
-			this.on('remove', caller, cb);
+			this.on(ListEvent.REMOVE.toString(), caller, cb);
 			return this;
 		}
 
 		onSet(caller: Base, cb : (index : number, newvalue, oldvalue, cell: Cell) => void) : List{
-			this.on('set', caller, cb);
+			this.on(ListEvent.SET.toString(), caller, cb);
 			return this;
 		}
 
@@ -312,6 +315,11 @@ module NOA {
 
 		atIndex(index: number) { //TODO: bleghname
 			return new ListIndex(this, index);
+		}
+
+		
+		isError(): boolean {
+			return false;
 		}
 	}
 }
