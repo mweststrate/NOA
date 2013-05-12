@@ -170,9 +170,10 @@ module NOA {
 			return a.get(onchange);
 		}
 
-		getValue(index: number): any;
-		getValue(index: number, caller: Base, onchange: (newvalue, oldvalue) => void , fireInitialEvent?: bool): any;
-		getValue(index?: number, caller?: Base, onchange?: (newvalue, oldvalue) => void , fireInitialEvent?: bool): any {
+		get (index: number): any;
+		get (index: number): IValue; //TODO: really?
+		get (index: number, caller: Base, onchange: (newvalue, oldvalue) => void , fireInitialEvent?: bool): any;
+		get (index?: number, caller?: Base, onchange?: (newvalue, oldvalue) => void , fireInitialEvent?: bool): any {
 			if (index < 0 || index >= this.cells.length)
 				throw new Error("Get out of bounds: " + index + " not in 0.." + this.cells.length)
 

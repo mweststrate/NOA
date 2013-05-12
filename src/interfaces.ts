@@ -34,7 +34,7 @@ module NOA {
 
 		each(scope, cb: (index: number, value: any, cell: Cell) => void );
 		size(): number;
-		getValue(index: number): IValue;
+		get(index: number): IValue;
 	}
 
 	export interface IMutableList extends IList {
@@ -233,7 +233,7 @@ module NOA {
 				//empty current listeners. TODO: maybe a clear / removeRange operation should be more efficient :)
 				var l = value.size();
 				for (var i = l - 1; i >= 0; i--)
-					this.fire('remove', i, value.getValue(i));
+					this.fire('remove', i, value.get(i));
 			}
 		}
 
@@ -301,8 +301,8 @@ module NOA {
 				(<IList>this.value).each.apply(this.value, args);
 		}
 
-		getValue(index: number): IValue {
-			return this.value.getValue(index);
+		get(index: number): IValue {
+			return (<IList>this.value).get(index);
 		}
 	}
 

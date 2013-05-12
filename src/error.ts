@@ -87,9 +87,13 @@ module NOA {
 		onSet(caller: Base, cb: (index: number, newvalue, oldvalue, cell: Cell) => void ) { }
 
 		get(): any;
-		get(caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any;
-		get(caller?: Base, onChange?: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any {
-			return this.backingPlain.get(caller, onChange, fireInitialEvent);
+		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any;
+		get (index: number): IValue;
+		get(callerOrIndex?: any, onChange?: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any {
+			if (Util.isNumber(callerOrIndex))
+				return this.backingList.get(callerOrIndex);
+
+			return this.backingPlain.get(<Base>callerOrIndex, onChange, fireInitialEvent);
 		}
 
 		onPut(caller: Base, cb: (index: string, value, cell: Cell) => void , fireInitialEvents?: bool) {
@@ -102,10 +106,6 @@ module NOA {
 
 		size(): number {
 			return this.backingList.size();
-		}
-
-		getValue(index: number): IValue {
-			return this.backingList.getValue(index);
 		}
 
 		/*equals(other: IValue) {
