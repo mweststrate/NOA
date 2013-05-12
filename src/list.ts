@@ -4,7 +4,7 @@ module NOA {
 
 	export enum ListEvent { INSERT, REMOVE, MOVE, SET, FREE }
 
-	export class List extends CellContainer implements IValue, IList {
+	export class List extends CellContainer implements IValue, IList, IMutableList {
 
 		static Aggregates = { count : "count", numbercount: "numbercount", sum : "sum", min: "min", max : "max", vag : "avg", first : "first", last : "last" };
 
@@ -33,6 +33,10 @@ module NOA {
 			this._updateIndexes(index +1);
 			this.fire(ListEvent.INSERT.toString(), index, cell.get(), cell);
 
+			cell.onChange(this, (newvalue : any, oldvalue : any) : void => {
+				this.fire(ListEvent.SET.toString(), cell.index, newvalue, oldvalue, cell);
+			})
+
 			this.debugOut();
 			return this;
 		}
@@ -49,10 +53,6 @@ module NOA {
 
 			this.debugOut();
 			return this;
-		}
-
-		fireCellChanged(index: any, newvalue: any, oldvalue: any, cell : Cell) {
-			this.fire(ListEvent.SET.toString(), index, newvalue, oldvalue, cell);
 		}
 
 		remove (index : number) : any {
@@ -317,7 +317,7 @@ module NOA {
 			return new ListIndex(this, index);
 		}
 
-		
+
 		isError(): boolean {
 			return false;
 		}

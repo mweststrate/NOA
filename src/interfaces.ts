@@ -9,6 +9,8 @@ module NOA {
 		Any
 	}
 
+	export enum PlainValueEvent { UPDATE, FREE }
+
 	export interface IValue extends Base {
 		toJSON(): any;
 		toAST(): Object;
@@ -29,16 +31,21 @@ module NOA {
 		onRemove(caller: Base, cb: (from: number, value) => void );
 		onSet(caller: Base, cb: (index: number, newvalue, oldvalue, cell: Cell) => void );
 
-		insert(index: number, value: IValue);
 
 		each(scope, cb: (index: number, value: any, cell: Cell) => void );
 		size(): number;
 		getValue(index: number): IValue;
 	}
 
+	export interface IMutableList extends IList {
+		insert(index: number, value: IValue);
+	}
+
 	export interface IRecord extends IValue {
 		onPut(caller: Base, callback: (key: string, newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool);
+	}
 
+	export interface IMutableRecord extends IRecord {
 		put(key: string, value: IValue);
 	}
 
@@ -46,8 +53,91 @@ module NOA {
 		static is(value: IValue, type: ValueType) {
 			return true; //TODO:
 		}
+
+		static followHelper(source: IValue, dest: IValue, follow: boolean) {
+
+			Util.assert(source != null && dest != null);
+
+			dest.uses(source);
+			var t = source.getType();
+			//no if, Error follows all types!
+			if (t == ValueType.PlainValue)
+				LangUtils.followEvent(source, PlainValueEvent.UPDATE.toString(), dest, follow);
+			if (t == ValueType.List) {
+				LangUtils.followEvent(source, ListEvent.INSERT.toString(), dest, follow);
+				LangUtils.followEvent(source, ListEvent.MOVE.toString(), dest, follow);
+				LangUtils.followEvent(source, ListEvent.REMOVE.toString(), dest, follow);
+				LangUtils.followEvent(source, ListEvent.SET.toString(), dest, follow);
+			}
+			if (t == ValueType.Record)
+				LangUtils.followEvent(source, RecordEvent.PUT.toString(), dest, follow);
+		}
+
+		static follow(source: IValue, dest: IValue) {
+			LangUtils.followHelper(source, dest, true);
+		}
+
+
+		static unfollow(source: IValue, dest: IValue) {
+			LangUtils.followHelper(source, dest, false);
+		}
+
+		static followEvent(source: Base, event: string, dest: Base, follow : boolean) {
+			if (follow) {
+				dest.listen(source, event, (...args: any[]) => {
+					args.unshift(event);
+					this.fire.apply(this, args);
+				} );
+			}
+			else {
+				dest.unlisten(source, event);
+			}
+		}
 	}
-	
+
+	export class AbstractValue extends Base implements IValue {
+
+		constructor() {
+			super();
+		}
+
+		getType() : ValueType {
+			if (this instanceof Error)
+				return ValueType.Error;
+			if (this.is(ValueType.List))
+				return ValueType.List;
+			if (this.is(ValueType.Record))
+				return ValueType.Record;
+			if (this.is(ValueType.PlainValue))
+				return ValueType.PlainValue;
+			return ValueType.Any; //MWE; or: unknown?
+		}
+
+		is(type : ValueType): boolean {
+			switch(type) {
+				case ValueType.Any: return true;
+				case ValueType.Error : return this instanceof Error;
+				case ValueType.List: return this['onInsert'];//MWE: typescript cannot check against interfaces
+				case ValueType.Record: return this['onPut'];
+				case ValueType.PlainValue: return this['onUpdate'];
+			}
+			return Util.notImplemented();
+		}
+
+		isError () : boolean { return this.is(ValueType.Error); }
+		asError() {
+			Util.assert(this.isError());
+			return <Error> this;
+		}
+
+		toJSON(): any {
+			return Util.notImplemented();
+		}
+
+		toAST(): Object {
+			return Util.notImplemented();
+		}
+	}
 
 	export class Variable<T extends IValue> extends Base {
 
@@ -87,7 +177,7 @@ module NOA {
 					this.setup(newvalue.asError().wrap("Expected ", this.expectedType, "but found error", newvalue.asError().getRootCause()));
 				}
 				else if (!LangUtils.is(newvalue, this.expectedType)) {
-					this.setup(new Error("Expected ", this.expectedType, "but found:", newvalue)); 
+					this.setup(new Error("Expected ", this.expectedType, "but found:", newvalue));
 				}
 				else
 					this.setup(newvalue);

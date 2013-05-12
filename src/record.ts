@@ -1,28 +1,28 @@
 ///<reference path='noa.ts'/>
 
 module NOA{
-	
+
 	export enum RecordEvent { PUT, FREE }
 
-	export class Record extends CellContainer implements IValue, IRecord {
+	export class Record extends CellContainer implements IValue, IRecord, IMutableRecord {
 
 		data = {};
 		keys = new List();
 
 		set (key : string, value : any) {
 			if (!this.has(key)) {
-				this.data[key] = new Cell(this, key, value, this);
+				var cell = this.data[key] = new Cell(this, key, value, this);
 				this.keys.add(key, this);
-				this.fire(RecordEvent.PUT.toString() ,key, value, undefined); //todo, needs to fire or is done automatically?
+				this.fire(RecordEvent.PUT.toString() ,key, value, undefined);
+
+				cell.onChange(this, (newvalue, oldvalue) => {
+					this.fire(RecordEvent.PUT.toString(), cell.index, newvalue, oldvalue, cell);
+				}, false)
 			}
 
 			else if (this.get(key) != value) {
 				(<Cell>this.data[key]).set(value); //fires event
 			}
-		}
-
-		fireCellChanged(index: any, newvalue: any, oldvalue: any) {
-			this.fire(RecordEvent.PUT.toString(), index, newvalue, oldvalue);
 		}
 
 		remove(key : string) {
@@ -58,8 +58,9 @@ module NOA{
 				handler.call(key, this.get(key));
 		}
 
-		onPut (caller: Base, callback: (key : string,  newvalue : any, oldvalue : any) => void) {
+		onPut (caller: Base, callback: (key : string,  newvalue : any, oldvalue : any) => void, fireInitialEvent? boolean) {
 			return this.on(RecordEvent.PUT.toString(), caller, callback);
+			//TOOD: implements fireInitialEvent
 		}
 
 		toJSON (): Object {

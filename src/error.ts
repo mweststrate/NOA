@@ -1,13 +1,13 @@
 ///<reference path='noa.ts'/>
 
 module NOA {
-	export class Error extends Base implements IValue, IList, IRecord, IPlainValue {
+	export class Error extends AbstractValue implements IValue, IList, IRecord, IPlainValue {
 
 		error: string;
 		cause: Error;
 
-		backingList: IList;
-		backingRecord: IRecord;
+		backingList: List;
+		backingRecord: Record;
 		backingPlain: IPlainValue;
 
 		constructor(error: string, cause?: Error);
@@ -31,6 +31,10 @@ module NOA {
 			this.backingRecord.put("error", this);
 		}
 
+		isError(): boolean {
+			return true;
+		}
+
 		getError(): string {
 			return this.error;
 		}
@@ -44,10 +48,6 @@ module NOA {
 
 		toAST(): Object {
 			return { "type": "error", "error": this.error };
-		}
-
-		getType(): ValueType {
-			return ValueType.Error;
 		}
 
 		getCause(): Error {

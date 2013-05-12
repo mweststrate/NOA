@@ -2,11 +2,11 @@
 module NOA {
 
 //	export interface IValue {
-/*		TODO: need list / record support for get() ? probably not. 
+/*		TODO: need list / record support for get() ? probably not.
 		get (): any;
 		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
 		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent: bool): any;
-*/		
+*/
 /*		toAST(): Object;
 
 		toJSON() : any;
@@ -17,13 +17,11 @@ module NOA {
 	}
 	*/
 
-	export class CellContainer extends Base implements IValue {
-		
+	export class CellContainer extends AbstractValue {
+
 		constructor() {
 			super();
 		}
-
-		fireCellChanged(index: any, newvalue: any, oldvalue: any, cell: Cell) { Util.notImplemented() }
 
 		cell(index: any): Cell { Util.notImplemented(); return null; }
 		toJSON() : any { Util.notImplemented(); return null; }
@@ -40,8 +38,8 @@ module NOA {
 		}
 	}
 
-	export class ValueContainer extends Base implements IValue {
-		value: any; 
+	export class ValueContainer extends AbstractValue implements IValue {
+		value: any;
 		origin: CellContainer;
 
 		constructor() {

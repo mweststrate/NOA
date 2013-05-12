@@ -75,8 +75,6 @@ module NOA {
 		}
 
 		fireChanged (newv : any, oldv: any) {
-			if (this.parent)
-				this.parent.fireCellChanged(this.index, newv, oldv, this);
 			this.changed(newv, oldv, this);
 		}
 

@@ -207,6 +207,15 @@ module NOA {
 			if (that) {
 				that.live();
 				this.onFree(this, () => that.die());
+				that.onFree(this, () => this.die()); //MWE: added, might cause problems
+			}
+			return this;
+		}
+
+		unuse(that: Base) : Base {
+			if (that) {
+				that.die();
+				//TODO: mimic uses, use list in NOAbase?
 			}
 			return this;
 		}
