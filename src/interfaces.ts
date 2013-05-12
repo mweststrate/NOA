@@ -11,12 +11,12 @@ module NOA {
 
 	export enum PlainValueEvent { UPDATE, FREE }
 
-	export interface IValue extends Base {
+	export interface IValue extends IBase {
 		toJSON(): any;
 		toAST(): Object;
 		getType(): ValueType;
 
-		isError() : boolean;
+		isError() : bool;
 		asError() : Error;
 	}
 
@@ -54,7 +54,7 @@ module NOA {
 			return true; //TODO:
 		}
 
-		static followHelper(source: IValue, dest: IValue, follow: boolean) {
+		static followHelper(source: IValue, dest: IValue, follow: bool) {
 
 			Util.assert(source != null && dest != null);
 
@@ -82,7 +82,7 @@ module NOA {
 			LangUtils.followHelper(source, dest, false);
 		}
 
-		static followEvent(source: Base, event: string, dest: Base, follow : boolean) {
+		static followEvent(source: IBase, event: string, dest: IBase, follow : bool) {
 			if (follow) {
 				dest.listen(source, event, (...args: any[]) => {
 					args.unshift(event);
@@ -113,7 +113,7 @@ module NOA {
 			return ValueType.Any; //MWE; or: unknown?
 		}
 
-		is(type : ValueType): boolean {
+		is(type : ValueType): bool {
 			switch(type) {
 				case ValueType.Any: return true;
 				case ValueType.Error : return this instanceof Error;
@@ -124,7 +124,7 @@ module NOA {
 			return Util.notImplemented();
 		}
 
-		isError () : boolean { return this.is(ValueType.Error); }
+		isError () : bool { return this.is(ValueType.Error); }
 		asError() {
 			Util.assert(this.isError());
 			return <Error> this;
@@ -139,14 +139,17 @@ module NOA {
 		}
 	}
 
-	export class Variable<T extends IValue> extends Base {
+	export class Variable/*<T extends IValue>*/ extends Base {
 
-		constructor(private expectedType : ValueType, private value: T) {
+		value: IValue;
+
+		constructor(private expectedType : ValueType, value: IValue) {
 			//TODO: null type?
 			super();
+			this.value = value;
 			this.setup(value);
 		}
-
+/*
 		as<Y>(): Y {
 			if (this.is())
 				return this;
@@ -157,8 +160,8 @@ module NOA {
 		is(): boolean {
 			return this.value !== null && this.value !== undefined && this.value.getType() == this.targetType();
 		}
-
-		isError(): boolean {
+*/
+		isError(): bool {
 			return this.value.isError();
 		}
 
@@ -166,7 +169,7 @@ module NOA {
 			return this.value.asError();
 		}
 
-		set(newvalue: T) {
+		set(newvalue: IValue) {
 			if (this.value != newvalue) {
 				var oldvalue = this.value;
 
@@ -208,11 +211,11 @@ module NOA {
 				this.value.die();
 		}
 
-		teardown(value: T) {
+		teardown(value: IValue) {
 			throw new Error("Variable.teardown() should be overridden");
 		}
 
-		setup(value: T) {
+		setup(value: IValue) {
 			throw new Error("Variable.setup() should be overridden");
 		}
 
@@ -221,7 +224,7 @@ module NOA {
 		}
 	}
 
-	export class ListVariable extends Variable<IList> implements IList {
+	export class ListVariable extends Variable/*<IList>*/ implements IList {
 
 		teardown(value: IList) {
 			if (value) {
@@ -252,7 +255,7 @@ module NOA {
 		onInsert(caller: Base, cb: (index: number, value, cell: Cell) => void , fireInitialEvents?: bool) {
 			this.on('insert', caller, cb);
 			if (fireInitialEvents !== false)
-				this.value.each(caller, cb);
+				(<IList>this.value).each(caller, cb);
 		}
 
 		onSourceInsert(...args: any[]) {
@@ -290,12 +293,12 @@ module NOA {
 		//Listen to free? Nope, value should not be able to free as long as at least we are listening to it :) Otherwise, it should be handled in Variable.
 
 		size(): number {
-			return this.value ? this.value.size() : 0;
+			return this.value ? (<IList>this.value).size() : 0;
 		}
 
 		each(...args: any[]) {
 			if (this.value)
-				this.value.each.apply(this.value, args);
+				(<IList>this.value).each.apply(this.value, args);
 		}
 
 		getValue(index: number): IValue {

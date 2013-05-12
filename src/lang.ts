@@ -75,7 +75,7 @@ module NOA {
 			)).uses(list);
 		}
 
-		public static declare_<T extends IVariable>(name: String, argtypes: any[], func: (...args: any[]) => T, memoize: boolean) {
+		public static declare_/*<T extends IVariable>*/(name: String, argtypes: any[], func: (...args: any[]) => Variable /* T */, memoize: bool) {
 			//declare the thing
 			//check input arguments on errors
 			//check input argument on types

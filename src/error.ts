@@ -25,13 +25,13 @@ module NOA {
 			this.backingPlain = new Constant(this);
 
 			this.backingList = new List();
-			this.backingList.insert(0, this);
+			this.backingList.add(this);
 
 			this.backingRecord = new Record();
 			this.backingRecord.put("error", this);
 		}
 
-		isError(): boolean {
+		isError(): bool {
 			return true;
 		}
 
@@ -63,7 +63,7 @@ module NOA {
 
 		getStack(): Error[] {
 			var v = this;
-			var res = new Array<Error>();
+			var res = new Error[]/*new Array<Error>()*/;
 			while (v) {
 				res.push(v);
 				v = v.getCause();

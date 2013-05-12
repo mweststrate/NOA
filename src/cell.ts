@@ -134,7 +134,7 @@ module NOA {
 		}
 
 		
-		isError(): boolean {
+		isError(): bool {
 			return false; //TODO: check expression?
 		}
 

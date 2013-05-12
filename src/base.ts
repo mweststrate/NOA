@@ -50,7 +50,21 @@ module NOA {
 		}
 	}
 
-	export class Base {
+	/* interface is needed because typescript 0.8 does not support class extending interfaces (0.9 does) */
+	export interface IBase {
+		free();
+		live() : IBase;
+		die(): IBase;
+		uses(that: IBase): IBase;
+
+		listen(other: IBase, event: string, callback: Function);
+
+		unlisten(other: IBase, event?: string);
+
+		on(ev: string, caller: IBase, callback: Function): Binding;
+	}
+
+	export class Base implements IBase {
 
 		static noaid : number = 0;
 
@@ -131,12 +145,12 @@ module NOA {
 
 		 returns this
 		 */
-		listen (other: Base, event: string, callback: Function) {
+		listen (other: IBase, event: string, callback: Function) {
 			other.on(event, this, callback)
 			return this;
 		}
 
-		unlisten (other: Base, event?: string){
+		unlisten (other: IBase, event?: string){
 			if (!this.destroyed && !this.freeing) {
 				var ar = this.noabase.getSubscriptions(), l = ar.length;
 				for(var i = 0; i < l; i++)

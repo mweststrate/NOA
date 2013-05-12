@@ -9,7 +9,7 @@ module NOA{
 		data = {};
 		keys = new List();
 
-		set (key : string, value : any) {
+		put(key : string, value : any) {
 			if (!this.has(key)) {
 				var cell = this.data[key] = new Cell(this, key, value, this);
 				this.keys.add(key, this);
@@ -17,7 +17,7 @@ module NOA{
 
 				cell.onChange(this, (newvalue, oldvalue) => {
 					this.fire(RecordEvent.PUT.toString(), cell.index, newvalue, oldvalue, cell);
-				}, false)
+				})
 			}
 
 			else if (this.get(key) != value) {
@@ -58,7 +58,7 @@ module NOA{
 				handler.call(key, this.get(key));
 		}
 
-		onPut (caller: Base, callback: (key : string,  newvalue : any, oldvalue : any) => void, fireInitialEvent? boolean) {
+		onPut (caller: Base, callback: (key : string,  newvalue : any, oldvalue : any) => void, fireInitialEvent? : bool) {
 			return this.on(RecordEvent.PUT.toString(), caller, callback);
 			//TOOD: implements fireInitialEvent
 		}
@@ -70,7 +70,7 @@ module NOA{
 			return res;
 		}
 
-		isError(): boolean {
+		isError(): bool {
 			return false;
 		}
 

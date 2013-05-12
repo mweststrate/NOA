@@ -76,7 +76,7 @@ module NOA{
 
 			Util.parallel(ast.values, (ast, key : string, cb) => {
 				this.unserialize(ast, (value) => {
-					res.set(key, value);
+					res.put(key, value);
 					cb();
 				})
 			}, () => cb(res));

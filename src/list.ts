@@ -100,6 +100,10 @@ module NOA {
 			return this.cells[index];
 		}
 
+		size(): number {
+			return this.cells.length;
+		}
+
 		/** events */
 		onInsert(caller: Base, cb: (index: number, value, cell: Cell) => void , fireInitialEvents? : bool) : List {
 			this.on(ListEvent.INSERT.toString(), caller, cb);
@@ -147,7 +151,7 @@ module NOA {
 
 		/** util functions */
 		add(value: ValueContainer);
-		add(value: any, origin: CellContainer);
+		add(value: any, origin?: CellContainer);
 		add(value: any, origin?: CellContainer) {
 			this.insert(this.cells.length, value, origin);
 			//return this.cells.length - 1;
@@ -166,9 +170,9 @@ module NOA {
 			return a.get(onchange);
 		}
 
-		get (index: number): any;
-		get (index: number, caller: Base, onchange: (newvalue, oldvalue) => void , fireInitialEvent?: bool): any;
-		get (index?: number, caller?: Base, onchange?: (newvalue, oldvalue) => void , fireInitialEvent?: bool): any {
+		getValue(index: number): any;
+		getValue(index: number, caller: Base, onchange: (newvalue, oldvalue) => void , fireInitialEvent?: bool): any;
+		getValue(index?: number, caller?: Base, onchange?: (newvalue, oldvalue) => void , fireInitialEvent?: bool): any {
 			if (index < 0 || index >= this.cells.length)
 				throw new Error("Get out of bounds: " + index + " not in 0.." + this.cells.length)
 
@@ -318,7 +322,7 @@ module NOA {
 		}
 
 
-		isError(): boolean {
+		isError(): bool {
 			return false;
 		}
 	}
