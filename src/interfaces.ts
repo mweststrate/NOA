@@ -148,7 +148,7 @@ module NOA {
 			//TODO: null type?
 			super();
 			this.value = value;
-			this.setup(value);
+			this.setup(value, false); //Nobody is listening yet
 		}
 /*
 		as<Y>(): Y {
@@ -179,24 +179,24 @@ module NOA {
 			return this.value.asError();
 		}
 
-		set(newvalue: IValue) {
+		set(newvalue: IValue, withEvents: bool) {
 			if (this.value != newvalue) {
 				var oldvalue = this.value;
 				var combineChangeEvent = LangUtils.is(newvalue, ValueType.PlainValue) && LangUtils.is(oldvalue, ValueType.PlainValue);
 
-				this.teardown(oldvalue, combineChangeEvent);
+				this.teardown(oldvalue, withEvents,combineChangeEvent);
 
 				if (newvalue.isError()) {
 					//TODO: creating new errors for each new type might be expensive?
-					this.setup(newvalue.asError().wrap("Expected ", this.expectedType, "but found error", newvalue.asError().getRootCause()));
+					this.setup(newvalue.asError().wrap("Expected ", this.expectedType, "but found error", newvalue.asError().getRootCause()), true);
 				}
 				else if (!LangUtils.is(newvalue, this.expectedType)) {
-					this.setup(new ErrorValue("Expected ", this.expectedType, "but found:", newvalue));
+					this.setup(new ErrorValue("Expected ", this.expectedType, "but found:", newvalue), true);
 				}
 				else
-					this.setup(newvalue, combineChangeEvent);
+					this.setup(newvalue, withEvents, combineChangeEvent);
 
-				if (combineChangeEvent)
+				if (combineChangeEvent && withEvents)
 					this.fire('changed', (<IPlainValue>newvalue).get(), (<IPlainValue>oldvalue).get());
 
 
@@ -233,11 +233,14 @@ module NOA {
 				this.value.die();
 		}
 
-		teardown(value: IValue, suppressPrimitiveGet: bool) {
+		teardown(value: IValue, withEvents: bool, suppressPrimitiveGet: bool) {
 			if (!value)
 				return;
 
 			LangUtils.unfollow(this, value);
+
+			if (withEvents === false)
+				return;
 
 			if (value.is(ValueType.List)) {
 				//empty current listeners. TODO: maybe a clear / removeRange operation should be more efficient :)
@@ -255,11 +258,14 @@ module NOA {
 			}
 		}
 
-		setup(value: IValue, suppressPrimitiveGet = false) {
+		setup(value: IValue, withEvents: bool, suppressPrimitiveGet = false) {
 			if (!value)
 				return;
 
 			LangUtils.follow(this, value);
+
+			if (withEvents === false)
+				return;
 
 			if (value.is(ValueType.List)) {
 				(<List>value).each(this, function (index: number, value) {
