@@ -39,7 +39,7 @@ module NOA {
 		}
 	}
 
-	export class ValueContainer extends AbstractValue implements IValue {
+	export class ValueContainer extends AbstractValue implements IPlainValue {
 		value: any;
 		origin: CellContainer;
 
