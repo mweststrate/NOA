@@ -58,7 +58,15 @@ module NOA {
 			return new ListNumberCount(list);
 		}
 
-		static avg(list: List/*TODO: ListVariable*/, cb : (value: IValue) => void) : IValue {
+		//TODO: copy
+
+		//TODO: next / prev
+		static avg() {
+			//TODO:Lang.declare_("List.avg", []);
+		}
+
+
+		static avgOLD(list: List/*TODO: ListVariable*/, cb : (value: IValue) => void) : IValue {
 			return <IValue><any> (<Base><any>(
 				Lang.let(
 					Lang.numbercount(list),
