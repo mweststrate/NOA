@@ -32,8 +32,8 @@ module NOA {
 			this.initialized = true;
 		}
 
-		hasExpression () {
-			return this.value instanceof ValueContainer;
+		hasPlainValue () {
+			return this.value && this.value.getType && this.value.getType() === ValueType.PlainValue;
 		}
 
 		//TODO: parse new value to List / Record if Array / Object
@@ -47,9 +47,10 @@ module NOA {
 
 			if(newvalue != orig) {
 				var oldvalue = orig;
-				if(this.hasExpression()) {
-					oldvalue = orig.get();
-					this.unlisten(<Base>orig, 'change');
+				if(this.hasPlainValue()) {
+					LangUtils.unfollow(this,oldvalue)
+					//oldvalue = orig.get();
+					//this.unlisten(<Base>orig, 'change');
 				}
 
 				if(newvalue instanceof Base)
@@ -60,29 +61,34 @@ module NOA {
 
 				this.value = newvalue;
 
-				if(this.hasExpression()) {
+				if(this.hasPlainValue()) {
 					this.debug("now following", newvalue);
 
-					newvalue = (<ValueContainer>newvalue).get(newvalue, (newv, oldv) => {
-						this.fireChanged(newv, oldv);
+					/**newvalue = (<ValueContainer>newvalue).get(newvalue, (newv, oldv) => {
+						this.changed(newv, oldv);
 					}, false);
+					*/
+					LangUtils.follow(this, newvalue);
+					newvalue = newvalue.get();
 				}
 
 				if (this.initialized)
-					this.fireChanged(newvalue, oldvalue);
+					this.changed(newvalue, oldvalue);
 			}
 			this.debugOut();
 		}
 
+/*
 		fireChanged (newv : any, oldv: any) {
 			this.changed(newv, oldv, this);
 		}
+*/
 
 		get (): any;
 		get (caller: Base, onchange: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any;
 		get (caller?: Base, onchange?: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any {
 
-			if (this.hasExpression()) {
+			if (this.hasPlainValue()) {
 				var expr = <ValueContainer> super.get(caller, onchange, true);
 				//MWE: note, we do not have to listen to the expression, because the expression onChange already causes this cell to update :), so we would be listening twice;
 				var value = expr.get();
@@ -113,8 +119,8 @@ module NOA {
 		}
 
 		free () {
-			if(this.hasExpression())
-				this.unlisten(this.value, 'change');
+			if(this.hasPlainValue())
+				LangUtils.unfollow(this, this.value);
 
 			if(this.value instanceof Base)
 				this.value.die();
@@ -133,13 +139,13 @@ module NOA {
 			   "=" + this.value +"]");
 		}
 
-		
+
 		isError(): bool {
 			return false; //TODO: check expression?
 		}
 
-		asError(): Error {
-			return <Error> Util.notImplemented();
+		asError(): ErrorValue {
+			return <ErrorValue> Util.notImplemented();
 		}
 
 	}

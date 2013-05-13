@@ -19,7 +19,7 @@ module NOA {
 		is(expected: ValueType) : bool;
 
 		isError() : bool;
-		asError() : Error;
+		asError() : ErrorValue;
 	}
 
 	export interface IPlainValue extends IValue { //TODO: cell and expression implement IPlainValue
@@ -55,7 +55,7 @@ module NOA {
 		static is(value: IValue, type: ValueType) {
 			switch(type) {
 				case ValueType.Any: return true;
-				case ValueType.Error : return this instanceof Error;
+				case ValueType.Error: return this instanceof ErrorValue;
 				case ValueType.List: return this['onInsert'];//MWE: typescript cannot check against interfaces
 				case ValueType.Record: return this['onPut'];
 				case ValueType.PlainValue: return this['onUpdate'];
@@ -110,7 +110,7 @@ module NOA {
 		}
 
 		getType() : ValueType {
-			if (this instanceof Error)
+			if (this instanceof ErrorValue)
 				return ValueType.Error;
 			if (this.is(ValueType.List))
 				return ValueType.List;
@@ -128,7 +128,7 @@ module NOA {
 		isError () : bool { return this.is(ValueType.Error); }
 		asError() {
 			Util.assert(this.isError());
-			return <Error> this;
+			return <ErrorValue> this;
 		}
 
 		toJSON(): any {
@@ -175,7 +175,7 @@ module NOA {
 			return this.value.isError();
 		}
 
-		asError(): Error {
+		asError(): ErrorValue {
 			return this.value.asError();
 		}
 
@@ -190,7 +190,7 @@ module NOA {
 					this.setup(newvalue.asError().wrap("Expected ", this.expectedType, "but found error", newvalue.asError().getRootCause()));
 				}
 				else if (!LangUtils.is(newvalue, this.expectedType)) {
-					this.setup(new Error("Expected ", this.expectedType, "but found:", newvalue));
+					this.setup(new ErrorValue("Expected ", this.expectedType, "but found:", newvalue));
 				}
 				else
 					this.setup(newvalue);

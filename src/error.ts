@@ -1,21 +1,21 @@
 ///<reference path='noa.ts'/>
 
 module NOA {
-	export class Error extends AbstractValue implements IValue, IList, IRecord, IPlainValue {
+	export class ErrorValue extends AbstractValue implements IValue, IList, IRecord, IPlainValue {
 
 		error: string;
-		cause: Error;
+		cause: ErrorValue;
 
 		backingList: List;
 		backingRecord: Record;
 		backingPlain: IPlainValue;
 
-		constructor(error: string, cause?: Error);
+		constructor(error: string, cause?: ErrorValue);
 		constructor(...args: any[]);
 		constructor(...args: any[]) {
 			super();
 
-			if (args.length > 1 && args[args.length - 1] instanceof Error) {
+			if (args.length > 1 && args[args.length - 1] instanceof ErrorValue) {
 				this.cause = args[args.length - 1];
 				args.pop();
 			}
@@ -50,20 +50,20 @@ module NOA {
 			return { "type": "error", "error": this.error };
 		}
 
-		getCause(): Error {
+		getCause(): ErrorValue {
 			return this.cause;
 		}
 
-		getRootCause(): Error {
+		getRootCause(): ErrorValue {
 			if (this.cause)
 				return this.cause.getRootCause();
 			else
 				return this;
 		}
 
-		getStack(): Error[] {
+		getStack(): ErrorValue[] {
 			var v = this;
-			var res = new Error[]/*new Array<Error>()*/;
+			var res = new ErrorValue[]/*new Array<Error>()*/;
 			while (v) {
 				res.push(v);
 				v = v.getCause();
@@ -71,10 +71,10 @@ module NOA {
 			return res;
 		}
 
-		wrap(message: string, error: Error);
+		wrap(message: string, error: ErrorValue);
 		wrap(...args: any[]);
 		wrap(...args: any[]) {
-			return new Error(args);
+			return new ErrorValue(args);
 		}
 
 		//* Interface implementations */
@@ -108,15 +108,15 @@ module NOA {
 			return this.backingList.size();
 		}
 
-		/*equals(other: IValue) {
-			return false; //Too pessimistic?
-		}*/
-
 		free() {
 			this.backingList.free();
 			this.backingRecord.free();
 			this.backingPlain.free();
 			super.free();
+		}
+
+		toString(): string {
+			return "[Error] " + this.error + (this.cause? "\n\t" + this.cause.toString() : "");
 		}
 	}
 }
