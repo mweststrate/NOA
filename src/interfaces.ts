@@ -182,8 +182,9 @@ module NOA {
 		set(newvalue: IValue) {
 			if (this.value != newvalue) {
 				var oldvalue = this.value;
+				var combineChangeEvent = LangUtils.is(newvalue, ValueType.PlainValue) && LangUtils.is(oldvalue, ValueType.PlainValue);
 
-				this.teardown(oldvalue);
+				this.teardown(oldvalue, combineChangeEvent);
 
 				if (newvalue.isError()) {
 					//TODO: creating new errors for each new type might be expensive?
@@ -193,7 +194,11 @@ module NOA {
 					this.setup(new ErrorValue("Expected ", this.expectedType, "but found:", newvalue));
 				}
 				else
-					this.setup(newvalue);
+					this.setup(newvalue, combineChangeEvent);
+
+				if (combineChangeEvent)
+					this.fire('changed', (<IPlainValue>newvalue).get(), (<IPlainValue>oldvalue).get());
+
 
 				if (newvalue)
 					newvalue.live();
@@ -228,29 +233,46 @@ module NOA {
 				this.value.die();
 		}
 
-		teardown(value: IValue) {
+		teardown(value: IValue, suppressPrimitiveGet: bool) {
 			if (!value)
 				return;
 
 			LangUtils.unfollow(this, value);
 
-			if (value && value.is(ValueType.List)) {
-				this.unlisten(value);
-
+			if (value.is(ValueType.List)) {
 				//empty current listeners. TODO: maybe a clear / removeRange operation should be more efficient :)
 				var l = (<IList>value).size();
 				for (var i = l - 1; i >= 0; i--)
-					this.fire('remove', i, (<IList>value).get(i));
+					this.fire(ListEvent.REMOVE.toString(), i, (<IList>value).get(i));
 			}
-			//TODO: record, plain..
+			if (value.is(ValueType.Record)) {
+				//TODO: record, plain..
+
+			}
+			if (value.is(ValueType.PlainValue)) {
+				if (!suppressPrimitiveGet)
+					this.fire("changed", undefined, (<IPlainValue>value).get());
+			}
 		}
 
-		setup(value: IValue) {
+		setup(value: IValue, suppressPrimitiveGet = false) {
 			if (!value)
 				return;
 
 			LangUtils.follow(this, value);
 
+			if (value.is(ValueType.List)) {
+				(<List>value).each(this, function (index: number, value) {
+					this.fire(ListEvent.INSERT.toString(), index, value);
+				});
+			}
+			if (value.is(ValueType.Record)) {
+				//TODO: Record
+			}
+			if (value.is(ValueType.PlainValue)) {
+				if (!suppressPrimitiveGet)
+					this.fire("changed",(<IPlainValue>value).get(), undefined);
+			}
 		}
 
 		//Event and interface wrappers
