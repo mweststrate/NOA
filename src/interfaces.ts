@@ -5,7 +5,7 @@ module NOA {
 		Error,
 		List,
 		Record,
-		PlainValue,
+		PlainValue, //TODO: split to 'primitive' and 'valuecontainer (or similar)'
 		Any
 	}
 
@@ -14,7 +14,9 @@ module NOA {
 	export interface IValue extends IBase {
 		toJSON(): any;
 		toAST(): Object;
+
 		getType(): ValueType;
+		is(expected: ValueType) : bool;
 
 		isError() : bool;
 		asError() : Error;
@@ -51,10 +53,17 @@ module NOA {
 
 	export class LangUtils {
 		static is(value: IValue, type: ValueType) {
-			return true; //TODO:
+			switch(type) {
+				case ValueType.Any: return true;
+				case ValueType.Error : return this instanceof Error;
+				case ValueType.List: return this['onInsert'];//MWE: typescript cannot check against interfaces
+				case ValueType.Record: return this['onPut'];
+				case ValueType.PlainValue: return this['onUpdate'];
+			}
+			return Util.notImplemented();
 		}
 
-		static followHelper(source: IValue, dest: IValue, follow: bool) {
+		static followHelper(dest: IValue, source: IValue, follow: bool) {
 
 			Util.assert(source != null && dest != null);
 
@@ -73,13 +82,12 @@ module NOA {
 				LangUtils.followEvent(source, RecordEvent.PUT.toString(), dest, follow);
 		}
 
-		static follow(source: IValue, dest: IValue) {
-			LangUtils.followHelper(source, dest, true);
+		static follow(dest: IValue, source: IValue) {
+			LangUtils.followHelper(dest, source, true);
 		}
 
-
-		static unfollow(source: IValue, dest: IValue) {
-			LangUtils.followHelper(source, dest, false);
+		static unfollow(dest: IValue, source: IValue) {
+			LangUtils.followHelper(dest, source, false);
 		}
 
 		static followEvent(source: IBase, event: string, dest: IBase, follow : bool) {
@@ -114,14 +122,7 @@ module NOA {
 		}
 
 		is(type : ValueType): bool {
-			switch(type) {
-				case ValueType.Any: return true;
-				case ValueType.Error : return this instanceof Error;
-				case ValueType.List: return this['onInsert'];//MWE: typescript cannot check against interfaces
-				case ValueType.Record: return this['onPut'];
-				case ValueType.PlainValue: return this['onUpdate'];
-			}
-			return Util.notImplemented();
+			return LangUtils.is(this, type);
 		}
 
 		isError () : bool { return this.is(ValueType.Error); }
@@ -139,7 +140,7 @@ module NOA {
 		}
 	}
 
-	export class Variable/*<T extends IValue>*/ extends Base {
+	export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO: IRecord...*/ {
 
 		value: IValue;
 
@@ -161,6 +162,15 @@ module NOA {
 			return this.value !== null && this.value !== undefined && this.value.getType() == this.targetType();
 		}
 */
+
+		getType(): ValueType {
+			return this.value.getType();
+		}
+
+		is(expected: ValueType) {
+			return this.value.is(expected);
+		}
+
 		isError(): bool {
 			return this.value.isError();
 		}
@@ -200,10 +210,17 @@ module NOA {
 			return this.value.toAST.apply(this.value, arguments);
 		}
 
-		getType(): ValueType {
-			return this.value.getType();
+/*
+		live() {
+			if (this.value != null)
+				this.value.live();
 		}
 
+		die() {
+			if (this.value != null)
+				this.value.die();
+		}
+*/
 		free() {
 			super.free();
 
@@ -212,42 +229,28 @@ module NOA {
 		}
 
 		teardown(value: IValue) {
-			throw new Error("Variable.teardown() should be overridden");
-		}
+			if (!value)
+				return;
 
-		setup(value: IValue) {
-			throw new Error("Variable.setup() should be overridden");
-		}
+			LangUtils.unfollow(this, value);
 
-		targetType(): ValueType {
-			throw new Error("Variable.targetType() should be overridden");
-		}
-	}
-
-	export class ListVariable extends Variable/*<IList>*/ implements IList {
-
-		teardown(value: IList) {
-			if (value) {
+			if (value && value.is(ValueType.List)) {
 				this.unlisten(value);
 
 				//empty current listeners. TODO: maybe a clear / removeRange operation should be more efficient :)
-				var l = value.size();
+				var l = (<IList>value).size();
 				for (var i = l - 1; i >= 0; i--)
-					this.fire('remove', i, value.get(i));
+					this.fire('remove', i, (<IList>value).get(i));
 			}
+			//TODO: record, plain..
 		}
 
-		setup(value: IList) {
-			if (value) {
-				value.onInsert(this, this.onSourceInsert, true);
-				value.onMove(this, this.onSourceMove);
-				value.onRemove(this, this.onSourceRemove);
-				value.onSet(this, this.onSourceSet);
-			}
-		}
+		setup(value: IValue) {
+			if (!value)
+				return;
 
-		targetType(): ValueType {
-			return ValueType.List;
+			LangUtils.follow(this, value);
+
 		}
 
 		//Event and interface wrappers
@@ -258,39 +261,17 @@ module NOA {
 				(<IList>this.value).each(caller, cb);
 		}
 
-		onSourceInsert(...args: any[]) {
-			args.unshift('insert');
-			this.fire.apply(this, args);
-		}
-
 		onMove(caller: Base, cb: (from: number, to: number) => void ) {
 			this.on('move', caller, cb);
-		}
-
-		onSourceMove(...args: any[]) {
-			args.unshift('move');
-			this.fire.apply(this, args);
 		}
 
 		onRemove(caller: Base, cb: (from: number, value) => void ) {
 			this.on('remove', caller, cb);
 		}
 
-		onSourceRemove(...args: any[]) {
-			args.unshift('remove');
-			this.fire.apply(this, args);
-		}
-
 		onSet(caller: Base, cb: (index: number, newvalue, oldvalue, cell: Cell) => void ) {
 			this.on('set', caller, cb);
 		}
-
-		onSourceSet(...args: any[]) {
-			args.unshift('set');
-			this.fire.apply(this, args);
-		}
-
-		//Listen to free? Nope, value should not be able to free as long as at least we are listening to it :) Otherwise, it should be handled in Variable.
 
 		size(): number {
 			return this.value ? (<IList>this.value).size() : 0;

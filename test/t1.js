@@ -606,16 +606,16 @@ exports.testavg = function(test) {
 exports.test7 = function(test) {
 
     var o = new NOA.Record().live();
-    o.set("a", 2);
-    o.set("b", 2);
-    o.set("c", 5);
-    o.set("a", 1);
+    o.put("a", 2);
+    o.put("b", 2);
+    o.put("c", 5);
+    o.put("a", 1);
     o.remove("b");
 
     test.equal(JSON.stringify(o.toJSON()), '{"a":1,"c":5}');
     test.deepEqual(o.keys.toJSON(), ["a","c"]);
 
-    o.set("b", 2);
+    o.put("b", 2);
 
     var scope = NOA.Scope.newScope();
 
@@ -626,12 +626,12 @@ exports.test7 = function(test) {
     var f = new NOA.Expression(function() {
         return this.variable("this","a") + this.variable("this","b");
     }, scope);
-    o.set("c", f);
+    o.put("c", f);
 
     test.equal(o.get("c"), '3');
 
-    o.set("a", 10);
-    o.set("b", 7);
+    o.put("a", 10);
+    o.put("b", 7);
     test.equal(o.get("c"), '17');
 
     //f.live().die();
