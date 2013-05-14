@@ -68,7 +68,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 				}
 
 				if (combineChangeEvent && withEvents)
-					this.fire('changed',
+					this.fire('change',
 						newprimitive
 						? newvalue
 						: (<IPlainValue>newvalue).get(),
@@ -79,7 +79,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 
 				//there was no setup earlier
 				else if (newprimitive && !combineChangeEvent && withEvents)
-					this.fire('changed', newvalue, undefined); //TODO: no changed!
+					this.fire('change', newvalue, undefined); //TODO: no changed!
 
 
 				if (!newprimitive && newvalue)
@@ -136,7 +136,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			}
 			if (value.is(ValueType.PlainValue)) {
 				if (!suppressPrimitiveGet)
-					this.fire("changed", undefined, (<IPlainValue>value).get());
+					this.fire("change", undefined, (<IPlainValue>value).get());
 			}
 		}
 
@@ -159,7 +159,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			}
 			if (value.is(ValueType.PlainValue)) {
 				if (!suppressPrimitiveGet)
-					this.fire("changed",(<IPlainValue>value).get(), undefined);
+					this.fire("change",(<IPlainValue>value).get(), undefined);
 			}
 		}
 

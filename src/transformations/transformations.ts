@@ -4,7 +4,7 @@ module NOA {
 //TODO: transformations should listen to input arguments if applicable
 
 
-	export class ListTransformation extends List {
+	export class ListTransformation extends List implements IList {
 		//TODO: make transformation evaluate on first evaluation (that is, first 'cell' call)?
 
 		source : List; //TODO: remove parent?

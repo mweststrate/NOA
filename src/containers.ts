@@ -46,6 +46,7 @@ module NOA {
 			super();
 		}
 
+		/*
 		origin: CellContainer;
 		public getOrigin(): CellContainer {
 			return this.origin;
@@ -54,6 +55,7 @@ module NOA {
 		public setOrigin(origin: CellContainer) {
 			this.origin = origin;
 		}
+		*/
 
 		public get (): any;
 		public get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
@@ -66,6 +68,25 @@ module NOA {
 				onChange.call(caller, this.value, undefined);
 
 			return this.value;
+		}
+
+		set(newvalue) {
+			if (newvalue != this.value) { //TODO: langutils.equal
+				//TODO: autoFollow other plain values
+				var old = this.value;
+				this.value = newvalue;
+
+				/*TODO: origin stuff
+				var origin: CellContainer = null;
+				if (cell)
+					origin = cell.getOrigin();
+				else if (newvalue instanceof ValueContainer)
+					origin = (<ValueContainer>newvalue).getOrigin();
+
+				this.setOrigin(origin);
+				*/
+				this.changed(newvalue, old);//TODO: fix: .get() if needed (newvalue can be variable)
+			}
 		}
 
 		public changed(...args: any[]) {

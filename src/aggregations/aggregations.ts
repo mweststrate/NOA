@@ -7,7 +7,6 @@ module NOA {
 		//TODO: make aggregations evaluate on first evaluation
 
 		source: IList; //TODO: remove parent?
-		value;
 
 		constructor(source: IList) {
 			super();
@@ -40,23 +39,7 @@ module NOA {
 
 		onSourceSet(index: number, newvalue, oldvalue) { }
 
-		updateValue(newvalue) {
-			if (newvalue != this.value) {
-				var old = this.value;
-				this.value = newvalue;
 
-				/*TODO: origin stuff
-				var origin: CellContainer = null;
-				if (cell)
-					origin = cell.getOrigin();
-				else if (newvalue instanceof ValueContainer)
-					origin = (<ValueContainer>newvalue).getOrigin();
-
-				this.setOrigin(origin);
-				*/
-				this.changed(newvalue, old);//TODO: fix: .get() if needed (newvalue can be variable)
-			}
-		}
 
 		toAST(): Object {
 			Util.notImplemented();
@@ -81,11 +64,11 @@ module NOA {
 		}
 
 		onSourceInsert(index: number, value) {
-			this.updateValue(this.value + 1)
+			this.set(this.value + 1)
 		}
 
 		onSourceRemove(index: number, value) {
-			this.updateValue(this.value - 1)
+			this.set(this.value - 1)
 		}
 
 		toAST(): Object {
@@ -107,21 +90,21 @@ module NOA {
 
 		onSourceInsert(index: number, value) {
 			if (Util.isNumber(value))
-				this.updateValue(this.value + 1)
+				this.set(this.value + 1)
 		}
 
 		onSourceRemove(index: number, value) {  //TODO: check if remove provides old value!
 			if (Util.isNumber(value))
-				this.updateValue(this.value - 1)
+				this.set(this.value - 1)
 		}
 
 		onSourceSet(index: number, newvalue, oldvalue) {
 			var lin = Util.isNumber(newvalue);
 			var rin = Util.isNumber(oldvalue);
 			if (lin && !rin)
-				this.updateValue(this.value + 1)
+				this.set(this.value + 1)
 			else if (rin && !lin)
-				this.updateValue(this.value - 1);
+				this.set(this.value - 1);
 		}
 
 		toAST(): Object {
@@ -141,12 +124,12 @@ module NOA {
 
 		onSourceInsert(index: number, value) {
 			if (Util.isNumber(value))
-				this.updateValue(this.value + value)
+				this.set(this.value + value)
 		}
 
 		onSourceRemove(index: number, value) {
 			if (Util.isNumber(value))
-				this.updateValue(this.value - value)
+				this.set(this.value - value)
 		}
 
 		onSourceSet(index: number, newvalue, oldvalue) {
@@ -155,7 +138,7 @@ module NOA {
 				delta += newvalue;
 			if (Util.isNumber(oldvalue))
 				delta -= oldvalue;
-			this.updateValue(this.value + delta);
+			this.set(this.value + delta);
 		}
 
 		toAST(): Object {
@@ -195,8 +178,8 @@ module NOA {
 
 		listChanged() {
 			if (this.count.get() == 0)
-				this.updateValue(0);
-			this.updateValue(this.sum.get() / this.count.get());
+				this.set(0);
+			this.set(this.sum.get() / this.count.get());
 		}
 
 		free() {
@@ -232,12 +215,12 @@ module NOA {
 						max = v;
 					}
 			})
-			this.updateValue(max);
+			this.set(max);
 		}
 
 		onSourceInsert(index: number, value) {
 			if (Util.isNumber(value) && value > this.value)
-				this.updateValue(value);
+				this.set(value);
 		}
 
 		onSourceRemove(index: number, value) {
@@ -275,12 +258,12 @@ module NOA {
 						min = v;
 					}
 			})
-			this.updateValue(min);
+			this.set(min);
 		}
 
 		onSourceInsert(index: number, value) {
 			if (Util.isNumber(value) && value < this.value)
-				this.updateValue(value);
+				this.set(value);
 		}
 
 		onSourceRemove(index: number, value) {
@@ -318,9 +301,9 @@ module NOA {
 
 		update() {
 			if (this.realindex < 0 || this.realindex >= this.source.size())
-				this.updateValue(null)
+				this.set(null)
 			else
-				this.updateValue((<List>this.source).cell(this.realindex)); //TODO: fix cast
+				this.set((<List>this.source).cell(this.realindex)); //TODO: fix cast
 		}
 
 		onSourceInsert(index: number, value) {
@@ -340,7 +323,7 @@ module NOA {
 /*
 		onSourceSet(index: number, newvalue) {
 			if (index == this.realindex)
-				this.updateValue(newvalue);
+				this.set(newvalue);
 		}*/
 
 		toAST(): Object {

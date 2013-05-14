@@ -118,7 +118,7 @@ module NOA {
 		}
 	}
 
-	export class AbstractValue extends Base implements IValue {
+	export /*abstract*/ class AbstractValue extends Base implements IValue {
 
 		constructor() {
 			super();
