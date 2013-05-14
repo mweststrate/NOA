@@ -41,12 +41,12 @@ module NOA {
 
 	export class ValueContainer extends AbstractValue implements IPlainValue {
 		value: any;
-		origin: CellContainer;
 
 		constructor() {
 			super();
 		}
 
+		origin: CellContainer;
 		public getOrigin(): CellContainer {
 			return this.origin;
 		}
@@ -99,7 +99,7 @@ module NOA {
 			return ValueType.PlainValue;
 		}
 	}
-
+/*
 	export class Constant extends ValueContainer implements IPlainValue {
 
 		constructor(value : any) {
@@ -116,7 +116,7 @@ module NOA {
 			//onChange is never triggered, so do not register an event
 		}
 	}
-
+*/
 	/**
 	This class just follows some IValue and just wraps it. The advantage is that others can just register events
 	on this object, regardless whether the thing that represents this variable is reassigned later

@@ -29,9 +29,9 @@ module NOA {
 			this.parent = parentscope;
 		}
 
-		get (varname: string, readTracker: Object);
+		get (varname: string, readTracker: Object): IValue;
 		get (varname: string, field: string, readTracker: Object);
-		get (...args: any[]): ValueContainer {
+		get (...args: any[]): IValue {
 			var varname: string = args[0],
 				field, readTracker;
 			if (args.length == 2)
@@ -61,7 +61,7 @@ module NOA {
 			throw new Error("Undefined variable: '" + varname + "'")
 		}
 
-		set (varname: string, value: ValueContainer) {
+		set (varname: string, value: IValue) {
 			if (varname in this.vars)
 				throw new Error("Already declared: '" + varname + "'")
 

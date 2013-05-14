@@ -3,6 +3,7 @@
 ///<reference path='binding.ts'/>
 ///<reference path='containers.ts'/>
 ///<reference path='interfaces.ts'/>
+///<reference path='variable.ts'/>
 ///<reference path='cell.ts'/>
 ///<reference path='expression.ts'/>
 ///<reference path='list.ts'/>

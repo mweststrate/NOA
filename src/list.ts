@@ -20,22 +20,22 @@ module NOA {
 
 		/** core functions */
 		insert(index: number, value: ValueContainer): List;
-		insert(index: number, value: any, origin: CellContainer): List;
+		insert(index: number, value: any, origin?: CellContainer): List;
 		insert(index: number, value: any, origin?: CellContainer): List {
 			this.debugIn("Insert at " + index + ": " + value);
 			if (index < 0 || index > this.cells.length)
 				throw new Error("Insert out of bounds: " + index + " not in 0.." + this.cells.length)
 
 
-			var cell = new Cell(<CellContainer>this, index, <any> value, <CellContainer>origin); //Todo extract origin from value
+			var cell = new Cell(<CellContainer>this, index, LangUtils.toValue(value), <CellContainer>origin); //Todo extract origin from value
 			this.cells.splice(index, 0, cell);
 
 			this._updateIndexes(index +1);
 			this.fire(ListEvent.INSERT.toString(), index, cell.get(), cell);
 
-			cell.onChange(this, (newvalue : any, oldvalue : any) : void => {
+			cell.get(this, (newvalue: any, oldvalue: any): void => {
 				this.fire(ListEvent.SET.toString(), cell.index, newvalue, oldvalue, cell);
-			})
+			}, false);
 
 			this.debugOut();
 			return this;
@@ -49,7 +49,7 @@ module NOA {
 				throw new Error("Set out of bounds: " + index + " not in 0.." + this.cells.length)
 
 
-			this.cells[index].set(value);
+			this.cells[index].set(LangUtils.toValue(value));
 
 			this.debugOut();
 			return this;
@@ -298,7 +298,7 @@ module NOA {
 
 		avg () : Expression {
 			var scope = Scope.newScope(null);
-			scope.set("this", new Constant(this));
+			scope.set("this", new Variable/*TODO: constant*/(ValueType.Any, this));
 			return <Expression> new Expression(function() {
 				var count = this.variable("this", "numbercount");
 				var sum = this.variable("this", "sum");

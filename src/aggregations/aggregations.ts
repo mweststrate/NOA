@@ -6,10 +6,10 @@ module NOA {
 	export class ListAggregation extends ValueContainer { //Generic on return type!
 		//TODO: make aggregations evaluate on first evaluation
 
-		source: List; //TODO: remove parent?
+		source: IList; //TODO: remove parent?
 		value;
 
-		constructor(source: List) {
+		constructor(source: IList) {
 			super();
 			//TODO: register at parent so the aggregate can be freed
 			this.source = source;
@@ -97,7 +97,7 @@ module NOA {
 
 		value: number = 0;
 
-		constructor(source: List) {
+		constructor(source: IList) {
 			super(source);
 			this.unlisten(source, ListEvent.MOVE.toString())
 			this.startup();
@@ -131,7 +131,7 @@ module NOA {
 
 		value: number = 0;
 
-		constructor(source: List) {
+		constructor(source: IList) {
 			super(source);
 			this.unlisten(source, ListEvent.MOVE.toString())
 			this.startup();
@@ -225,8 +225,7 @@ module NOA {
 			var max = -1 * (1/0); // -INF
 			var maxcell = null;
 
-			Util.each(this.source.cells, cell => {
-				var v = cell.get();
+			this.source.each(this, (index, v, cell) => {
 				if (Util.isNumber(v))
 					if (v > max) {
 						max = v;
@@ -271,8 +270,7 @@ module NOA {
 			var min = 1 * (1/0); // +NF
 			var mincell = null;
 
-			Util.each(this.source.cells, cell => {
-				var v = cell.get();
+			this.source.each(this, (index, v, cell) => {
 				if (Util.isNumber(v))
 					if (v < min) {
 						min = v;
@@ -308,7 +306,7 @@ module NOA {
 		index: number;
 		realindex : number;
 
-		constructor(source: List, index: number) {
+		constructor(source: IList, index: number) {
 			super(source);
 			this.unlisten(source, ListEvent.SET.toString())
 			this.index = index;
@@ -317,14 +315,14 @@ module NOA {
 		}
 
 		updateRealIndex() {
-			this.realindex = this.index < 0 ? this.source.cells.length - this.index : this.index;
+			this.realindex = this.index < 0 ? this.source.size() - this.index : this.index;
 		}
 
 		update() {
-			if (this.realindex < 0 || this.realindex >= this.source.cells.length)
+			if (this.realindex < 0 || this.realindex >= this.source.size())
 				this.updateValue(null)
 			else
-				this.updateValue(this.source.cell(this.realindex));
+				this.updateValue((<List>this.source).cell(this.realindex)); //TODO: fix cast
 		}
 
 		onSourceInsert(index: number, value) {

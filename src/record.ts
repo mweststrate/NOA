@@ -15,9 +15,9 @@ module NOA{
 				this.keys.add(key, this);
 				this.fire(RecordEvent.PUT.toString() ,key, value, undefined);
 
-				cell.onChange(this, (newvalue, oldvalue) => {
+				cell.get(this, (newvalue, oldvalue) => {
 					this.fire(RecordEvent.PUT.toString(), cell.index, newvalue, oldvalue, cell);
-				})
+				},false)
 			}
 
 			else if (this.get(key) != value) {

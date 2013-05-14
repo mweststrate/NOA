@@ -279,6 +279,18 @@ module NOA {
 			return Util.type(thing) == "number";
 		}
 
+		static isString(thing: any): bool {
+			return Util.type(thing) == "string";
+		}
+
+		static isBool(thing: any): bool {
+			return Util.type(thing) == "boolean";
+		}
+
+		static isPrimitive(thing: any): bool {
+			return Util.isString(thing) || Util.isBool(thing) || Util.isNumber(thing); //TODO: Date? Regex?
+		}
+
 		static isArray (thing : any) : bool {
 			return Object.prototype.toString.call( thing ) === '[object Array]'
 		}

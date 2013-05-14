@@ -8,33 +8,36 @@ module NOA {
 
 		replayInserts should have an variant which does not care about ordering
 	*/
-	export class Cell extends ValueContainer implements IValue , IPlainValue {
+	export class Cell extends Variable implements IValue , IPlainValue {
 
 		private parent : CellContainer;
 		index  : any = -1; //int or string
-		private initialized : bool = false;
 
-		constructor(parent: CellContainer, index: number, value: ValueContainer);
+/* TODO: restore orign		constructor(parent: CellContainer, index: number, value: ValueContainer);
 		constructor(parent: CellContainer, index: string, value: ValueContainer);
-		constructor(parent: CellContainer, index: string, value: any, origin: CellContainer);
-		constructor(parent: CellContainer, index: number, value: any, origin: CellContainer);
-		constructor(parent: CellContainer, index: any, value: any, origin?: CellContainer) {
-			super();
+*/		constructor(parent: CellContainer, index: string, value: IValue, origin?: CellContainer);//MWE: fix: origin not optional
+		constructor(parent: CellContainer, index: number, value: IValue, origin?: CellContainer);
+		constructor(parent: CellContainer, index: any, value: IValue, origin?: CellContainer) {
+			super(ValueType.Any, value);
 			this.parent = parent;
 			this.index = index;
 
-			if (origin)
+/*TODO: restore origin and such			if (origin)
 				this.setOrigin(origin)
 			else if(value instanceof ValueContainer)
 				this.setOrigin((<ValueContainer> value).getOrigin())
-
-			this.set(value);
-			this.initialized = true;
+*/
 		}
 
-		hasPlainValue () {
-			return this.value && this.value.getType && this.value.getType() === ValueType.PlainValue;
+		origin: CellContainer;
+		public getOrigin(): CellContainer {
+			return this.origin;
 		}
+
+/*		public setOrigin(origin: CellContainer) {
+			this.origin = origin;
+		}
+*/
 
 		//TODO: parse new value to List / Record if Array / Object
 		set(newvalue) {
@@ -43,47 +46,12 @@ module NOA {
 
 			this.debugIn("Receiving new value: " + newvalue);
 
-			var orig = this.value;
+			super.set(newvalue, true);
 
-			if(newvalue != orig) {
-				var oldvalue = orig;
-				if(this.hasPlainValue()) {
-					LangUtils.unfollow(this,oldvalue)
-					//oldvalue = orig.get();
-					//this.unlisten(<Base>orig, 'change');
-				}
-
-				if(newvalue instanceof Base)
-					newvalue.live();
-
-				if(orig instanceof Base)
-					orig.die();
-
-				this.value = newvalue;
-
-				if(this.hasPlainValue()) {
-					this.debug("now following", newvalue);
-
-					/**newvalue = (<ValueContainer>newvalue).get(newvalue, (newv, oldv) => {
-						this.changed(newv, oldv);
-					}, false);
-					*/
-					LangUtils.follow(this, newvalue);
-					newvalue = newvalue.get();
-				}
-
-				if (this.initialized)
-					this.changed(newvalue, oldvalue);
-			}
 			this.debugOut();
 		}
 
 /*
-		fireChanged (newv : any, oldv: any) {
-			this.changed(newv, oldv, this);
-		}
-*/
-
 		get (): any;
 		get (caller: Base, onchange: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any;
 		get (caller?: Base, onchange?: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any {
@@ -101,7 +69,7 @@ module NOA {
 			else
 				return super.get(caller, onchange, fireInitialEvent);
 		}
-
+*/
 		live () {
 			if(this.parent)
 				this.parent.live();
@@ -118,34 +86,14 @@ module NOA {
 			return this;
 		}
 
-		free () {
-			if(this.hasPlainValue())
-				LangUtils.unfollow(this, this.value);
-
-			if(this.value instanceof Base)
-				this.value.die();
-
-			//this.changed(undefined); //or fireChanged?
-			super.free();
-		}
-
 		toAST(): Object {
 			return Serializer.serialize(this.get());
 		}
 
 		toString () : string {
 			return ("[Cell(" + this.noaid +"): " +
-			   (this.parent ? this.parent.toString() + "#" + this.index : "") +
-			   "=" + this.value +"]");
-		}
-
-
-		isError(): bool {
-			return false; //TODO: check expression?
-		}
-
-		asError(): ErrorValue {
-			return <ErrorValue> Util.notImplemented();
+				(this.parent ? this.parent.toString() + "#" + this.index : "") +
+				"=" + this.value +"]");
 		}
 
 	}

@@ -2,20 +2,51 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/src/base.js" />
+        <item url="file://$PROJECT_DIR$/src/transformations/map.js" />
+        <item url="file://$PROJECT_DIR$/src/transformations/distinct.js" />
+        <item url="file://$PROJECT_DIR$/src/noa.js" />
+        <item url="file://$PROJECT_DIR$/src/transformations/tail.js" />
+        <item url="file://$PROJECT_DIR$/src/transformations/join.js" />
+        <item url="file://$PROJECT_DIR$/src/scope.js" />
+        <item url="file://$PROJECT_DIR$/src/transformations/reverse.js" />
+        <item url="file://$PROJECT_DIR$/src/transformations/sort.js" />
+        <item url="file://$PROJECT_DIR$/src/binding.js" />
+        <item url="file://$PROJECT_DIR$/src/transformations/transformations.js" />
+        <item url="file://$PROJECT_DIR$/src/transformations/filter.js" />
+        <item url="file://$PROJECT_DIR$/src/record.js" />
+        <item url="file://$PROJECT_DIR$/src/serializer.js" />
+        <item url="file://$PROJECT_DIR$/src/list.js" />
         <item url="file://$PROJECT_DIR$/src/util.js" />
+        <item url="file://$PROJECT_DIR$/src/cell.js" />
+        <item url="file://$PROJECT_DIR$/src/transformations/subset.js" />
+        <item url="file://$PROJECT_DIR$/src/variable.js" />
+        <item url="file://$PROJECT_DIR$/src/aggregations/aggregations.js" />
+        <item url="file://$PROJECT_DIR$/src/containers.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/public/noa/expression.js" />
-      <root url="file://$PROJECT_DIR$/public/noa/aggregations.js" />
-      <root url="file://$PROJECT_DIR$/public/noa/list.js" />
-      <root url="file://$PROJECT_DIR$/public/noa/base.js" />
-      <root url="file://$PROJECT_DIR$/public/noa/transformations.js" />
-      <root url="file://$PROJECT_DIR$/public/noa/record.js" />
-      <root url="file://$PROJECT_DIR$/public/noa/noa.js" />
-      <root url="file://$PROJECT_DIR$/public/noa/binding.js" />
-      <root url="file://$PROJECT_DIR$/public/noa/cell.js" />
+      <root url="file://$PROJECT_DIR$/src/transformations/map.js" />
+      <root url="file://$PROJECT_DIR$/src/base.js" />
+      <root url="file://$PROJECT_DIR$/src/transformations/distinct.js" />
+      <root url="file://$PROJECT_DIR$/src/transformations/tail.js" />
+      <root url="file://$PROJECT_DIR$/src/noa.js" />
+      <root url="file://$PROJECT_DIR$/src/transformations/join.js" />
+      <root url="file://$PROJECT_DIR$/src/scope.js" />
+      <root url="file://$PROJECT_DIR$/src/transformations/reverse.js" />
+      <root url="file://$PROJECT_DIR$/src/binding.js" />
+      <root url="file://$PROJECT_DIR$/src/transformations/sort.js" />
+      <root url="file://$PROJECT_DIR$/src/transformations/transformations.js" />
+      <root url="file://$PROJECT_DIR$/src/record.js" />
+      <root url="file://$PROJECT_DIR$/src/transformations/filter.js" />
+      <root url="file://$PROJECT_DIR$/src/serializer.js" />
+      <root url="file://$PROJECT_DIR$/src/list.js" />
+      <root url="file://$PROJECT_DIR$/src/cell.js" />
       <root url="file://$PROJECT_DIR$/src/util.js" />
+      <root url="file://$PROJECT_DIR$/src/variable.js" />
+      <root url="file://$PROJECT_DIR$/src/transformations/subset.js" />
+      <root url="file://$PROJECT_DIR$/src/containers.js" />
+      <root url="file://$PROJECT_DIR$/src/aggregations/aggregations.js" />
     </CLASSES>
     <SOURCES />
   </library>

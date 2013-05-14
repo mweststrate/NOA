@@ -62,6 +62,7 @@ module NOA {
 		unlisten(other: IBase, event?: string);
 
 		on(ev: string, caller: IBase, callback: Function): Binding;
+		onFree(caller: Base, callback: Function);
 	}
 
 	export class Base implements IBase {
@@ -217,7 +218,7 @@ module NOA {
 			return this;
 		}
 
-		uses (that: Base) : Base{
+		uses (that: IBase) : IBase{
 			if (that) {
 				that.live();
 				this.onFree(this, () => that.die());
