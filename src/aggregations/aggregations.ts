@@ -3,7 +3,7 @@ module NOA {
 
 	//TODO: aggregations should listen to input arguments if applicable
 
-	export class ListAggregation extends ValueContainer { //Generic on return type!
+	export class ListAggregation extends ValueContainer { //TODO: should be variable //Generic on return type!
 		//TODO: make aggregations evaluate on first evaluation
 
 		source: IList; //TODO: remove parent?
@@ -32,19 +32,20 @@ module NOA {
 			this.source.each(this, this.onSourceInsert);
 		}
 
-		onSourceInsert(index: number, value, cell: Cell) { }
+		onSourceInsert(index: number, value) { }
 
 		onSourceRemove(index: number, value) { }
 
 		onSourceMove(from: number, to: number) { }
 
-		onSourceSet(index: number, newvalue, oldvalue, cell: Cell) { }
+		onSourceSet(index: number, newvalue, oldvalue) { }
 
-		updateValue(newvalue, cell?: Cell) {
+		updateValue(newvalue) {
 			if (newvalue != this.value) {
 				var old = this.value;
 				this.value = newvalue;
 
+				/*TODO: origin stuff
 				var origin: CellContainer = null;
 				if (cell)
 					origin = cell.getOrigin();
@@ -52,7 +53,8 @@ module NOA {
 					origin = (<ValueContainer>newvalue).getOrigin();
 
 				this.setOrigin(origin);
-				this.changed(newvalue, old);
+				*/
+				this.changed(newvalue, old);//TODO: fix: .get() if needed (newvalue can be variable)
 			}
 		}
 
@@ -223,21 +225,19 @@ module NOA {
 
 		findNewMax () {
 			var max = -1 * (1/0); // -INF
-			var maxcell = null;
 
 			this.source.each(this, (index, v, cell) => {
 				if (Util.isNumber(v))
 					if (v > max) {
 						max = v;
-						maxcell = cell;
 					}
 			})
-			this.updateValue(max, maxcell);
+			this.updateValue(max);
 		}
 
-		onSourceInsert(index: number, value, cell) {
+		onSourceInsert(index: number, value) {
 			if (Util.isNumber(value) && value > this.value)
-				this.updateValue(value, cell);
+				this.updateValue(value);
 		}
 
 		onSourceRemove(index: number, value) {
@@ -267,22 +267,20 @@ module NOA {
 		}
 
 		findNewMin () {
-			var min = 1 * (1/0); // +NF
-			var mincell = null;
+			var min = 1 * (1/0); // +INF
 
 			this.source.each(this, (index, v, cell) => {
 				if (Util.isNumber(v))
 					if (v < min) {
 						min = v;
-						mincell = cell;
 					}
 			})
-			this.updateValue(min, mincell);
+			this.updateValue(min);
 		}
 
-		onSourceInsert(index: number, value, cell:Cell) {
+		onSourceInsert(index: number, value) {
 			if (Util.isNumber(value) && value < this.value)
-				this.updateValue(value, cell);
+				this.updateValue(value);
 		}
 
 		onSourceRemove(index: number, value) {
