@@ -14,8 +14,8 @@ module NOA {
 			this.unlisten(source, 'set');
 		}
 
-		onSourceInsert (index, value, cell) {
-			this.insert(this.cells.length - index, cell);
+		onSourceInsert (index, value) {
+			this.insert(this.cells.length - index, this.source.cell(index));
 		}
 
 		onSourceRemove (index) {

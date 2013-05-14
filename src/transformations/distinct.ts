@@ -19,11 +19,11 @@ module NOA {
 			return value.toString();
 		}
 
-		onSourceInsert (index : number, value, cell) {
+		onSourceInsert (index : number, value) {
 			var key = this.toKey(value);
 			var has = key in this.occ;
 			if (!has) {
-				this.add(value, cell);
+				this.add(value);
 				this.occ[key] = 1;
 			}
 			else
@@ -43,9 +43,9 @@ module NOA {
 		}
 
 
-		onSourceSet(index: number, newvalue, origvalue, cell) {
+		onSourceSet(index: number, newvalue, origvalue) {
 			this.onSourceRemove(index, origvalue);
-			this.onSourceInsert(index, newvalue, cell);
+			this.onSourceInsert(index, newvalue);
 		}
 
 		toAST(): Object {

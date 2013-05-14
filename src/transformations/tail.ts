@@ -14,13 +14,13 @@ module NOA {
 			this.startup();
 		}
 
-		onSourceInsert(index: number, _, cell) {
+		onSourceInsert(index: number, _) {
 			if (index < this.start){
 				if (this.source.cells.length > this.start)
 					this.insert(0, this.source.get(this.start));
 			}
 			else
-				this.insert(index - this.start, cell);
+				this.insert(index - this.start, this.source.cell(index));
 		}
 
 		onSourceRemove(index: number, value) {

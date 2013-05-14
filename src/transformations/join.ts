@@ -53,8 +53,8 @@ module NOA {
 		setupSublist (index : number, sublist: List) {
 			var cell = this.source.cell(index); //the cell knows our position in lmap reliable when handling events, so the join transformation does not need to track that.
 
-			var sublistInsert = function (subindex, _, subcell) {
-				this.insert(this.getOffset(cell.index, subindex), subcell);
+			var sublistInsert = function (subindex, _) {
+				this.insert(this.getOffset(cell.index, subindex));
 				this.updateLmap(cell.index, +1);
 			}
 
@@ -82,13 +82,13 @@ module NOA {
 			}
 		}
 
-		onSourceInsert(index : number, value, cell) {
+		onSourceInsert(index : number, value) {
 			if (!(value instanceof List)) { //plain value, insert right away
 				this.insertLmap(index, 1);
-				this.insert(this.getOffset(index), value, cell);
+				this.insert(this.getOffset(index), value);
 			}
 			else { //list
-				this.insertLmap(index, (<List>value).cells.length);
+				this.insertLmap(index, (<IList>value).size());
 				this.setupSublist(index, value);
 			}
 		}
@@ -104,7 +104,7 @@ module NOA {
 				this.remove(start);
 		}
 
-		onSourceSet(index: number, newvalue, oldvalue, cell) {
+		onSourceSet(index: number, newvalue, oldvalue) {
 			var curlength = this.getLength(index);
 			var newlength = newvalue instanceof List ? (<List>newvalue).cells.length : 1;
 			this.updateLmap(index, newlength - curlength);

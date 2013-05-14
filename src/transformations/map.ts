@@ -22,9 +22,9 @@ module NOA {
 			this.startup();
 		}
 
-		onSourceInsert (index : number, _, source) {
+		onSourceInsert (index : number, _) {
 			var scope = Scope.newScope(this.basescope);
-			scope.set(this.varname, source);
+			scope.set(this.varname, this.source.cell(index));
 
 			var a;
 			if (Util.isFunction(this.func))
@@ -34,7 +34,7 @@ module NOA {
 			else
 				throw "Map function should be JS function or expression"
 
-			this.insert(index, a, source); //cells that are assigned an expression automatically listen
+			this.insert(index, a); 
 		}
 
 		onSourceRemove(index: number, value) {

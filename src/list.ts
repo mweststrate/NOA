@@ -31,10 +31,10 @@ module NOA {
 			this.cells.splice(index, 0, cell);
 
 			this._updateIndexes(index +1);
-			this.fire(ListEvent.INSERT.toString(), index, cell.get(), cell);
+			this.fire(ListEvent.INSERT.toString(), index, cell.get());
 
 			cell.get(this, (newvalue: any, oldvalue: any): void => {
-				this.fire(ListEvent.SET.toString(), cell.index, newvalue, oldvalue, cell);
+				this.fire(ListEvent.SET.toString(), cell.index, newvalue, oldvalue);
 			}, false);
 
 			this.debugOut();
@@ -105,7 +105,7 @@ module NOA {
 		}
 
 		/** events */
-		onInsert(caller: Base, cb: (index: number, value, cell: Cell) => void , fireInitialEvents? : bool) : List {
+		onInsert(caller: Base, cb: (index: number, value) => void , fireInitialEvents? : bool) : List {
 			this.on(ListEvent.INSERT.toString(), caller, cb);
 
 			if (fireInitialEvents !== false)
@@ -124,7 +124,7 @@ module NOA {
 			return this;
 		}
 
-		onSet(caller: Base, cb : (index : number, newvalue, oldvalue, cell: Cell) => void) : List{
+		onSet(caller: Base, cb : (index : number, newvalue, oldvalue) => void) : List{
 			this.on(ListEvent.SET.toString(), caller, cb);
 			return this;
 		}
@@ -151,9 +151,9 @@ module NOA {
 
 		/** util functions */
 		add(value: ValueContainer);
-		add(value: any, origin?: CellContainer);
-		add(value: any, origin?: CellContainer) {
-			this.insert(this.cells.length, value, origin);
+		add(value: any);
+		add(value: any) {
+			this.insert(this.cells.length, value);
 			//return this.cells.length - 1;
 			return this;
 		}

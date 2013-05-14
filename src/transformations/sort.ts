@@ -39,12 +39,12 @@ module NOA {
 		}
 
 		//reusable insert function
-		onSourceInsert (baseindex: number, value, cell : Cell, _knownindex? : number) {
+		onSourceInsert (baseindex: number, value, _knownindex? : number) {
 			var nidx = _knownindex;
 			if (nidx === undefined)
 				nidx = Util.binarySearch(this.cells, value, (a, b) => this.searcher(a,b));
 
-			this.insert(nidx, value, cell.getOrigin());
+			this.insert(nidx, value);
 			this.updateMapping(nidx, 1);
 			this.mapping.splice(baseindex, 0, nidx);
 		}
@@ -56,12 +56,12 @@ module NOA {
 			this.mapping.splice(baseindex, 1);
 		}
 
-		onSourceSet (index : number, value, _, cell) {
+		onSourceSet (index : number, value) {
 			var baseidx = this.mapping[index];
 			var nidx = Util.binarySearch(this.cells, value, (a, b) => this.searcher(a,b));
 			if (nidx != baseidx) {
 				this.onSourceRemove(index);
-				this.onSourceInsert(index, value, cell, nidx);
+				this.onSourceInsert(index, value, nidx);
 			}
 			else //just update
 				this.set(index, value);

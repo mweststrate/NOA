@@ -34,13 +34,13 @@ module NOA {
 			this.source.each(this, this.onSourceInsert);
 		}
 
-		onSourceInsert (index : number, value, cell: Cell) { }
+		onSourceInsert (index : number, value) { }
 
 		onSourceRemove(index: number, value) { }
 
 		onSourceMove(from : number, to : number) { }
 
-		onSourceSet(index: number, newvalue, oldvalue, cell: Cell) { }
+		onSourceSet(index: number, newvalue, oldvalue) { }
 
 		toAST(): Object {
 			Util.notImplemented();

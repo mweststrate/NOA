@@ -12,7 +12,7 @@ module NOA{
 		put(key : string, value : any) {
 			if (!this.has(key)) {
 				var cell = this.data[key] = new Cell(this, key, value, this);
-				this.keys.add(key, this);
+				this.keys.add(key);
 				this.fire(RecordEvent.PUT.toString() ,key, value, undefined);
 
 				cell.get(this, (newvalue, oldvalue) => {

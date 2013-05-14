@@ -78,7 +78,7 @@ module NOA {
 		}
 
 		//* Interface implementations */
-		onInsert(caller: Base, cb: (index: number, value, cell: Cell) => void , fireInitialEvents?: bool) {
+		onInsert(caller: Base, cb: (index: number, value) => void , fireInitialEvents?: bool) {
 			this.backingList.onInsert(caller, cb, fireInitialEvents);
 		}
 

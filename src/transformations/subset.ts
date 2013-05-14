@@ -37,14 +37,14 @@ module NOA {
 				this.insert(0, this.source.cell(this.begin))
 		}
 
-		onSourceInsert(index, value, cell) {
+		onSourceInsert(index, value) {
 			if (index < this.begin) { //Item inserted before the subset
 				this.removeLast();
 				this.addFirst();
 			}
 			else if (index >= this.begin && index < this.end) { //item inserted within the subset
 				this.removeLast();
-				this.insert(index - this.begin, cell);
+				this.insert(index - this.begin, this.source.cell(index));
 			}
 		}
 
