@@ -2,7 +2,13 @@
 
 module NOA {
 
-	export enum ListEvent { INSERT, REMOVE, MOVE, SET, FREE }
+	export enum ListEvent {
+		INSERT = 200,
+		REMOVE = 201,
+		MOVE = 202,
+		SET = 203,
+		FREE = 204
+	}
 
 	export class List extends CellContainer implements IValue, IList, IMutableList {
 
@@ -19,7 +25,6 @@ module NOA {
 		//Inherit invariant for internal mappings in for example filter and join.
 
 		/** core functions */
-		insert(index: number, value: ValueContainer): List;
 		insert(index: number, value: any, origin?: CellContainer): List;
 		insert(index: number, value: any, origin?: CellContainer): List {
 			this.debugIn("Insert at " + index + ": " + value);
@@ -41,8 +46,7 @@ module NOA {
 			return this;
 		}
 
-		set (index: number, value: ValueContainer): List;
-		set (index: number, value: any, origin: CellContainer): List;
+		set (index: number, value: any, origin?: CellContainer): List;
 		set (index: number, value: any, origin?: CellContainer): List {
 			this.debugIn("Set at " + index + ": " + value);
 			if (index < 0 || index >= this.cells.length)
@@ -150,8 +154,6 @@ module NOA {
 		}
 
 		/** util functions */
-		add(value: ValueContainer);
-		add(value: any);
 		add(value: any) {
 			this.insert(this.cells.length, value);
 			//return this.cells.length - 1;
@@ -296,15 +298,17 @@ module NOA {
 			return new ListMax(this);
 		}
 
+		/*
 		avg () : Expression {
 			var scope = Scope.newScope(null);
-			scope.set("this", new Variable/*TODO: constant*/(ValueType.Any, this));
+			scope.set("this", new Constant(ValueType.Any, this));
 			return <Expression> new Expression(function() {
 				var count = this.variable("this", "numbercount");
 				var sum = this.variable("this", "sum");
 				return count > 0 ? (sum / count) : 0; //MWE: wrong div result?
 			}, scope).setAST(Serializer.serializeFunction("avg",[this])).uses(this);
-		}
+			}
+		*/
 
 		count () {
 			return new ListCount(this);
@@ -314,7 +318,7 @@ module NOA {
 			return new ListFirst(this);
 		}
 
-		numbercount () : ValueContainer {
+		numbercount () : IValue {
 			return new ListNumberCount(this);
 		}
 

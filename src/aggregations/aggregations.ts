@@ -3,13 +3,13 @@ module NOA {
 
 	//TODO: aggregations should listen to input arguments if applicable
 
-	export class ListAggregation extends ValueContainer { //TODO: should be variable //Generic on return type!
+	export class ListAggregation extends PlainValue { //TODO: should be variable //Generic on return type!
 		//TODO: make aggregations evaluate on first evaluation
 
 		source: IList; //TODO: remove parent?
 
-		constructor(source: IList) {
-			super();
+		constructor(source: IList, initialValue: any) {
+			super(initialValue);
 			//TODO: register at parent so the aggregate can be freed
 			this.source = source;
 			this.uses(source);
@@ -54,21 +54,19 @@ module NOA {
 
 	export class ListCount extends ListAggregation {
 
-		value: number = 0;
-
 		constructor(source: List) {
-			super(source);
+			super(source, 0);
 			this.unlisten(source, ListEvent.MOVE.toString())
 			this.unlisten(source, ListEvent.SET.toString())
 			this.startup();
 		}
 
 		onSourceInsert(index: number, value) {
-			this.set(this.value + 1)
+			this.set(this.get() + 1)
 		}
 
 		onSourceRemove(index: number, value) {
-			this.set(this.value - 1)
+			this.set(this.get() - 1)
 		}
 
 		toAST(): Object {
@@ -80,10 +78,8 @@ module NOA {
 	//TODO: just replace by numberfilter().count()
 	export class ListNumberCount extends ListAggregation {
 
-		value: number = 0;
-
 		constructor(source: IList) {
-			super(source);
+			super(source, 0);
 			this.unlisten(source, ListEvent.MOVE.toString())
 			this.startup();
 		}
@@ -114,10 +110,8 @@ module NOA {
 
 	export class ListSum extends ListAggregation {
 
-		value: number = 0;
-
 		constructor(source: IList) {
-			super(source);
+			super(source, 0);
 			this.unlisten(source, ListEvent.MOVE.toString())
 			this.startup();
 		}
@@ -197,10 +191,8 @@ module NOA {
 
 	export class ListMax extends ListAggregation {
 
-		value: number = 0;
-
 		constructor(source: List) {
-			super(source);
+			super(source, undefined);
 			this.unlisten(source, ListEvent.MOVE.toString())
 
 			this.findNewMax();
@@ -240,10 +232,8 @@ module NOA {
 
 	export class ListMin extends ListAggregation {
 
-		value: number = 0;
-
 		constructor(source: List) {
-			super(source);
+			super(source, undefined);
 			this.unlisten(source, ListEvent.MOVE.toString())
 
 			this.findNewMin();
@@ -288,7 +278,7 @@ module NOA {
 		realindex : number;
 
 		constructor(source: IList, index: number) {
-			super(source);
+			super(source, undefined);
 			this.unlisten(source, ListEvent.SET.toString())
 			this.index = index;
 			this.updateRealIndex();

@@ -7,7 +7,7 @@ module NOA {
 
 	//TODO: input arguments which are not NOA objects, should be converted to static values automatically,
 	//which support a get callback which is in fact ignored always.
-
+	/*
 	export class Expression extends ValueContainer implements IValue {
 		func : Function;
 		scope : Object;
@@ -17,9 +17,6 @@ module NOA {
 		readTracker = null;
 
 		//TODO: scope should not be argument tot the expression, but assigned by Cell.Set
-		/**
-			func supports both synchronous and asynchronos invocation pattern. In the latter case, undefined should be return to indicate that we should wait on the callback
-		*/
 
 		//Sync pattern
 		constructor(func: () => any, scope?: Scope);
@@ -109,7 +106,7 @@ module NOA {
 			 else
 			 return this.params[name] =  thing;
 			 */
-
+/*
 		}
 
 		free() {
@@ -133,4 +130,5 @@ module NOA {
 			throw new Error("toAST of expression should be prevented!");
 		}
 	}
+	*/
 }

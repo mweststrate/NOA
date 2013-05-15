@@ -39,23 +39,13 @@ module NOA {
 		}
 	}
 
-	export class ValueContainer extends AbstractValue implements IPlainValue {
+	export class PlainValue extends AbstractValue implements IPlainValue {
 		value: any;
 
-		constructor() {
+		constructor(initialValue: any) {
 			super();
+			this.set(initialValue);
 		}
-
-		/*
-		origin: CellContainer;
-		public getOrigin(): CellContainer {
-			return this.origin;
-		}
-
-		public setOrigin(origin: CellContainer) {
-			this.origin = origin;
-		}
-		*/
 
 		public get (): any;
 		public get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
@@ -64,28 +54,35 @@ module NOA {
 			if (onChange)
 				this.onChange(caller, onChange);
 
-			if (onChange && fireInitialEvent !== false)
-				onChange.call(caller, this.value, undefined);
+			var value = LangUtils.dereference(this.value);
 
-			return this.value;
+			if (onChange && fireInitialEvent !== false)
+				onChange.call(caller, value, undefined);
+
+			return value;
 		}
 
-		set(newvalue) {
-			if (newvalue != this.value) { //TODO: langutils.equal
-				//TODO: autoFollow other plain values
-				var old = this.value;
+		set(newvalue : any) {
+			if (newvalue != this.value) {
+				var oldvalue = this.value;
+
+				var ov = this.get();
+				var nv = LangUtils.dereference(newvalue);
+
 				this.value = newvalue;
 
-				/*TODO: origin stuff
-				var origin: CellContainer = null;
-				if (cell)
-					origin = cell.getOrigin();
-				else if (newvalue instanceof ValueContainer)
-					origin = (<ValueContainer>newvalue).getOrigin();
+				if (LangUtils.is(oldvalue, ValueType.PlainValue))
+					LangUtils.unfollow(this, oldvalue);
+				if (LangUtils.is(newvalue, ValueType.PlainValue));
+					LangUtils.follow(this, newvalue);
 
-				this.setOrigin(origin);
-				*/
-				this.changed(newvalue, old);//TODO: fix: .get() if needed (newvalue can be variable)
+				if (newvalue instanceof Base)
+					newvalue.live();
+				if (oldvalue instanceof Base)
+					oldvalue.die();
+
+				if (ov != nv)
+					this.changed(nv, ov);
 			}
 		}
 
@@ -107,12 +104,6 @@ module NOA {
 			var value = this.get();
 			if (value === undefined || value === null)
 				return value;
-			switch(Util.type(value)) {
-				case "boolean":
-				case "string":
-				case "number":
-					return value;
-			}
 			return value.toJSON();
 		}
 
@@ -120,12 +111,13 @@ module NOA {
 			return ValueType.PlainValue;
 		}
 	}
-/*
-	export class Constant extends ValueContainer implements IPlainValue {
+
+	export class Constant extends AbstractValue implements IPlainValue {
+		value : any;
 
 		constructor(value : any) {
 			super();
-			this.value = value;
+			this.value = LangUtils.dereference(value);
 		}
 
 		public changed(...args: any[]) {
@@ -133,11 +125,15 @@ module NOA {
 			return this;
 		}
 
-		onChange(caller: Base, callback: (newvalue: any, oldvalue: any) => void ): void {
+		get(caller?: Base, callback?: (newvalue: any, oldvalue: any) => void, fireInitialEvent? : bool): any {
 			//onChange is never triggered, so do not register an event
+			if (callback && fireInitialEvent !== false)
+				callback.call(caller, this.value, undefined);
+
+			return this.value;
 		}
 	}
-*/
+
 	/**
 	This class just follows some IValue and just wraps it. The advantage is that others can just register events
 	on this object, regardless whether the thing that represents this variable is reassigned later

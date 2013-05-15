@@ -89,9 +89,10 @@ module NOA {
 			}
 		}
 
-		static map (collection : Object, cb : (value : any, key : string) => any, scope? : Object) : Object;
-		static map (collection : any[], cb : (value : any, index : number) => any, scope? : Object) : any[];
-		static map (collection : any, cb : (value : any, key : any) => any, scope? : Object) : any {
+		//TODO: kill map/filter/each? are provided by default already in typescript
+		static map(collection: any[], cb: (value: any, index: number) => any, scope?: Object): any[];
+		static map(collection : Object, cb : (value : any, key : string) => any, scope? : Object) : Object;
+		static map(collection : any, cb : (value : any, key : any) => any, scope? : Object) : any {
 			return Util.each(collection, cb, scope, 'm');
 		}
 

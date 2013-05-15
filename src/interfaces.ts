@@ -9,7 +9,10 @@ module NOA {
 		Any
 	}
 
-	export enum PlainValueEvent { UPDATE, FREE }
+	export enum PlainValueEvent {
+		UPDATE = 100,
+		FREE = 101
+	}
 
 	export interface IValue extends IBase {
 		toJSON(): any;
@@ -52,20 +55,21 @@ module NOA {
 	}
 
 	export class LangUtils {
-		static is(value: IValue, type: ValueType) {
+		static is(value: any, type: ValueType) {
+			if (!(value instanceof Base))
+				return type == ValueType.Any;
+
 			switch(type) {
 				case ValueType.Any: return true;
 				case ValueType.Error: return this instanceof ErrorValue;
-				case ValueType.List: return this['onInsert'];//MWE: typescript cannot check against interfaces
-				case ValueType.Record: return this['onPut'];
-				case ValueType.PlainValue: return this['onUpdate'];
+				case ValueType.List: return this['insert'];//MWE: typescript cannot check against interfaces
+				case ValueType.Record: return this['put'];
+				case ValueType.PlainValue: return this['get'];
 			}
 			return Util.notImplemented();
 		}
 
-		static toValue(value: any): any {
-
-			return value; //TODO: not needed for variables anymore
+		static toValue(value: any): IValue {
 
 			if (value instanceof Base) //MWE: todo: bwegh...
 				return <IValue> value;
@@ -75,7 +79,32 @@ module NOA {
 			//TODO: check primitives
 			//TODO: make primitives pointer equal by sharing?
 
-			//return new Constant(value);
+			return new Constant(value);
+		}
+
+		/**
+			Converts any value to the value it is ultimatily representing.
+			Variables, Constants and PlainValues return their actual contents (recursively).
+
+			Other values will be returned directly
+		*/
+		static dereference(v: IValue) : any { //TODO: better name?
+				if (v === null || v === undefined)
+					return v;
+				if (Util.isPrimitive(v))
+					return v;
+				if (v.is(ValueType.List) || v.is(ValueType.Record) || v.is(ValueType.Error)) {
+					if (v instanceof Variable) //compare contents, not variables
+						return dereference((<Variable>v).value);
+					return v;
+				}
+				if (v.is(ValueType.PlainValue))
+					return (<IPlainValue>v).get();
+				throw new Error("Uncomparable: " + v);
+			}
+
+		static equal(left: IValue, right: IValue): bool {
+			return dereference(left) == dereference(right);
 		}
 
 		static followHelper(dest: IValue, source: IValue, follow: bool) {
@@ -114,6 +143,39 @@ module NOA {
 			}
 			else {
 				dest.unlisten(source, event);
+			}
+		}
+
+		private static parseArguments(argtypes, args: any[]) : IValue[] {
+			//converts to IValue
+			//Throws if not correct
+			return Util.map(args, LangUtils.toValue);
+		}
+
+		static define(name: string, argtypes : ValueType[], result: ValueType, impl : (cb: (newvalue: any)=> void, ...args:any[]) => any, memoize: bool = false): Function {
+
+			return Lang[name] = function (...args: any[]) {
+				var res = new Variable(result, undefined);
+				var cbcalled = false;
+
+				var cb = function (newvalue) {
+					cbcalled = true;
+					res.set(LangUtils.toValue(newvalue));
+				}
+
+				try {
+
+					args = parseArguments(argtypes, args);
+					args.forEach(arg => res.uses(arg));
+					args.unshift(cb);
+
+					var res = impl.apply(null, args); //TODO: scope?
+					if (res !== undefined && cbcalled == false)
+						cb(res);
+				}
+				catch (e) {
+					res.set(new ErrorValue(e));
+				}
 			}
 		}
 	}

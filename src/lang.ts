@@ -7,8 +7,15 @@ module NOA {
 			return null;
 		}
 
-		static eq(left: any, right: any):IValue { //TODO: variable
-			return new Variable(ValueType.Any,  left == right); //TODO: return type boolean
+		static eq(left: any, right: any):IValue { //TODO: variable //TODO can cb be declared as type?
+			return LangUtils.define(
+				"eq",
+				[ValueType.Any, ValueType.Any],
+				ValueType.PlainValue, //bool
+				(cb: (res) => void, l: IValue, r: IValue) => {
+					//TODO:
+				} ,
+				false)(left, right);
 		}
 
 		static list(...vals: IValue[]): List {
@@ -26,8 +33,11 @@ module NOA {
 			);
 		}
 
-		static div(left: ValueContainer, right: ValueContainer): IValue {
-			return <IValue> <any> /*TODO: return ValueContainer*/ new Expression((cb) => {
+		
+		static div(left: IValue, right: IValue): IValue {
+			return null;
+			/*
+			return new Expression((cb) => {
 				return (
 					left.get(this, (newleft, _) => {
 						cb(newleft / right.get());
@@ -37,7 +47,7 @@ module NOA {
 						cb(left.get() / newright);
 					}, false)
 				);
-			}).uses(left).uses(right);
+			}).uses(left).uses(right);*/
 		}
 
 		static variable(varname: string): IValue {
@@ -48,12 +58,12 @@ module NOA {
 			return null;
 		}
 
-		static sum(list: IList) : ValueContainer {
+		static sum(list: IList) : IValue {
 			//TODO: memoize
 			return new ListSum(list);
 		}
 
-		static numbercount(list: IList): ValueContainer {
+		static numbercount(list: IList): IValue {
 			//TODO: memoize
 			return new ListNumberCount(list);
 		}
@@ -75,7 +85,7 @@ module NOA {
 							0, //new Constant(0),
 							Lang.div(
 								Lang.sum(list),
-								<ValueContainer> Lang.variable("count") //TODO: make cast-or-default functions
+								Lang.variable("count") //TODO: make cast-or-default functions
 							)
 						)
 					)
@@ -95,7 +105,7 @@ module NOA {
 						0, //new Constant(0),
 						Lang.div(
 							Lang.sum(list),
-							<ValueContainer> Lang.variable("count") //TODO: make cast-or-default functions
+							Lang.variable("count") //TODO: make cast-or-default functions
 						)
 					)
 				)

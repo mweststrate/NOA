@@ -3,11 +3,11 @@
 module NOA {
 export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO: IRecord...*/ {
 
-	value: any;
+	value: IValue;
 	hasPrimitive: bool;
-		
 
-		constructor(private expectedType : ValueType, value: any) {
+
+		constructor(private expectedType : ValueType, value: IValue) {
 			//TODO: null type?
 			super();
 			this.value = value;
@@ -42,49 +42,37 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			return this.value.asError();
 		}
 
-		set(newvalue: any, withEvents: bool) {
-			if (this.value != newvalue) {
+		set(newvalue: IValue, withEvents: bool = true) {
+			//Q: should use Lang.equal? -> No, because we should setup the new events
+			if (newvalue != this.value) {
 				var oldvalue = this.value;
-				var oldprimitive = this.hasPrimitive;
-				var newprimitive = this.hasPrimitive = Util.isPrimitive(newvalue);
 
 				var combineChangeEvent =
-					(newprimitive || LangUtils.is(newvalue, ValueType.PlainValue)) &&
-					(oldprimitive || LangUtils.is(oldvalue, ValueType.PlainValue));
+					(LangUtils.is(newvalue, ValueType.PlainValue)) &&
+					(LangUtils.is(oldvalue, ValueType.PlainValue));
 
-				if (!oldprimitive)
-					this.teardown(oldvalue, withEvents,combineChangeEvent);
+				this.teardown(oldvalue, withEvents,combineChangeEvent);
 
-				if (!newprimitive) {
-					if (newvalue.isError()) {
-						//TODO: creating new errors for each new type might be expensive?
-						this.setup(newvalue.asError().wrap("Expected ", this.expectedType, "but found error", newvalue.asError().getRootCause()), true);
-					}
-					else if (!LangUtils.is(newvalue, this.expectedType)) {
-						this.setup(new ErrorValue("Expected ", this.expectedType, "but found:", newvalue), true);
-					}
-					else
-						this.setup(newvalue, withEvents, combineChangeEvent);
+				if (newvalue.isError()) {
+					//TODO: creating new errors for each new type might be expensive?
+					this.setup(newvalue.asError().wrap("Expected ", this.expectedType, "but found error", newvalue.asError().getRootCause()), true);
+				}
+				else if (!LangUtils.is(newvalue, this.expectedType)) {
+					this.setup(new ErrorValue("Expected ", this.expectedType, "but found:", newvalue), true);
+				}
+				else
+					this.setup(newvalue, withEvents, combineChangeEvent);
+
+				if (combineChangeEvent && withEvents) {
+					var nv = (<IPlainValue>newvalue).get();
+					var ov = (<IPlainValue>oldvalue).get();
+					if (nv != ov)
+						this.fire('change', nv, ov); //TODO: do not use changed but some constant!
 				}
 
-				if (combineChangeEvent && withEvents)
-					this.fire('change',
-						newprimitive
-						? newvalue
-						: (<IPlainValue>newvalue).get(),
-						oldprimitive
-						? oldvalue
-						: (<IPlainValue>oldvalue).get()
-					); //TODO: do not use changed but some constant!
-
-				//there was no setup earlier
-				else if (newprimitive && !combineChangeEvent && withEvents)
-					this.fire('change', newvalue, undefined); //TODO: no changed!
-
-
-				if (!newprimitive && newvalue)
+				if (newvalue)
 					newvalue.live();
-				if (!oldprimitive && oldvalue)
+				if (oldvalue)
 					oldvalue.die();
 			}
 		}
@@ -135,8 +123,9 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 
 			}
 			if (value.is(ValueType.PlainValue)) {
-				if (!suppressPrimitiveGet)
-					this.fire("change", undefined, (<IPlainValue>value).get());
+				var ov = (<IPlainValue>value).get();
+				if (!suppressPrimitiveGet && ov !== undefined)
+					this.fire("change", undefined, ov);
 			}
 		}
 
@@ -158,8 +147,9 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 				//TODO: Record
 			}
 			if (value.is(ValueType.PlainValue)) {
-				if (!suppressPrimitiveGet)
-					this.fire("change",(<IPlainValue>value).get(), undefined);
+				var nv = (<IPlainValue>value).get();
+				if (!suppressPrimitiveGet && nv !== undefined)
+					this.fire("change", nv, undefined);
 			}
 		}
 

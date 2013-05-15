@@ -22,7 +22,7 @@ module NOA {
 
 			this.error = Util.map(args, (arg, i) => i % 2 == 1 ? "'" + arg + "'" : ""+arg).join(" ");
 
-			this.backingPlain = new Variable(ValueType.Any, this.error); //new Constant(this);
+			this.backingPlain = new Constant(this.error); 
 
 			this.backingList = new List();
 			this.backingList.add(this);
