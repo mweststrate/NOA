@@ -13,8 +13,9 @@ module NOA {
 			return new Scope(basescope);
 		}
 
-		static pushScope(scope) {
+		static pushScope(scope) : Scope {
 			Scope.SCOPE.unshift(scope);
+			return scope;
 		}
 
 		static popScope() {

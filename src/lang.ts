@@ -2,6 +2,46 @@
 module NOA {
 	export class Lang {
 
+		static let(expr : IValue, varname : string, stats: IValue) {
+			return LangUtils.define(
+				"eq",
+				[ValueType.Any, ValueType.PlainValue, ValueType.Any],
+				ValueType.Any,
+				(cb: (res) => void, expr : IValue, varname : IPlainValue, stats: IValue) => {
+					Util.assert(varname && LangUtils.is(varname, ValueType.PlainValue));
+
+					var realname = varname.get();
+					Util.assert(Util.isString(realname));
+
+					var scope = Scope.pushScope(Scope.newScope(Scope.getCurrentScope()))
+					try {
+						scope.set(realname, expr);
+						cb(stats);
+					} finally {
+						Scope.popScope();
+					}
+				} ,
+				false
+			)(expr, varname, stats);
+		}
+
+		static evalJSExpression(expr : IValue) {
+			return LangUtils.define(
+				"eq",
+				[ValueType.PlainValue],
+				ValueType.Any,
+				(cb: (res) => void, expr : IPlainValue) => {
+					Util.assert(expr && LangUtils.is(expr, ValueType.PlainValue));
+
+					expr.get(null, js => {
+						Util.assert(Util.isString(js));
+						cb(eval(js))
+					});
+				} ,
+				false
+			)(expr);
+		}
+
 		static if_(cond: any, iftrue: any, iffalse: any): IValue {
 			//TODO: make sure iftrue/ iffalse evaluate lazy..
 			return null;
@@ -15,7 +55,8 @@ module NOA {
 				(cb: (res) => void, l: IValue, r: IValue) => {
 					//TODO:
 				} ,
-				false)(left, right);
+				false
+			)(left, right);
 		}
 
 		static list(...vals: IValue[]): List {
@@ -33,7 +74,7 @@ module NOA {
 			);
 		}
 
-		
+
 		static div(left: IValue, right: IValue): IValue {
 			return null;
 			/*
@@ -51,10 +92,6 @@ module NOA {
 		}
 
 		static variable(varname: string): IValue {
-			return null;
-		}
-
-		static let(expr: any, varname: string, stat: any /* TODO:?IValue*/): IValue {
 			return null;
 		}
 
@@ -76,8 +113,8 @@ module NOA {
 				"avg",
 				[ValueType.List, ValueType.List],
 				ValueType.PlainValue,
-				function(list: Variable){
-					Lang.let(
+				function(cb, list: Variable){
+					return Lang.let(
 						Lang.numbercount(list),
 						"count",
 						Lang.if_(

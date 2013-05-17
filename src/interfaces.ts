@@ -146,6 +146,11 @@ module NOA {
 			}
 		}
 
+		static clone(item: IValue, cb: (res : IValue) => void) {
+			var ast = NOA.Serializer.serialize(item);
+			new NOA.Unserializer(Util.notImplemented).unserialize(ast, cb);
+		}
+
 		private static parseArguments(argtypes, args: any[]) : IValue[] {
 			//converts to IValue
 			//Throws if not correct
@@ -158,6 +163,8 @@ module NOA {
 				var res = new Variable(result, undefined);
 				var cbcalled = false;
 
+				var scope : Scope = Scope.getCurrentScope(); //TODO: maybe just pass scopes around?
+
 				var cb = function (newvalue) {
 					cbcalled = true;
 					res.set(LangUtils.toValue(newvalue));
@@ -169,7 +176,7 @@ module NOA {
 					args.forEach(arg => res.uses(arg));
 					args.unshift(cb);
 
-					var res = impl.apply(null, args); //TODO: scope?
+					var res = impl.apply(Lang, args);
 					if (res !== undefined && cbcalled == false)
 						cb(res);
 				}

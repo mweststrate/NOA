@@ -26,7 +26,24 @@ module NOA {
 			var scope = Scope.newScope(this.basescope);
 			scope.set(this.varname, this.source.cell(index));
 
-			var a;
+			if (this.func instanceof Base) { //Poor way expression check
+				LangUtils.clone(this.func, (clone : IValue) => {
+					this.insert(index, Lang.let(
+						this.source.cell(index),
+						this.varname,
+						clone
+					));
+				});
+			}
+			else if (Util.isFunction(this.func)) {
+				this.insert(index, Lang.let(
+					this.source.cell(index),
+					this.varname,
+					Lang.evalJSExpression(LangUtils.toValue( + this.func))
+				));
+			}
+			//TODO: support string and parse
+
 			/* TODO:
 			if (Util.isFunction(this.func))
 				a = new Expression(this.func, scope)
@@ -34,9 +51,8 @@ module NOA {
 				a = this.func;
 			else
 			*/
-				throw "Map function should be JS function or expression"
+			throw "Map function should be JS function or expression"
 
-			this.insert(index, a); 
 		}
 
 		onSourceRemove(index: number, value) {
@@ -48,7 +64,7 @@ module NOA {
 		}
 
 		toAST(): Object {
-			return this.toASTHelper("map", this.varname); //TODO: function
+			return this.toASTHelper("map", this.varname); //TODO: function, use toString for real funcs
 		}
 
 	}
