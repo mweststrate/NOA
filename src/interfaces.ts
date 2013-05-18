@@ -55,7 +55,7 @@ module NOA {
 	}
 
 	export class LangUtils {
-		static is(value: any, type: ValueType) {
+		static is(value: any, type: ValueType): bool {
 			if (!(value instanceof Base))
 				return type == ValueType.Any;
 
@@ -66,7 +66,7 @@ module NOA {
 				case ValueType.Record: return this['put'];
 				case ValueType.PlainValue: return this['get'];
 			}
-			return Util.notImplemented();
+			Util.notImplemented();
 		}
 
 		static toValue(value: any): IValue {

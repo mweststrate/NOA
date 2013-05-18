@@ -222,7 +222,7 @@ module NOA {
 			if (that) {
 				that.live();
 				this.onFree(this, () => that.die());
-				that.onFree(this, () => this.die()); //MWE: added, might cause problems
+				//that.onFree(this, () => this.die()); //MWE: added, might cause problems. Yess it does. Why..?
 			}
 			return this;
 		}

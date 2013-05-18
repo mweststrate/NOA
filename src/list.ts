@@ -53,7 +53,7 @@ module NOA {
 				throw new Error("Set out of bounds: " + index + " not in 0.." + this.cells.length)
 
 
-			this.cells[index].set(LangUtils.toValue(value));
+			this.cells[index].set(value);
 
 			this.debugOut();
 			return this;

@@ -53,6 +53,8 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 
 				this.teardown(oldvalue, withEvents,combineChangeEvent);
 
+				this.value = newvalue;
+
 				if (newvalue.isError()) {
 					//TODO: creating new errors for each new type might be expensive?
 					this.setup(newvalue.asError().wrap("Expected ", this.expectedType, "but found error", newvalue.asError().getRootCause()), true);

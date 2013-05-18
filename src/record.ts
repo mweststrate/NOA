@@ -23,7 +23,7 @@ module NOA{
 				},false)
 			}
 
-			else if (this.get(key) != value) {
+			else {
 				(<Cell>this.data[key]).set(value); //fires event
 			}
 		}

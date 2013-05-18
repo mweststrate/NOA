@@ -40,13 +40,13 @@ module NOA {
 */
 
 		//TODO: parse new value to List / Record if Array / Object
-		set(newvalue) {
+		set(newvalue: any) {
 			if(this.destroyed)
 				return;
 
 			this.debugIn("Receiving new value: " + newvalue);
 
-			super.set(newvalue, true);
+			super.set(LangUtils.toValue(newvalue), true);
 
 			this.debugOut();
 		}

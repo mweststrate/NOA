@@ -132,6 +132,12 @@ module NOA {
 
 			return this.value;
 		}
+
+		toJSON(): any {
+			if (this.value instanceof Base)
+				return (<IValue> this.value).toJSON();
+			return this.value;
+		}
 	}
 
 	/**
