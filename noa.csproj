@@ -60,6 +60,7 @@
     <Content Include="src\binding.ts" />
     <Content Include="src\cell.ts" />
     <Content Include="src\containers.ts" />
+    <Content Include="src\variable.ts" />
     <TypeScriptCompile Include="src\error.ts" />
     <Content Include="src\error.js">
       <DependentUpon>error.ts</DependentUpon>

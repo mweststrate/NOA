@@ -188,7 +188,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		get (scope?: any, cb?: (newvalue: any, oldvalue: any) => void , triggerEvents?: bool): IValue;
 		get (...args: any[]) {
 			//TODO: check arguments for either list / record or plain value?
-			return (<any>this.value).get.apply(this, args);
+			return (<any>this.value).get.apply(this.value, args);
 		}
 	}
 

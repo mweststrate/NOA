@@ -61,10 +61,10 @@ module NOA {
 
 			switch(type) {
 				case ValueType.Any: return true;
-				case ValueType.Error: return this instanceof ErrorValue;
-				case ValueType.List: return this['insert'];//MWE: typescript cannot check against interfaces
-				case ValueType.Record: return this['put'];
-				case ValueType.PlainValue: return this['get'];
+				case ValueType.Error: return value instanceof ErrorValue;
+				case ValueType.List: return value['insert'];//MWE: typescript cannot check against interfaces
+				case ValueType.Record: return value['put'];
+				case ValueType.PlainValue: return value['get'];
 			}
 			Util.notImplemented();
 		}
@@ -157,11 +157,12 @@ module NOA {
 			return Util.map(args, LangUtils.toValue);
 		}
 
-		static define(name: string, argtypes : ValueType[], resultType: ValueType, impl : (cb: (newvalue: any)=> void, ...args:any[]) => any, memoize: bool = false): Function {
+		static define(name: string, argtypes : ValueType[], resultType: ValueType, impl : (...args:IValue[]) => any, memoize: bool = false): Function {
 			return Lang[name] = function (...args: any[]) {
 				var realArgs = parseArguments(argtypes, args);
 				var wrapper = LangUtils.watchFunction(impl, resultType);
-				return (<any>wrapper).res;
+				wrapper.apply(null, realArgs);
+				return (<any>wrapper).result;
 			}
 
 
@@ -196,12 +197,13 @@ module NOA {
 		Function watcher watches a function and follows the result. A new function is returned. This function has the following properties:
 		1. Any arguments passed into the wrapper will be passed into the original function
 		2. It has a 'result' property which containts the variable in which the result is stored
-		3. If the wrapper is invoked the result can be updated, by either doing the following
-		4. - Return something (in the original function)
-		5. - call this(result). This will update the stored variable.
+		3. If the wrapper is invoked, it invokes the original function (with a special scope), allowing it to updte the result, by either doing the following
+		4. - Return something (This will update the stored variable in wrapper.result).
+		5. - call this(result). (This will update the stored variable in wrapper.result).
 		*/
 		static watchFunction(func, expectedType: ValueType = ValueType.Any): Function {
-			var res = new Variable(expectedType, undefined); 
+			var scope = Scope.getCurrentScope();
+			var res = new Variable(expectedType, undefined);
 			var cbcalled = false;
 			var cb = function (newvalue) {
 				cbcalled = true;
@@ -209,6 +211,8 @@ module NOA {
 			}
 
 			var f = function () {
+				Scope.pushScope(scope);
+
 				try {
 					cbcalled = false;
 
@@ -220,6 +224,9 @@ module NOA {
 				}
 				catch(e) {
 					res.set(new ErrorValue(e));
+				}
+				finally {
+					Scope.popScope();
 				}
 			};
 
@@ -242,7 +249,7 @@ module NOA {
 					(<IPlainValue>arg).get(null, (newvalue, _) => {
 						realargs[index] = LangUtils.dereference(newvalue);
 						update();
-					});
+					}, false);
 				}
 			});
 

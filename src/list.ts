@@ -3,11 +3,11 @@
 module NOA {
 
 	export enum ListEvent {
-		INSERT = 200,
-		REMOVE = 201,
-		MOVE = 202,
-		SET = 203,
-		FREE = 204
+		INSERT,// = 200,
+		REMOVE,// = 201,
+		MOVE,// = 202,
+		SET,// = 203,
+		FREE,// = 204
 	}
 
 	export class List extends CellContainer implements IValue, IList, IMutableList {

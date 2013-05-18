@@ -7,7 +7,7 @@ module NOA {
 				"eq",
 				[ValueType.Any, ValueType.PlainValue, ValueType.Any],
 				ValueType.Any,
-				(cb: (res) => void, expr : IValue, varname : IPlainValue, stats: IValue) => {
+				(expr : IValue, varname : IPlainValue, stats: IValue) => {
 					Util.assert(varname && LangUtils.is(varname, ValueType.PlainValue));
 
 					var realname = varname.get();
@@ -16,7 +16,7 @@ module NOA {
 					var scope = Scope.pushScope(Scope.newScope(Scope.getCurrentScope()))
 					try {
 						scope.set(realname, expr);
-						cb(stats);
+						this(stats);
 					} finally {
 						Scope.popScope();
 					}
@@ -25,21 +25,30 @@ module NOA {
 			)(expr, varname, stats);
 		}
 
-		static evalJSExpression(expr : IValue) {
+		static get(varname): IValue {
 			return LangUtils.define(
-				"eq",
+				"get",
 				[ValueType.PlainValue],
 				ValueType.Any,
-				(cb: (res) => void, expr : IPlainValue) => {
-					Util.assert(expr && LangUtils.is(expr, ValueType.PlainValue));
-
-					expr.get(null, js => {
-						Util.assert(Util.isString(js));
-						cb(eval(js))
+				function(varname: IValue) {
+					return LangUtils.withValues([varname], function (name) {
+						return Scope.getCurrentScope().get(name);
 					});
-				} ,
-				false
-			)(expr);
+				}
+			)(varname);
+		}
+
+		static mul(left, right): IValue {
+			return LangUtils.define(
+				"mul",
+				[ValueType.PlainValue, ValueType.PlainValue],
+				ValueType.Any,
+				function (l : IValue, r: IValue) {
+					return LangUtils.withValues([l,r], function (l,r) {
+						return l * r;
+					});
+				}
+			)(left, right);
 		}
 
 		static if_(cond: any, iftrue: any, iffalse: any): IValue {
@@ -52,7 +61,7 @@ module NOA {
 				"eq",
 				[ValueType.Any, ValueType.Any],
 				ValueType.PlainValue, //bool
-				(cb: (res) => void, l: IValue, r: IValue) => {
+				(l: IValue, r: IValue) => {
 					//TODO:
 				} ,
 				false

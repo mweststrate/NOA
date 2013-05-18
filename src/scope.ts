@@ -30,6 +30,20 @@ module NOA {
 			this.parent = parentscope;
 		}
 
+		get (varname: string, readTracker?: Object): IValue {//MWE: tODO: kill readtracker stuff
+			if (varname in this.vars) {
+				var thing = this.vars[varname];
+				readTracker[thing.noaid] = thing;
+				return thing;
+			}
+
+			if (this.parent)
+				return this.parent.get(varname, readTracker);
+
+			throw new Error("Undefined variable: '" + varname + "'")
+		}
+
+		/*
 		get (varname: string, readTracker: Object): IValue;
 		get (varname: string, field: string, readTracker: Object);
 		get (...args: any[]): IValue {
@@ -61,6 +75,7 @@ module NOA {
 
 			throw new Error("Undefined variable: '" + varname + "'")
 		}
+		*/
 
 		set (varname: string, value: IValue) {
 			if (varname in this.vars)
