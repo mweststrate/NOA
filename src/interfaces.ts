@@ -157,9 +157,15 @@ module NOA {
 			return Util.map(args, LangUtils.toValue);
 		}
 
-		static define(name: string, argtypes : ValueType[], result: ValueType, impl : (cb: (newvalue: any)=> void, ...args:any[]) => any, memoize: bool = false): Function {
-
+		static define(name: string, argtypes : ValueType[], resultType: ValueType, impl : (cb: (newvalue: any)=> void, ...args:any[]) => any, memoize: bool = false): Function {
 			return Lang[name] = function (...args: any[]) {
+				var realArgs = parseArguments(argtypes, args);
+				var wrapper = LangUtils.watchFunction(impl, resultType);
+				return (<any>wrapper).res;
+			}
+
+
+				/*function (...args: any[]) {
 				var res = new Variable(result, undefined);
 				var cbcalled = false;
 
@@ -176,14 +182,73 @@ module NOA {
 					args.forEach(arg => res.uses(arg));
 					args.unshift(cb);
 
-					var res = impl.apply(Lang, args);
+					var res = impl.apply(cb, args);
 					if (res !== undefined && cbcalled == false)
 						cb(res);
 				}
 				catch (e) {
 					res.set(new ErrorValue(e));
 				}
+			}*/
+		}
+
+		/**
+		Function watcher watches a function and follows the result. A new function is returned. This function has the following properties:
+		1. Any arguments passed into the wrapper will be passed into the original function
+		2. It has a 'result' property which containts the variable in which the result is stored
+		3. If the wrapper is invoked the result can be updated, by either doing the following
+		4. - Return something (in the original function)
+		5. - call this(result). This will update the stored variable.
+		*/
+		static watchFunction(func, expectedType: ValueType = ValueType.Any): Function {
+			var res = new Variable(expectedType, undefined); 
+			var cbcalled = false;
+			var cb = function (newvalue) {
+				cbcalled = true;
+				res.set(LangUtils.toValue(newvalue));
 			}
+
+			var f = function () {
+				try {
+					cbcalled = false;
+
+					//var scope: Scope = Scope.getCurrentScope(); //TODO: maybe just pass scopes around?
+					var value = func.apply(cb, arguments);
+
+					if (res !== undefined && cbcalled == false)
+						cb(res);
+				}
+				catch(e) {
+					res.set(new ErrorValue(e));
+				}
+			};
+
+			(<any>f).result = res;
+
+			return f;
+		}
+
+		static withValues(args: IValue[], func): IValue {
+			var realargs = args.map(LangUtils.dereference);
+
+			var wrapped = LangUtils.watchFunction(func);
+
+			var update = function () {
+				wrapped.apply(null, realargs);
+			};
+
+			args.forEach((arg, index) => {
+				if (arg.is(ValueType.PlainValue)) {
+					(<IPlainValue>arg).get(null, (newvalue, _) => {
+						realargs[index] = LangUtils.dereference(newvalue);
+						update();
+					});
+				}
+			});
+
+			update();
+
+			return (<any>wrapped).result;
 		}
 	}
 

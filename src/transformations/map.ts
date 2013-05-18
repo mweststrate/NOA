@@ -24,12 +24,13 @@ module NOA {
 
 		onSourceInsert (index : number, _) {
 			var scope = Scope.newScope(this.basescope);
-			scope.set(this.varname, this.source.cell(index));
+			var source = this.source.cell(index);
+			scope.set(this.varname, source);
 
 			if (this.func instanceof Base) { //Poor way expression check
 				LangUtils.clone(this.func, (clone : IValue) => {
 					this.insert(index, Lang.let(
-						this.source.cell(index),
+						source,
 						this.varname,
 						clone
 					));
@@ -37,9 +38,9 @@ module NOA {
 			}
 			else if (Util.isFunction(this.func)) {
 				this.insert(index, Lang.let(
-					this.source.cell(index),
+					source,
 					this.varname,
-					Lang.evalJSExpression(LangUtils.toValue( + this.func))
+					LangUtils.withValues([source], this.func)
 				));
 			}
 			//TODO: support string and parse
