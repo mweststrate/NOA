@@ -219,11 +219,11 @@ module NOA {
 					//var scope: Scope = Scope.getCurrentScope(); //TODO: maybe just pass scopes around?
 					var value = func.apply(cb, arguments);
 
-					if (res !== undefined && cbcalled == false)
-						cb(res);
+					if (value !== undefined && cbcalled == false)
+						cb(value);
 				}
 				catch(e) {
-					res.set(new ErrorValue(e));
+					cb(new ErrorValue(e));
 				}
 				finally {
 					Scope.popScope();
