@@ -2,12 +2,12 @@
 
 module NOA {
 
-	export enum ListEvent {
-		INSERT,// = 200,
-		REMOVE,// = 201,
-		MOVE,// = 202,
-		SET,// = 203,
-		FREE,// = 204
+	export class ListEvent {
+		public static INSERT = "insert";
+		public static REMOVE = "remove";
+		public static MOVE = "move";
+		public static SET = "set";
+		public static FREE = "free";
 	}
 
 	export class List extends CellContainer implements IValue, IList, IMutableList {

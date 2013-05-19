@@ -2,9 +2,9 @@
 
 module NOA{
 
-	export enum RecordEvent {
-		PUT,// = 300,
-		FREE// = 301
+	export class RecordEvent {
+		public static PUT = "put";
+		public static FREE = "free";
 	}
 
 	export class Record extends CellContainer implements IValue, IRecord, IMutableRecord {

@@ -138,6 +138,10 @@ module NOA {
 				return (<IValue> this.value).toJSON();
 			return this.value;
 		}
+
+		toString(): string {
+			return ["[Constant:", this.noaid, "=", this.value, "]"].join("");
+		}
 	}
 
 	/**

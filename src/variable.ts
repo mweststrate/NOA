@@ -184,11 +184,30 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 				(<IList>this.value).each.apply(this.value, args);
 		}
 
-		get (index: number, scope?: any, cb?: (newvalue: any, oldvalue: any) => void , triggerEvents?: bool): IValue;
+		get (index: number): IValue;
+		get (index: string): IValue;
 		get (scope?: any, cb?: (newvalue: any, oldvalue: any) => void , triggerEvents?: bool): IValue;
 		get (...args: any[]) {
-			//TODO: check arguments for either list / record or plain value?
-			return (<any>this.value).get.apply(this.value, args);
+			//record or list?
+			if (Util.isNumber(args[0]) || Util.isString(args[0])) {
+				return this.value ? (<any>this.value).get(args[0]) : undefined;
+			}
+			
+			//Plain value
+			var value = this.value ? (<any>this.value).get() : undefined;
+
+			//callback provided? signature is (scope, callback, fireevents)
+			if (args[1]) {
+				this.on(PlainValueEvent.UPDATE.toString(), args[0], args[1]);
+				if (args[2] !== undefined)
+					args[1].apply(args[0], [value, undefined]);
+			}
+
+			return value;
+		}
+
+		toString(): string {
+			return ["[Constant:", this.noaid, "=", <any>this.value, "]"].join("");
 		}
 	}
 

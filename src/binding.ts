@@ -14,7 +14,7 @@ module NOA {
 
 		constructor (event: string, source: Base, dest : Base, callback : Function) {
 			if (!callback)
-				throw this.toString() + ": no callback provided!";
+				throw new Error(this.toString() + ": no callback provided!");
 
 			this.id = "" + (++Binding.bindingcount);
 			this.event = event;
@@ -35,7 +35,7 @@ module NOA {
 			if (this._firing) {
 				if (this.event == 'free')
 					return; //Special case, items can attempt to free each other if intertwined as a result of the refcount mechanism
-				throw this.toString() + ": exception: circular event detected";
+				throw new Error(this.toString() + ": exception: circular event detected");
 			}
 			this._firing = true;
 

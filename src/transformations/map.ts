@@ -45,14 +45,8 @@ module NOA {
 			}
 			//TODO: support string and parse
 
-			/* TODO:
-			if (Util.isFunction(this.func))
-				a = new Expression(this.func, scope)
-			else if (this.func instanceof Expression)
-				a = this.func;
 			else
-			*/
-			throw "Map function should be JS function or expression"
+				throw new Error("Map function should be JS function or expression");
 
 		}
 

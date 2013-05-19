@@ -71,8 +71,8 @@ exports.smallmap = function(test) {
     var x = new NOA.List();
     x.add(3);
     var y = x.map("k", function(v) { return v*2 }).live();
-    test.equal(x.toJSON(),[3])
-    test.equal(y.toJSON(),[6])
+    test.deepEqual(x.toJSON(),[3])
+    test.deepEqual(y.toJSON(),[6])
     y.die();
 
     test.equal(NOA.List.count, 0);

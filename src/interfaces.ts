@@ -9,9 +9,9 @@ module NOA {
 		Any
 	}
 
-	export enum PlainValueEvent {
-		UPDATE = 100,
-		FREE = 101
+	export class PlainValueEvent {
+		public static UPDATE = "change";
+		public static FREE = "free";
 	}
 
 	export interface IValue extends IBase {
@@ -112,17 +112,32 @@ module NOA {
 			Util.assert(source != null && dest != null);
 
 			dest.uses(source);
-			var t = source.getType();
-			//no if, Error follows all types!
-			if (t == ValueType.PlainValue)
+
+			//MWE: mweh implementation
+			var listenList =
+				(dest instanceof List || dest instanceof Variable) &&
+				(source instanceof List || source instanceof Variable || source instanceof Error);
+
+			var listenRecord =
+				(dest instanceof Record || dest instanceof Variable) &&
+				(source instanceof Record || source instanceof Variable || source instanceof Error);
+
+			var listenPlain =
+				(dest instanceof PlainValue || dest instanceof Variable) &&
+				(source instanceof Constant || source instanceof PlainValue || source instanceof Variable || source instanceof Error)
+
+			if (!(listenList || listenPlain || listenRecord))
+				throw new Error("Follow not supported for " + source+  " and "+ dest);
+
+			if (listenPlain)
 				LangUtils.followEvent(source, PlainValueEvent.UPDATE.toString(), dest, follow);
-			if (t == ValueType.List) {
+			if (listenList) {
 				LangUtils.followEvent(source, ListEvent.INSERT.toString(), dest, follow);
 				LangUtils.followEvent(source, ListEvent.MOVE.toString(), dest, follow);
 				LangUtils.followEvent(source, ListEvent.REMOVE.toString(), dest, follow);
 				LangUtils.followEvent(source, ListEvent.SET.toString(), dest, follow);
 			}
-			if (t == ValueType.Record)
+			if (listenRecord)
 				LangUtils.followEvent(source, RecordEvent.PUT.toString(), dest, follow);
 		}
 
