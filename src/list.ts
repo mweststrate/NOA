@@ -31,6 +31,7 @@ module NOA {
 			if (index < 0 || index > this.cells.length)
 				throw new Error("Insert out of bounds: " + index + " not in 0.." + this.cells.length)
 
+			//TODO: fix: if a variable is inserted, it should either be followed, or replace the cell at all..
 
 			var cell = new Cell(<CellContainer>this, index, LangUtils.toValue(value), <CellContainer>origin); //Todo extract origin from value
 			this.cells.splice(index, 0, cell);

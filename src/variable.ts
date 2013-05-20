@@ -6,25 +6,12 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 	value: IValue;
 	hasPrimitive: bool;
 
-
 		constructor(private expectedType : ValueType, value: IValue) {
 			//TODO: null type?
 			super();
 			this.value = value;
 			this.setup(value, false); //Nobody is listening yet
 		}
-/*
-		as<Y>(): Y {
-			if (this.is())
-				return this;
-			else
-				return new Error("Expected '" + this.targetType() + "' found: '" + (this.value ? this.value.getType() : this.value) + "'");
-		}
-
-		is(): boolean {
-			return this.value !== null && this.value !== undefined && this.value.getType() == this.targetType();
-		}
-*/
 
 		getType(): ValueType {
 			return this.value.getType();
@@ -80,29 +67,17 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		toJSON() {
-			return this.value.toJSON.apply(this.value, arguments);
+			return this.value === undefined ? undefined : this.value.toJSON.apply(this.value, arguments);
 		}
 
 		toAST(): Object {
-			return this.value.toAST.apply(this.value, arguments);
+			return this.value === undefined ? undefined : this.value.toAST.apply(this.value, arguments);
 		}
 
-/*
-		live() {
-			if (this.value != null)
-				this.value.live();
-		}
-
-		die() {
-			if (this.value != null)
-				this.value.die();
-		}
-*/
 		free() {
-			super.free();
+			this.teardown(this.value, true, false);
 
-			if (this.value)
-				this.value.die();
+			super.free();
 		}
 
 		teardown(value: IValue, withEvents: bool, suppressPrimitiveGet: bool) {
@@ -121,7 +96,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 					this.fire(ListEvent.REMOVE.toString(), i, (<IList>value).get(i));
 			}
 			if (value.is(ValueType.Record)) {
-				//TODO: record, plain..
+				//TODO: record:.
 
 			}
 			if (value.is(ValueType.PlainValue)) {
@@ -199,7 +174,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			//callback provided? signature is (scope, callback, fireevents)
 			if (args[1]) {
 				this.on(PlainValueEvent.UPDATE.toString(), args[0], args[1]);
-				if (args[2] !== undefined)
+				if (args[2] !== false)
 					args[1].apply(args[0], [value, undefined]);
 			}
 
@@ -207,7 +182,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		toString(): string {
-			return ["[Constant:", this.noaid, "=", <any>this.value, "]"].join("");
+			return ["[Constant#", this.noaid, "=", <any>this.value, "]"].join("");
 		}
 	}
 

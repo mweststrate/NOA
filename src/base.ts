@@ -266,7 +266,7 @@ module NOA {
 			if (n)
 				return n;
 			else
-				return "[" + (<any>this).constructor.name + ":" + this.noaid + "]";
+				return "[" + (<any>this).constructor.name + "#" + this.noaid + "]";
 		}
 	}
 }

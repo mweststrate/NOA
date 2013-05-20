@@ -91,8 +91,8 @@ module NOA {
 		}
 
 		toString () : string {
-			return ("[Cell(" + this.noaid +"): " +
-				(this.parent ? this.parent.toString() + "#" + this.index : "") +
+			return ("[Cell#" + this.noaid +" of " +
+				(this.parent ? this.parent.toString() + "@" + this.index : "") +
 				"=" + this.value +"]");
 		}
 

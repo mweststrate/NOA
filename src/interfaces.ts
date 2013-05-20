@@ -111,8 +111,6 @@ module NOA {
 
 			Util.assert(source != null && dest != null);
 
-			dest.uses(source);
-
 			//MWE: mweh implementation
 			var listenList =
 				(dest instanceof List || dest instanceof Variable) &&
@@ -139,6 +137,12 @@ module NOA {
 			}
 			if (listenRecord)
 				LangUtils.followEvent(source, RecordEvent.PUT.toString(), dest, follow);
+
+			//live / die
+			if (follow)
+				source.live();
+			else
+				source.die();
 		}
 
 		static follow(dest: IValue, source: IValue) {
