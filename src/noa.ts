@@ -49,7 +49,7 @@ module NOA {
 declare var exports : any;
 (function(root) {
 //var exports = root['exports'];
-for(var key in NOA)
-	exports[key] = NOA[key];
+	if (typeof(exports) !== "undefined") for(var key in NOA)
+		exports[key] = NOA[key];
 })(this);
 

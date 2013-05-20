@@ -1,5 +1,4 @@
-
-NOA = require("../build/noa.js");
+var NOA = typeof(require) !== "undefined" ? require("../build/noa.js") : window.NOA;
 
 function createTest(name, func, args, result) {
 	exports[name] = function(test) {

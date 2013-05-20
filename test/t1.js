@@ -1,5 +1,4 @@
-
-NOA = require("../build/noa.js");
+(function(exports, NOA) {
 
 function testIndexes(x, test) {
     for(var i = 0; i < x.cells.length; i++)
@@ -673,7 +672,8 @@ exports.test7 = function(test) {
 
 };
 
+    if ((typeof(module) !== "undefined" && !module.parent) || typeof(window) !== "undefined")
+        NOA.Util.runtests(exports);
 
+})(typeof(exports) != "undefined" ?exports : (t1 = {}), typeof(require) !== "undefined" ? require("../build/noa.js") : window.NOA);
 
-if (!module.parent)
-    NOA.Util.runtests(exports);

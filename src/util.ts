@@ -373,14 +373,16 @@ module NOA {
 
 		static runtests(tests : Object) {
 			var report : string[] = ["\n==[ TEST REPORT ]=="]
-			var assert = require("assert")
+			var assert = typeof (require) !== "undefined" ? require("assert") : (<any>window).assert;
 			var count = 0;
 			var success = 0;
 			var origdone = assert.done;
 
 			var filter = function(_:string):bool { return true; }
-			if (process.argv.length == 3)
-				filter = function(name : string) { return name.indexOf(process.argv[2]) != -1; }
+			if (typeof (process) !== "undefined" && process.argv.length == 3)
+				filter = function (name: string) { return name.indexOf(process.argv[2]) != -1; }
+			else if (typeof (window) !== "undefined")
+				filter = (name) => name.indexOf(window.location.hash.substring(1)) != -1;
 
 			var failed = true;
 			for(var key in tests) if (filter(key)) {
