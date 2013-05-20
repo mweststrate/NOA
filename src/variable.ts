@@ -5,11 +5,13 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 
 	value: IValue;
 	hasPrimitive: bool;
+	indexes: any;
 
 		constructor(private expectedType : ValueType, value: IValue) {
 			//TODO: null type?
 			super();
 			this.value = value;
+			this.indexes = {};
 			this.setup(value, false); //Nobody is listening yet
 		}
 
@@ -183,6 +185,29 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 
 		toString(): string {
 			return ["[Constant#", this.noaid, "=", <any>this.value, "]"].join("");
+		}
+
+
+		//TODO: move to Variable
+		addIndex(parent: CellContainer, index: any): Variable {
+			Util.assert(this.indexes[parent.noaid] === undefined);
+
+			this.indexes[parent.noaid] = index;
+			return this;
+		}
+
+
+		updateIndex(parent: CellContainer, index: any): Variable {
+			Util.assert(this.indexes[parent.noaid] !== undefined);
+
+			this.indexes[parent.noaid] = index;
+			return this;
+		}
+
+		getIndex(parent: CellContainer): any {
+			Util.assert(this.indexes[parent.noaid] !== undefined);
+
+			return this.indexes[parent.noaid];
 		}
 	}
 

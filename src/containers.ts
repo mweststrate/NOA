@@ -24,7 +24,7 @@ module NOA {
 			super();
 		}
 
-		cell(index: any): Cell { Util.notImplemented(); return null; }
+		cell(index: any): Variable { Util.notImplemented(); return null; }
 		toJSON() : any { Util.notImplemented(); return null; }
 
 		toAST(): Object {

@@ -84,7 +84,7 @@ module NOA {
 
 		onMove(caller: Base, cb: (from: number, to: number) => void ) { }
 		onRemove(caller: Base, cb: (from: number, value) => void ) { }
-		onSet(caller: Base, cb: (index: number, newvalue, oldvalue, cell: Cell) => void ) { }
+		onSet(caller: Base, cb: (index: number, newvalue, oldvalue) => void ) { }
 
 		get(): any;
 		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any;
@@ -96,11 +96,11 @@ module NOA {
 			return this.backingPlain.get(<Base>callerOrIndex, onChange, fireInitialEvent);
 		}
 
-		onPut(caller: Base, cb: (index: string, value, cell: Cell) => void , fireInitialEvents?: bool) {
+		onPut(caller: Base, cb: (index: string, value) => void , fireInitialEvents?: bool) {
 			return this.backingRecord.onPut(caller, cb, fireInitialEvents);
 		}
 
-		each(scope, cb: (index: number, value: any, cell: Cell) => void ) {
+		each(scope, cb: (index: number, value: any) => void ) {
 			this.backingList.each(scope, cb);
 		}
 

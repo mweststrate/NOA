@@ -32,15 +32,20 @@ module NOA {
 				throw new Error("Insert out of bounds: " + index + " not in 0.." + this.cells.length)
 
 			//TODO: fix: if a variable is inserted, it should either be followed, or replace the cell at all..
+			var cell;
+			if (value instanceof Variable) //TODO: what about constants?
+				cell = value;
+			else
+				cell = new Cell(<CellContainer>this, LangUtils.toValue(value), <CellContainer>origin); //Todo extract origin from value
 
-			var cell = new Cell(<CellContainer>this, index, LangUtils.toValue(value), <CellContainer>origin); //Todo extract origin from value
+			cell.addIndex(this, index);
 			this.cells.splice(index, 0, cell);
 
 			this._updateIndexes(index +1);
 			this.fire(ListEvent.INSERT.toString(), index, cell.get());
 
 			cell.get(this, (newvalue: any, oldvalue: any): void => {
-				this.fire(ListEvent.SET.toString(), cell.index, newvalue, oldvalue);
+				this.fire(ListEvent.SET.toString(), cell.getIndex(this), newvalue, oldvalue);
 			}, false);
 
 			this.debugOut();
@@ -144,7 +149,7 @@ module NOA {
 				return this._updateIndexes(end, start);
 
 			for(var i = start; i <= end; i++)
-				this.cells[i].index = i;
+				this.cells[i].updateIndex(this, i);
 			return this;
 		}
 

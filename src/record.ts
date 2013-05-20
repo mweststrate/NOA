@@ -14,12 +14,13 @@ module NOA{
 
 		put(key : string, value : any) {
 			if (!this.has(key)) {
-				var cell = this.data[key] = new Cell(this, key, value, this);
+				var cell = this.data[key] = new Cell(this, value, this);
+				cell.addIndex(this, key);
 				this.keys.add(key);
 				this.fire(RecordEvent.PUT.toString() ,key, value, undefined);
 
 				cell.get(this, (newvalue, oldvalue) => {
-					this.fire(RecordEvent.PUT.toString(), cell.index, newvalue, oldvalue);
+					this.fire(RecordEvent.PUT.toString(), cell.getIndex(this), newvalue, oldvalue);
 				},false)
 			}
 
