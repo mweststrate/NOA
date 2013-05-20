@@ -14,7 +14,7 @@ module NOA {
 
 		static Aggregates = { count : "count", numbercount: "numbercount", sum : "sum", min: "min", max : "max", vag : "avg", first : "first", last : "last" };
 
-		cells : Cell[] = [];
+		cells : Variable[] = [];
 		aggregates = {};
 
 		constructor() {
@@ -25,8 +25,8 @@ module NOA {
 		//Inherit invariant for internal mappings in for example filter and join.
 
 		/** core functions */
-		insert(index: number, value: any, origin?: CellContainer): List;
-		insert(index: number, value: any, origin?: CellContainer): List {
+		insert(index: number, value: any): List;
+		insert(index: number, value: any): List {
 			this.debugIn("Insert at " + index + ": " + value);
 			if (index < 0 || index > this.cells.length)
 				throw new Error("Insert out of bounds: " + index + " not in 0.." + this.cells.length)
@@ -36,7 +36,7 @@ module NOA {
 			if (value instanceof Variable) //TODO: what about constants?
 				cell = value;
 			else
-				cell = new Cell(<CellContainer>this, LangUtils.toValue(value), <CellContainer>origin); //Todo extract origin from value
+				cell = new Variable(ValueType.Any, LangUtils.toValue(value)); 
 
 			cell.addIndex(this, index);
 			this.cells.splice(index, 0, cell);
@@ -103,7 +103,7 @@ module NOA {
 			return this;
 		}
 
-		cell (index: number) : Cell {
+		cell (index: number) : Variable {
 			if (index < 0 || index >= this.cells.length)
 				throw new Error("Cell out of bounds: " + index + " not in 0.." + this.cells.length)
 
@@ -153,7 +153,8 @@ module NOA {
 			return this;
 		}
 
-		each(scope, cb : (index: number, value: any, cell: Cell) => void) {
+		each(scope, cb: (index: number, value: any, variable: Variable
+			) => void ) {
 			var l= this.cells.length;
 			for(var i = 0; i < l; i++)
 				cb.call(scope, i, this.get(i), this.cells[i]);

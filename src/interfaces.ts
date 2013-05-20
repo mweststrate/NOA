@@ -31,13 +31,13 @@ module NOA {
 	}
 
 	export interface IList extends IValue {
-		onInsert(caller: Base, cb: (index: number, value, cell: Cell) => void , fireInitialEvents?: bool);
+		onInsert(caller: Base, cb: (index: number, value) => void , fireInitialEvents?: bool);
 		onMove(caller: Base, cb: (from: number, to: number) => void );
 		onRemove(caller: Base, cb: (from: number, value) => void );
-		onSet(caller: Base, cb: (index: number, newvalue, oldvalue, cell: Cell) => void );
+		onSet(caller: Base, cb: (index: number, newvalue, oldvalue) => void );
 
 
-		each(scope, cb: (index: number, value: any, cell: Cell) => void );
+		each(scope, cb: (index: number, value: any) => void );
 		size(): number;
 		get(index: number): IValue;
 	}

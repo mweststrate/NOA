@@ -14,7 +14,7 @@ module NOA{
 
 		put(key : string, value : any) {
 			if (!this.has(key)) {
-				var cell = this.data[key] = new Cell(this, value, this);
+				var cell = this.data[key] = new Variable(ValueType.Any, value); 
 				cell.addIndex(this, key);
 				this.keys.add(key);
 				this.fire(RecordEvent.PUT.toString() ,key, value, undefined);
@@ -25,7 +25,7 @@ module NOA{
 			}
 
 			else {
-				(<Cell>this.data[key]).set(value); //fires event
+				(<Variable>this.data[key]).set(value); //fires event
 			}
 		}
 
@@ -34,13 +34,13 @@ module NOA{
 				return;
 
 			this.fire(RecordEvent.PUT.toString(), key, undefined, this.get(key));
-			(<Cell>this.data[key]).free();
+			(<Variable>this.data[key]).free();
 
 			this.keys.removeAll(key);
 			delete this.data[key];
 		}
 
-		cell (key: string) : Cell{
+		cell(key: string): Variable {
 			return this.data[key];
 		}
 
@@ -50,7 +50,7 @@ module NOA{
 			if (!this.has(key))
 				throw new Error("Value for '" + key + "' is not yet defined!")
 
-			return (<Cell>this.data[key]).get(caller, onchange, fireInitialEvent);
+			return (<Variable>this.data[key]).get(caller, onchange, fireInitialEvent);
 		}
 
 		has (key: string): bool {
@@ -91,7 +91,7 @@ module NOA{
 
 		free () {
 			for(var key in this.data)
-				(<Cell>this.data[key]).free();
+				(<Variable>this.data[key]).free();
 
 			this.keys.free();
 			super.free();

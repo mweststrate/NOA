@@ -34,7 +34,7 @@ module NOA {
 		}
 
 		//Comperator wrap function
-		searcher (a, b : Cell) {
+		searcher(a, b: Variable) {
 			return this.func(a, b.get()); //b is a cell, so unwrap the value
 		}
 

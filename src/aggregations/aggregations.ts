@@ -201,7 +201,7 @@ module NOA {
 		findNewMax () {
 			var max = -1 * (1/0); // -INF
 
-			this.source.each(this, (index, v, cell) => {
+			this.source.each(this, (index, v) => {
 				if (Util.isNumber(v))
 					if (v > max) {
 						max = v;
@@ -242,7 +242,7 @@ module NOA {
 		findNewMin () {
 			var min = 1 * (1/0); // +INF
 
-			this.source.each(this, (index, v, cell) => {
+			this.source.each(this, (index, v) => {
 				if (Util.isNumber(v))
 					if (v < min) {
 						min = v;

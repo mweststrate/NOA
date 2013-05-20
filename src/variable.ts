@@ -134,7 +134,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 
 		//Event and interface wrappers
 
-		onInsert(caller: Base, cb: (index: number, value, cell: Cell) => void , fireInitialEvents?: bool) {
+		onInsert(caller: Base, cb: (index: number, value) => void , fireInitialEvents?: bool) {
 			this.on('insert', caller, cb);
 			if (fireInitialEvents !== false)
 				(<IList>this.value).each(caller, cb);
@@ -148,7 +148,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			this.on('remove', caller, cb);
 		}
 
-		onSet(caller: Base, cb: (index: number, newvalue, oldvalue, cell: Cell) => void ) {
+		onSet(caller: Base, cb: (index: number, newvalue, oldvalue) => void ) {
 			this.on('set', caller, cb);
 		}
 
