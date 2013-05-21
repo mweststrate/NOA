@@ -7,7 +7,7 @@ module NOA {
 				"eq",
 				[ValueType.Any, ValueType.PlainValue, ValueType.Any],
 				ValueType.Any,
-				(expr : IValue, varname : IPlainValue, stats: IValue) => {
+				function(expr : IValue, varname : IPlainValue, stats: IValue) {
 					Util.assert(varname && LangUtils.is(varname, ValueType.PlainValue));
 
 					var realname = varname.get();
@@ -16,7 +16,6 @@ module NOA {
 					var scope = Scope.pushScope(Scope.newScope(Scope.getCurrentScope()))
 					try {
 						scope.set(realname, expr);
-						//this(stats);
 						return stats;
 					} finally {
 						Scope.popScope();

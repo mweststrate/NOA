@@ -62,7 +62,7 @@ module NOA {
 			return this;
 		}
 
-		remove (index : number) : any {
+		remove(index : number) : any {
 			this.debugIn("Remove at " + index);
 			if (index < 0 || index >= this.cells.length)
 				throw new Error("Remove out of bounds: " + index + " not in 0.." + this.cells.length)
@@ -70,12 +70,15 @@ module NOA {
 			var origcell = this.cells[index];
 			var origvalue = origcell.get();
 
+			origcell.removeIndex(this);
 			this.cells.splice(index, 1);
 			this._updateIndexes(index);
 
 			this.fire(ListEvent.REMOVE.toString(), index, origvalue);
 
+			this.unlisten(origcell);
 			origcell.free();
+
 			this.debugOut();
 			return origvalue;
 		}

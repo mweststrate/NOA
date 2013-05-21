@@ -67,7 +67,7 @@ module NOA {
 
 	export class Base implements IBase {
 
-		static noaid : number = 0;
+		static MAXNOAID : number = 0;
 
 		public  noaid : number;
 		public  noabase: BaseData;
@@ -75,8 +75,8 @@ module NOA {
 		private freeing : bool = false;
 
 		constructor() {
+			this.noaid = (Base.MAXNOAID += 1);
 			this.noabase = new BaseData();
-			this.noaid = Base.noaid += 1;
 
 			//TODO: expensive? use global debug flag
 			var x : any = this;

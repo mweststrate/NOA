@@ -37,6 +37,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			//Q: should use Lang.equal? -> No, because we should setup the new events
 			if (newvalue != this.value) {
 				var oldvalue = this.value;
+				var ov = oldvalue ? (<IPlainValue>oldvalue).get() : undefined;
 
 				var combineChangeEvent =
 					(LangUtils.is(newvalue, ValueType.PlainValue)) &&
@@ -58,15 +59,9 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 
 				if (!combineChangeEvent && withEvents) {
 					var nv = newvalue ? (<IPlainValue>newvalue).get() : undefined;
-					var ov = oldvalue ? (<IPlainValue>oldvalue).get() : undefined;
 					if (nv != ov)
 						this.fire('change', nv, ov); //TODO: do not use changed but some constant!
 				}
-
-				if (newvalue)
-					newvalue.live();
-				if (oldvalue)
-					oldvalue.die();
 			}
 		}
 
@@ -79,7 +74,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		free() {
-			this.teardown(this.value, true, false);
+			this.teardown(this.value, false, false);
 
 			super.free();
 		}
@@ -205,6 +200,14 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			this.indexes[parent.noaid] = index;
 			return this;
 		}
+
+		removeIndex(parent: CellContainer): Variable {
+			Util.assert(this.indexes[parent.noaid] !== undefined);
+
+			delete this.indexes[parent.noaid];
+			return this;
+		}
+
 
 		getIndex(parent: CellContainer): any {
 			Util.assert(this.indexes[parent.noaid] !== undefined);

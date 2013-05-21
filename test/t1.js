@@ -62,7 +62,7 @@ exports.test1 = function(test) {
 
 	test.equal(NOA.List.count, 0);
     test.equal(NOA.Variable.count, 0);
-	//TODO: test.equal(NOA.Constant.count, 0);
+	test.equal(NOA.Constant.count, 0);
 
 	test.done();
 };
@@ -78,8 +78,8 @@ exports.smallmap = function(test) {
     y.die();
 
     test.equal(NOA.List.count, 0);
-    test.equal(NOA.Variable.count, 0);
     test.equal(NOA.Constant.count, 0);
+    test.equal(NOA.Variable.count, 0);
 
     test.done();
 }
