@@ -16,7 +16,8 @@ module NOA {
 					var scope = Scope.pushScope(Scope.newScope(Scope.getCurrentScope()))
 					try {
 						scope.set(realname, expr);
-						this(stats);
+						//this(stats);
+						return stats;
 					} finally {
 						Scope.popScope();
 					}

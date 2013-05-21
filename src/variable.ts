@@ -32,6 +32,8 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		set(newvalue: IValue, withEvents: bool = true) {
+			newvalue = LangUtils.toValue(newvalue); //MWE: either not this, or make newvalue 'any'
+
 			//Q: should use Lang.equal? -> No, because we should setup the new events
 			if (newvalue != this.value) {
 				var oldvalue = this.value;
@@ -54,9 +56,9 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 				else
 					this.setup(newvalue, withEvents, combineChangeEvent);
 
-				if (combineChangeEvent && withEvents) {
-					var nv = (<IPlainValue>newvalue).get();
-					var ov = (<IPlainValue>oldvalue).get();
+				if (!combineChangeEvent && withEvents) {
+					var nv = newvalue ? (<IPlainValue>newvalue).get() : undefined;
+					var ov = oldvalue ? (<IPlainValue>oldvalue).get() : undefined;
 					if (nv != ov)
 						this.fire('change', nv, ov); //TODO: do not use changed but some constant!
 				}
@@ -169,7 +171,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			if (Util.isNumber(args[0]) || Util.isString(args[0])) {
 				return this.value ? (<any>this.value).get(args[0]) : undefined;
 			}
-			
+
 			//Plain value
 			var value = this.value ? (<any>this.value).get() : undefined;
 
@@ -184,7 +186,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		toString(): string {
-			return ["[Constant#", this.noaid, "=", <any>this.value, "]"].join("");
+			return ["[Variable#", this.noaid, "=", <any>this.value, "]"].join("");
 		}
 
 

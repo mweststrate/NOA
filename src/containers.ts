@@ -140,7 +140,7 @@ module NOA {
 		}
 
 		toString(): string {
-			return ["[Constant:", this.noaid, "=", this.value, "]"].join("");
+			return ["[Constant#", this.noaid, "=", this.value, "]"].join("");
 		}
 	}
 

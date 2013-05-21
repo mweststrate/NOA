@@ -27,16 +27,13 @@ module NOA {
 		/** core functions */
 		insert(index: number, value: any): List;
 		insert(index: number, value: any): List {
-			this.debugIn("Insert at " + index + ": " + value);
 			if (index < 0 || index > this.cells.length)
 				throw new Error("Insert out of bounds: " + index + " not in 0.." + this.cells.length)
 
-			//TODO: fix: if a variable is inserted, it should either be followed, or replace the cell at all..
-			var cell;
-			if (value instanceof Variable) //TODO: what about constants?
-				cell = value;
-			else
-				cell = new Variable(ValueType.Any, LangUtils.toValue(value)); 
+			//TODO: fix: if a variable is inserted, it should either be followed, or replace the cell at all..?
+			var cell = new Variable(ValueType.Any, LangUtils.toValue(value));
+
+			this.debugIn("Insert at " + index + ": " + cell + " for value " + value);
 
 			cell.addIndex(this, index);
 			this.cells.splice(index, 0, cell);

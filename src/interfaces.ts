@@ -110,19 +110,20 @@ module NOA {
 		static followHelper(dest: IValue, source: IValue, follow: bool) {
 
 			Util.assert(source != null && dest != null);
+			(<Base><any>dest).debug((follow ? "Following " : "Unfollowing") + source);
 
 			//MWE: mweh implementation
 			var listenList =
 				(dest instanceof List || dest instanceof Variable) &&
-				(source instanceof List || source instanceof Variable || source instanceof Error);
+				(source instanceof List || source instanceof Variable || source instanceof ErrorValue);
 
 			var listenRecord =
 				(dest instanceof Record || dest instanceof Variable) &&
-				(source instanceof Record || source instanceof Variable || source instanceof Error);
+				(source instanceof Record || source instanceof Variable || source instanceof ErrorValue);
 
 			var listenPlain =
 				(dest instanceof PlainValue || dest instanceof Variable) &&
-				(source instanceof Constant || source instanceof PlainValue || source instanceof Variable || source instanceof Error)
+				(source instanceof Constant || source instanceof PlainValue || source instanceof Variable || source instanceof ErrorValue)
 
 			if (!(listenList || listenPlain || listenRecord))
 				throw new Error("Follow not supported for " + source+  " and "+ dest);
@@ -226,10 +227,13 @@ module NOA {
 			var cbcalled = false;
 			var cb = function (newvalue) {
 				cbcalled = true;
+				destination.debug("Received new value: " + newvalue)
 				destination.set(LangUtils.toValue(newvalue));
+				destination.debugOut();
 			}
 
 			var f = function () {
+				destination.debugIn("Recalculating..");
 				Scope.pushScope(scope);
 
 				try {
@@ -255,6 +259,7 @@ module NOA {
 		static withValues(args: IValue[], func): IValue {
 			var realargs = args.map(LangUtils.dereference);
 			var result = new Variable(ValueType.Any, undefined);
+			result.debugName("with-values-result" + result.noaid);
 			var wrapped = LangUtils.watchFunction(func, result);
 
 			var update = function () {

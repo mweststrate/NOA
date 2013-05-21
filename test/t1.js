@@ -2,7 +2,7 @@
 
 function testIndexes(x, test) {
     for(var i = 0; i < x.cells.length; i++)
-        test.equal(x.cells[i].index, i);
+        test.equal(x.cells[i].getIndex(x), i);
     if (x instanceof NOA.JoinedList) {
         console.log(JSON.stringify(x.lmap))
         var start = 0;
@@ -61,7 +61,8 @@ exports.test1 = function(test) {
     x.die();
 
 	test.equal(NOA.List.count, 0);
-	test.equal(NOA.Cell.count, 0);
+    test.equal(NOA.Variable.count, 0);
+	//TODO: test.equal(NOA.Constant.count, 0);
 
 	test.done();
 };
@@ -69,13 +70,16 @@ exports.test1 = function(test) {
 exports.smallmap = function(test) {
     var x = new NOA.List();
     x.add(3);
-    var y = x.map("k", function(v) { return v*2 }).live();
+    var y = x.map("k", function(v) {
+        return v*2
+    }).live();
     test.deepEqual(x.toJSON(),[3])
     test.deepEqual(y.toJSON(),[6])
     y.die();
 
     test.equal(NOA.List.count, 0);
-    test.equal(NOA.Cell.count, 0);
+    test.equal(NOA.Variable.count, 0);
+    test.equal(NOA.Constant.count, 0);
 
     test.done();
 }
