@@ -68,18 +68,20 @@ exports.test1 = function(test) {
 };
 
 exports.smallmap = function(test) {
+
     var x = new NOA.List();
     x.add(3);
     var y = x.map("k", function(v) {
         return v*2
     }).live();
+
     test.deepEqual(x.toJSON(),[3])
     test.deepEqual(y.toJSON(),[6])
     y.die();
 
     test.equal(NOA.List.count, 0);
-    test.equal(NOA.Constant.count, 0);
     test.equal(NOA.Variable.count, 0);
+    test.equal(NOA.Constant.count, 0);
 
     test.done();
 }

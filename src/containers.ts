@@ -117,7 +117,10 @@ module NOA {
 
 		constructor(value : any) {
 			super();
+
 			this.value = LangUtils.dereference(value);
+			if (this.value instanceof Base)
+				this.value.live();
 		}
 
 		public changed(...args: any[]) {
@@ -141,6 +144,13 @@ module NOA {
 
 		toString(): string {
 			return ["[Constant#", this.noaid, "=", this.value, "]"].join("");
+		}
+
+		free() {
+			if (this.value instanceof Base)
+				this.value.die();
+
+			super.free();
 		}
 	}
 

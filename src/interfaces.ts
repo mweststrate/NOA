@@ -171,16 +171,21 @@ module NOA {
 			new NOA.Unserializer(Util.notImplemented).unserialize(ast, cb);
 		}
 
-		private static parseArguments(argtypes, args: any[]) : IValue[] {
+		private static parseArguments(argtypes, args: any[], destination: Variable) : IValue[] {
 			//converts to IValue
 			//Throws if not correct
-			return Util.map(args, LangUtils.toValue);
+			//TODO: use args.. to separate function?
+			return Util.map(args, arg => {
+				var val = LangUtils.toValue(arg);
+				destination.uses(val);
+				return val;
+			})
 		}
 
 		static define(name: string, argtypes : ValueType[], resultType: ValueType, impl : (...args:IValue[]) => any, memoize: bool = false): Function {
 			return Lang[name] = function (...args: any[]) {
-				var realArgs = parseArguments(argtypes, args);
 				var result = new Variable(resultType, undefined);
+				var realArgs = parseArguments(argtypes, args, result);
 				var wrapper = LangUtils.watchFunction(impl, result);
 				wrapper.apply(null, realArgs);
 				return result;
@@ -259,7 +264,7 @@ module NOA {
 		static withValues(args: IValue[], func): IValue {
 			var realargs = args.map(LangUtils.dereference);
 			var result = new Variable(ValueType.Any, undefined);
-			result.debugName("with-values-result" + result.noaid);
+			//result.debugName("with-values-result" + result.noaid);
 			var wrapped = LangUtils.watchFunction(func, result);
 
 			var update = function () {
@@ -267,6 +272,7 @@ module NOA {
 			};
 
 			args.forEach((arg, index) => {
+				result.uses(arg);
 				if (arg.is(ValueType.PlainValue)) {
 					(<IPlainValue>arg).get(null, (newvalue, _) => {
 						realargs[index] = LangUtils.dereference(newvalue);
@@ -317,13 +323,4 @@ module NOA {
 			return Util.notImplemented();
 		}
 	}
-
-
-	//etc
-	/*
-	export class Expression2<T extends IValue> implements IVariable<T> {
-
-	}
-*/
-
 }
