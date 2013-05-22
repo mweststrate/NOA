@@ -14,7 +14,10 @@ module NOA{
 
 		put(key : string, value : any) {
 			if (!this.has(key)) {
-				var cell = this.data[key] = new Variable(ValueType.Any, value); 
+
+				//TODO: support function insertion a la list.map
+
+				var cell = this.data[key] = new Variable(ValueType.Any, LangUtils.toValue(value));
 				cell.addIndex(this, key);
 				this.keys.add(key);
 				this.fire(RecordEvent.PUT.toString() ,key, value, undefined);
@@ -25,7 +28,7 @@ module NOA{
 			}
 
 			else {
-				(<Variable>this.data[key]).set(value); //fires event
+				(<Variable>this.data[key]).set(LangUtils.toValue(value)); //fires event
 			}
 		}
 
