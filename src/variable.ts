@@ -49,10 +49,11 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 
 				if (newvalue.isError()) {
 					//TODO: creating new errors for each new type might be expensive?
-					this.setup(newvalue.asError().wrap("Expected ", this.expectedType, "but found error", newvalue.asError().getRootCause()), true);
+					//this.setup(newvalue.asError().wrap("Expected ", this.expectedType, "but found error", newvalue.asError().getRootCause()), true);
+					this.setup(newvalue, true);
 				}
 				else if (!LangUtils.is(newvalue, this.expectedType)) {
-					this.setup(new ErrorValue("Expected ", this.expectedType, "but found:", newvalue), true);
+					this.setup(new ErrorValue("Expected '", this.expectedType, "' but found:", newvalue), true);
 				}
 				else
 					this.setup(newvalue, withEvents, combineChangeEvent);

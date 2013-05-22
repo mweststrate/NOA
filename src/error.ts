@@ -17,18 +17,19 @@ module NOA {
 
 			if (args.length > 1 && args[args.length - 1] instanceof ErrorValue) {
 				this.cause = args[args.length - 1];
+				this.cause.live();
 				args.pop();
 			}
 
 			this.error = Util.map(args, (arg, i) => i % 2 == 1 ? "'" + arg + "'" : ""+arg).join(" ");
 
-			this.backingPlain = new Constant(this.error); 
+			this.backingPlain = <any> new Constant(this.error).live();
 
-			this.backingList = new List();
-			this.backingList.add(this);
+			this.backingList = <any> new List().live();
+			this.backingList.add(this.backingPlain);//this);
 
-			this.backingRecord = new Record();
-			this.backingRecord.put("error", this);
+			this.backingRecord = <any> new Record().live();
+			this.backingRecord.put("error", this.backingPlain);//this);
 		}
 
 		isError(): bool {
@@ -109,14 +110,16 @@ module NOA {
 		}
 
 		free() {
-			this.backingList.free();
-			this.backingRecord.free();
-			this.backingPlain.free();
+			this.backingList.die().free();
+			this.backingRecord.die().free();
+			this.backingPlain.die().free();
+			if (this.cause)
+				this.cause.die();
 			super.free();
 		}
 
 		toString(): string {
-			return "[Error] " + this.error + (this.cause? "\n\t" + this.cause.toString() : "");
+			return "[Error#" + this.noaid + "] " + this.error + (this.cause? "\n\t" + this.cause.toString() : "");
 		}
 	}
 }
