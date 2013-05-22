@@ -75,8 +75,44 @@ exports.smallmap = function(test) {
         return v*2
     }).live();
 
-    test.deepEqual(x.toJSON(),[3])
-    test.deepEqual(y.toJSON(),[6])
+    x.add(4);
+
+    test.deepEqual(x.toJSON(),[3,4])
+    test.deepEqual(y.toJSON(),[6,8])
+    y.die();
+
+    test.equal(NOA.List.count, 0);
+    test.equal(NOA.Variable.count, 0);
+    test.equal(NOA.Constant.count, 0);
+
+    test.done();
+}
+
+exports.errortest = function(test) {
+
+    var x = new NOA.List();
+    x.add(3);
+
+    var y = x.map("k", function(v) {
+        if (v == 6)
+            throw "should not be six!"
+        else
+            return v*2;
+    }).live();
+
+    x.add(6);
+    x.add(9);
+
+    test.equal(y.cell(0).toJSON(),6)
+    test.equal(y.cell(1).toJSON().error, "should not be six!");
+    test.equal(y.cell(2).toJSON(),18)
+
+    test.ok(!y.isError())
+    test.ok(!x.isError())
+    test.ok(y.cell(1).isError())
+    test.ok(!y.cell(2).isError())
+    test.ok(!x.cell(1).isError())
+
     y.die();
 
     test.equal(NOA.List.count, 0);

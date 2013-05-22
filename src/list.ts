@@ -30,12 +30,15 @@ module NOA {
 			if (index < 0 || index > this.cells.length)
 				throw new Error("Insert out of bounds: " + index + " not in 0.." + this.cells.length)
 
-			//TODO: fix: if a variable is inserted, it should either be followed, or replace the cell at all..?
+			/* Question, if value is an variable, we could insert it directly, instead of wrapping it in a variable?
+			Yes, that is true, and maybe faster. But a lot more complicated as well. We need to update callbacks, use live/die etc.
+			Lets keep it simple for now
+			*/
 			var cell = new Variable(ValueType.Any, LangUtils.toValue(value));
 
 			this.debugIn("Insert at " + index + ": " + cell + " for value " + value);
 
-			cell.addIndex(this, index);
+			cell.addIndex(this, index); //TODO: just assing index property?
 			this.cells.splice(index, 0, cell);
 
 			this._updateIndexes(index +1);
