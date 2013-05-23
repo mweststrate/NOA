@@ -133,7 +133,7 @@ exports.test2 = function(test) {
 		return v * 2;
 
    	}).live().debugName("y");
-/*
+
    	var z = x.map("x", function (v) {
    		//debugger;
    		//console.log("DOUBLEMAP: " + v + " * 2 = " + (v * 2));
@@ -142,7 +142,7 @@ exports.test2 = function(test) {
    	}).live().debugName("z");
 
    	var a = x.map("x", NOA.Lang.mul(NOA.Lang.get("x"), 2)).live().debugName("a");
-*/
+
 	//base set
 	x.add(3);
 	x.add(2);
@@ -157,13 +157,13 @@ exports.test2 = function(test) {
 
 	test.deepEqual(x.toJSON(), [7,3,1]);
 	test.deepEqual(y.toJSON(), [14,6,2])
-//	test.deepEqual(z.toJSON(), [14, 6, 2])
-//	test.deepEqual(a.toJSON(), [14, 6, 2])
+	test.deepEqual(z.toJSON(), [14, 6, 2])
+	test.deepEqual(a.toJSON(), [14, 6, 2])
 
 	x.die();
 	y.die();
-//	z.die();
-//	a.die();
+	z.die();
+	a.die();
 
 	test.equal(NOA.List.count, 0);
 	test.equal(NOA.Cell.count, 0);

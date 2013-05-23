@@ -23,9 +23,9 @@ module NOA {
 		}
 
 		onSourceInsert (index : number, _) {
-			var scope = Scope.newScope(this.basescope);
+			//var scope = Scope.newScope(this.basescope);
 			var source = this.source.cell(index);
-			scope.set(this.varname, source);
+			//scope.set(this.varname, source);
 
 			if (this.func instanceof Base) { //Poor way expression check
 				LangUtils.clone(this.func, (clone : IValue) => {
