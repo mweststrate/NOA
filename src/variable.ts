@@ -75,6 +75,8 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		free() {
+			//TODO: for all destructors, first free, then fire events and such.
+			//That saves unnecessary firing and processing of free events of other objects
 			this.teardown(this.value, false, false);
 
 			super.free();
