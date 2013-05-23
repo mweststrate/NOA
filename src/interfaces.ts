@@ -238,8 +238,8 @@ module NOA {
 			}
 
 			var f = function () {
-				destination.debugIn("Recalculating..");
 				Scope.pushScope(scope);
+				destination.debugIn("Recalculating..");
 
 				try {
 					cbcalled = false;

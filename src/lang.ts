@@ -2,8 +2,23 @@
 module NOA {
 	export class Lang {
 
-		static let(expr : IValue, varname : string, stats: IValue) {
-			return LangUtils.define(
+		static let(expr : IValue, varname : any, stats: IValue) {
+			varname = LangUtils.toValue(varname); //varname can either be string or constant
+			Util.assert(varname && LangUtils.is(varname, ValueType.PlainValue));
+
+			//TODO: note that varname is not allowed to change
+			var realname = (<any>varname).get();
+			Util.assert(Util.isString(realname));
+
+			var scope = Scope.pushScope(Scope.newScope(Scope.getCurrentScope()))
+			try {
+				scope.set(realname, expr);
+				return stats;
+			} finally {
+				Scope.popScope();
+			}
+
+			/*return LangUtils.define(
 				"eq",
 				[ValueType.Any, ValueType.PlainValue, ValueType.Any],
 				ValueType.Any,
@@ -13,29 +28,24 @@ module NOA {
 					var realname = varname.get();
 					Util.assert(Util.isString(realname));
 
-					var scope = Scope.pushScope(Scope.newScope(Scope.getCurrentScope()))
-					try {
-						scope.set(realname, expr);
-						return stats;
-					} finally {
-						Scope.popScope();
-					}
 				} ,
 				false
-			)(expr, varname, stats);
+			)(expr, varname, stats);*/
 		}
 
 		static get(varname): IValue {
+			return Scope.getCurrentScope().get((<any>LangUtils.toValue(varname)).get());;
+			/*
 			return LangUtils.define(
 				"get",
 				[ValueType.PlainValue],
 				ValueType.Any,
 				function(varname: IValue) {
 					return LangUtils.withValues([varname], function (name) {
-						return Scope.getCurrentScope().get(name);
 					});
 				}
 			)(varname);
+*/
 		}
 
 		static mul(left, right): IValue {
