@@ -35,16 +35,26 @@ module NOA {
 			this.parent = parentscope;
 		}
 
-		get (varname: string, readTracker?: Object): IValue {//MWE: tODO: kill readtracker stuff
+		get (varname: string, create: bool = true): IValue {//MWE: tODO: kill readtracker stuff
 			if (varname in this.vars) {
 				var thing = this.vars[varname];
-				readTracker[thing.noaid] = thing;
+				//readTracker[thing.noaid] = thing;
 				Util.debug("Scope#" + this.id + ".get: '" + varname + " -> '" + thing + "'")
 				return thing;
 			}
 
+			var res;
 			if (this.parent)
-				return this.parent.get(varname, readTracker);
+				res = this.parent.get(varname, false);
+			if (res)
+				return res;
+			if (!res && create)
+				{
+					res = new Variable(ValueType.Any, undefined);
+					this.vars[varname] = res;
+					return res;
+				}
+
 
 			throw new Error("Undefined variable: '" + varname + "'")
 		}
@@ -85,13 +95,15 @@ module NOA {
 
 		set (varname: string, value: IValue) {
 			Util.debug("Scope#" + this.id + ".set: '" + varname + " -> '" + value + "'")
-			if (varname in this.vars)
-				throw new Error("Already declared: '" + varname + "'")
-
 			if (!value)
 				throw new Error("No value provided to Scope.set!")
 
-			this.vars[varname] = value;
+			if (varname in this.vars)
+				this.vars[varname].set(value);
+		//		throw new Error("Already declared: '" + varname + "'")
+			else
+				this.vars[varname] = new Variable(ValueType.Any, value);
+
 		}
 
 		toString() : string {

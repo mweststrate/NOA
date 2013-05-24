@@ -2,7 +2,12 @@
 module NOA {
 	export class Lang {
 
+		static SCOPE = {};
+
 		static let(expr : IValue, varname : any, stats: IValue) {
+			//TODO: note that varname is in scope of expr as well! thats dangerous...
+			//TODO: swap expr, varname to make that clear
+			//TODO: let the arguments live or use define
 			varname = LangUtils.toValue(varname); //varname can either be string or constant
 			Util.assert(varname && LangUtils.is(varname, ValueType.PlainValue));
 
@@ -10,14 +15,30 @@ module NOA {
 			var realname = (<any>varname).get();
 			Util.assert(Util.isString(realname));
 
-			var scope = Scope.pushScope(Scope.newScope(Scope.getCurrentScope()))
+			var v = Lang.SCOPE[realname];
+			if (v) {
+				delete Lang.SCOPE[realname]; //claim it!
+				v.set(expr);
+			}
+			else
+				Util.warn("Unused variable '" + realname + "'");
+
+			//TODO: check if in scope, if not, warn about never used
+			//var scope = Scope.getCurrentScope(); //todo new scope
+			//scope.set(realname, expr);
+			//TODO: claim this variable and remove it fromm the scope object
+			//Scope.pushScope(Scope.newScope(Scope.getCurrentScope())); //when to pop?!
+
+			return stats;
+
+/*			var scope = Scope.pushScope(Scope.newScope(Scope.getCurrentScope()))
 			try {
 				scope.set(realname, expr);
 				return stats;
 			} finally {
 				Scope.popScope();
 			}
-
+*/
 			/*return LangUtils.define(
 				"eq",
 				[ValueType.Any, ValueType.PlainValue, ValueType.Any],
@@ -31,10 +52,40 @@ module NOA {
 				} ,
 				false
 			)(expr, varname, stats);*/
+
+//			var v = Scope.getCurrentScope().get((<any>LangUtils.toValue(varname)));
+//			(<any>v).set(expr);
+//			return stats;
 		}
 
 		static get(varname): IValue {
-			return Scope.getCurrentScope().get((<any>LangUtils.toValue(varname)).get());;
+			//TODO: let the arguments live or use define
+			//TODO: varname is a variable
+
+			var v = Lang.SCOPE[varname];
+			if (!v) {
+				//create the variable, so that a 'let' can claim it
+				v = Lang.SCOPE[varname] = new Variable(ValueType.Any, undefined);
+				//check if anybody claims this var
+				setTimeout(() => {
+					if (v == Lang.SCOPE[varname])
+						v.set(new ErrorValue("Undefined variable '" + varname +"'"));
+					}, 1);
+			}
+
+			return v;
+
+//			var v = new Variable(ValueType.Any, undefined);
+//			var scope = Scope.pushScope(Scope.newScope(Scope.getCurrentScope()))
+//			scope.set(varname, v);
+
+//			return v;
+
+			//Variable r = new Variable(ValueType, v);
+
+			//var v = Scope.getCurrentScope().get((<any>LangUtils.toValue(varname)).get());
+			//TODO: if not claimed after timeout, no one will define it, set error!
+			//return v;
 			/*
 			return LangUtils.define(
 				"get",

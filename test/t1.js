@@ -67,7 +67,7 @@ exports.test1 = function(test) {
 	test.done();
 };
 
-exports.smallmap = function(test) {
+exports.smallmap1 = function(test) {
 
     var x = new NOA.List();
     x.add(3);
@@ -87,6 +87,32 @@ exports.smallmap = function(test) {
 
     test.done();
 }
+
+exports.smallmap2 = function(test) {
+
+    var x = new NOA.List();
+    x.add(3);
+    var y = x.map("k", function() {
+        var v = NOA.Lang.get("k");
+        var cb = this;
+        v.get(this, function(x) {
+            cb(x * 2)
+        })
+    }).live();
+
+    x.add(4);
+
+    test.deepEqual(x.toJSON(),[3,4])
+    test.deepEqual(y.toJSON(),[6,8])
+    y.die();
+
+    test.equal(NOA.List.count, 0);
+    test.equal(NOA.Variable.count, 0);
+    test.equal(NOA.Constant.count, 0);
+
+    test.done();
+}
+
 
 exports.errortest = function(test) {
 
