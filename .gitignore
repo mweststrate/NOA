@@ -8,4 +8,6 @@ build/*
 bin/
 src/*.js*
 src/aggregations/*.js*
+src/core/*.js*
+src/util/*.js*
 src/transformations/*.js*

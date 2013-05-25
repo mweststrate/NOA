@@ -1,4 +1,5 @@
-///<reference path='noa.ts'/>
+///<reference path='../noa.ts'/>
+
 
 module NOA {
 export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO: IRecord...*/ {

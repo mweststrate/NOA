@@ -2,7 +2,6 @@
 module NOA {
 
 	export class MappedList extends ListTransformation {
-		basescope : Scope;
 		func : any; //function or expession
 		varname : string;
 		/**
@@ -15,7 +14,6 @@ module NOA {
 		constructor(source: List, name: string, func: any /* Function or Expression */) {
 			super(source);
 
-			this.basescope = Scope.getCurrentScope();
 			this.func = func;
 			this.varname = name;
 

@@ -229,7 +229,6 @@ module NOA {
 		5. - call this(result). (This will update the value of destination).
 		*/
 		static watchFunction(func, destination: Variable): Function {
-			var scope = Scope.getCurrentScope();
 			var cbcalled = false;
 			var cb = function (newvalue) {
 				cbcalled = true;
@@ -239,7 +238,6 @@ module NOA {
 			}
 
 			var f = function () {
-				Scope.pushScope(scope);
 				destination.debugIn("Recalculating..");
 
 				try {
@@ -253,9 +251,6 @@ module NOA {
 				}
 				catch(e) {
 					cb(new ErrorValue(e));
-				}
-				finally {
-					Scope.popScope();
 				}
 			};
 

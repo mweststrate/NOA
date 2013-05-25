@@ -1,4 +1,5 @@
-///<reference path='noa.ts'/>
+///<reference path='../noa.ts'/>
+
 declare var require: Function;
 declare var process : any;
 

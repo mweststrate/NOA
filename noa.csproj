@@ -56,26 +56,23 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="src\aggregations\aggregations.ts" />
-    <Content Include="src\base.ts" />
-    <Content Include="src\binding.ts" />
-    <Content Include="src\cell.ts" />
+    <Content Include="src\util\base.ts" />
+    <Content Include="src\util\binding.ts" />
     <Content Include="src\containers.ts" />
-    <Content Include="src\variable.ts" />
-    <TypeScriptCompile Include="src\error.ts" />
-    <Content Include="src\error.js">
+    <Content Include="src\core\variable.ts" />
+    <TypeScriptCompile Include="src\core\error.ts" />
+    <Content Include="src\core\error.js">
       <DependentUpon>error.ts</DependentUpon>
     </Content>
-    <Content Include="src\expression.ts" />
-    <TypeScriptCompile Include="src\lang.ts" />
+    <TypeScriptCompile Include="src\core\lang.ts" />
     <Content Include="src\interfaces.ts" />
-    <Content Include="src\lang.js">
+    <Content Include="src\core\lang.js">
       <DependentUpon>lang.ts</DependentUpon>
     </Content>
-    <Content Include="src\list.ts" />
+    <Content Include="src\core\list.ts" />
     <Content Include="src\noa.ts" />
-    <Content Include="src\record.ts" />
-    <Content Include="src\scope.ts" />
-    <Content Include="src\serializer.ts" />
+    <Content Include="src\core\record.ts" />
+    <Content Include="src\util\serializer.ts" />
     <Content Include="src\transformations\distinct.ts" />
     <Content Include="src\transformations\filter.ts" />
     <Content Include="src\transformations\join.ts" />
@@ -85,7 +82,7 @@
     <Content Include="src\transformations\subset.ts" />
     <Content Include="src\transformations\tail.ts" />
     <Content Include="src\transformations\transformations.ts" />
-    <Content Include="src\util.ts" />
+    <Content Include="src\util\util.ts" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TypeScript\Microsoft.TypeScript.targets" />
 </Project>

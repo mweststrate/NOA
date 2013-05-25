@@ -1,17 +1,14 @@
-///<reference path='util.ts'/>
-///<reference path='base.ts'/>
-///<reference path='binding.ts'/>
+///<reference path='util/util.ts'/>
+///<reference path='util/base.ts'/>
+///<reference path='util/binding.ts'/>
 ///<reference path='containers.ts'/>
 ///<reference path='interfaces.ts'/>
-///<reference path='variable.ts'/>
-///<reference path='cell.ts'/>
-///<reference path='expression.ts'/>
-///<reference path='list.ts'/>
-///<reference path='record.ts'/>
-///<reference path='scope.ts'/>
-///<reference path='serializer.ts'/>
-///<reference path='lang.ts'/>
-///<reference path='error.ts'/>
+///<reference path='core/variable.ts'/>
+///<reference path='core/list.ts'/>
+///<reference path='core/record.ts'/>
+///<reference path='util/serializer.ts'/>
+///<reference path='core/lang.ts'/>
+///<reference path='core/error.ts'/>
 ///<reference path='aggregations/aggregations.ts'/>
 
 ///<reference path='transformations/transformations.ts'/>
