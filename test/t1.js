@@ -92,17 +92,19 @@ exports.smallmap2 = function(test) {
 
     var x = new NOA.List();
     x.add(3);
-    var y = x.map("k", function() {
+    var y = x.map("k", NOA.Lang.mul(NOA.Lang.get("k"), 2)).live();
+   /* var y = x.map("k", function() {
         var v = NOA.Lang.get("k");
         var cb = this;
         v.get(this, function(x) {
             cb(x * 2)
         })
     }).live();
-
+*/
     x.add(4);
+    x.set(0, 12);
 
-    test.deepEqual(x.toJSON(),[3,4])
+    //test.deepEqual(x.toJSON(),[3,4])
     test.deepEqual(y.toJSON(),[6,8])
     y.die();
 

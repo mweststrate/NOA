@@ -18,6 +18,9 @@ module NOA {
 			var v = Lang.SCOPE[realname];
 			if (v) {
 				delete Lang.SCOPE[realname]; //claim it!
+
+				Util.debug("Claiming " + v + " as " + realname + ", assigning: " + expr);
+
 				v.set(expr);
 			}
 			else
@@ -72,6 +75,8 @@ module NOA {
 						v.set(new ErrorValue("Undefined variable '" + varname +"'"));
 					}, 1);
 			}
+
+			Util.debug("Resolved " + varname + " to " + v);
 
 			return v;
 
