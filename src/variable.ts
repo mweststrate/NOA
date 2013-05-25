@@ -20,6 +20,8 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		is(expected: ValueType) : bool {
+			if (this.value === null || this.value === undefined)
+				return expected == ValueType.Any || expected == ValueType.PlainValue; //TODO: weird.. now the case because it is gettable...?!
 			return this.value.is(expected);
 		}
 

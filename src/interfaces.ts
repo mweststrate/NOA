@@ -93,9 +93,10 @@ module NOA {
 					return v;
 				if (Util.isPrimitive(v))
 					return v;
+				if (v instanceof Variable) {
+					return dereference((<Variable>v).value);
+				}
 				if (v.is(ValueType.List) || v.is(ValueType.Record) || v.is(ValueType.Error)) {
-					if (v instanceof Variable) //compare contents, not variables
-						return dereference((<Variable>v).value);
 					return v;
 				}
 				if (v.is(ValueType.PlainValue))

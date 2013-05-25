@@ -28,7 +28,11 @@ module NOA {
 			//scope.set(this.varname, source);
 
 			if (this.func instanceof Base) { //Poor way expression check
-				LangUtils.clone(this.func, (clone : IValue) => {
+				LangUtils.clone(this.func, (clone: IValue) => {
+
+					console.info("MAP inserting expression clone: ");
+					console.dir(clone);
+
 					this.insert(index, Lang.let(
 						source,
 						this.varname,

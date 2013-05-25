@@ -101,8 +101,8 @@ exports.smallmap2 = function(test) {
         })
     }).live();
 */
-    x.add(4);
-    x.set(0, 12);
+//    x.add(4);
+ //   x.set(0, 12);
 
     //test.deepEqual(x.toJSON(),[3,4])
     test.deepEqual(y.toJSON(),[6,8])

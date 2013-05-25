@@ -142,6 +142,12 @@ module NOA {
 			return this.value;
 		}
 
+		toAST() : Object {
+			if (this.value instanceof Base)
+				return (<IValue> this.value).toAST();
+			return this.value;
+		}
+
 		toString(): string {
 			return ["[Constant#", this.noaid, "=", this.value, "]"].join("");
 		}
