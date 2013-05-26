@@ -1,8 +1,8 @@
 ///<reference path='util/util.ts'/>
 ///<reference path='util/base.ts'/>
 ///<reference path='util/binding.ts'/>
-///<reference path='containers.ts'/>
-///<reference path='interfaces.ts'/>
+///<reference path='core/containers.ts'/>
+///<reference path='core/interfaces.ts'/>
 ///<reference path='core/variable.ts'/>
 ///<reference path='core/list.ts'/>
 ///<reference path='core/record.ts'/>
