@@ -2,22 +2,7 @@
 ///<reference path='interfaces.ts'/>
 module NOA {
 
-//	export interface IValue {
-/*		TODO: need list / record support for get() ? probably not.
-		get (): any;
-		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void ): void;
-		get (caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent: bool): any;
-*/
-/*		toAST(): Object;
-
-		toJSON() : any;
-
-		//TODO: getScope?
-
-		//TODO: static unserialize()
-	}
-	*/
-
+	//TODO: rename to var container
 	export class CellContainer extends AbstractValue {
 
 		constructor() {

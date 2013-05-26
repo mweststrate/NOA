@@ -1,14 +1,23 @@
 ///<reference path='util/util.ts'/>
 ///<reference path='util/base.ts'/>
 ///<reference path='util/binding.ts'/>
-///<reference path='core/containers.ts'/>
+
 ///<reference path='core/interfaces.ts'/>
+
+///<reference path='core/abstractvalue.ts'/>
+///<reference path='core/constant.ts'/>
 ///<reference path='core/variable.ts'/>
+///<reference path='core/varcontainer.ts'/>
+
 ///<reference path='core/list.ts'/>
 ///<reference path='core/record.ts'/>
-///<reference path='util/serializer.ts'/>
-///<reference path='core/lang.ts'/>
+
 ///<reference path='core/error.ts'/>
+
+///<reference path='util/serializer.ts'/>
+///<reference path='core/langutils.ts'/>
+///<reference path='core/lang.ts'/>
+
 ///<reference path='aggregations/aggregations.ts'/>
 
 ///<reference path='transformations/transformations.ts'/>
