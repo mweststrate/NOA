@@ -35,6 +35,7 @@ module NOA {
 			Lets keep it simple for now
 			*/
 			var cell = new Variable(ValueType.Any, LangUtils.toValue(value));
+			cell.live();
 
 			this.debugIn("Insert at " + index + ": " + cell + " for value " + value);
 
@@ -80,7 +81,7 @@ module NOA {
 			this.fire(ListEvent.REMOVE.toString(), index, origvalue);
 
 			this.unlisten(origcell);
-			origcell.free();
+			origcell.die();
 
 			this.debugOut();
 			return origvalue;
@@ -221,7 +222,7 @@ module NOA {
 		free() {
 			console.log("freeing " + this.cells.length)
 			for (var i = this.cells.length - 1; i >= 0; i--)
-				this.cells[i].free();
+				this.cells[i].die();
 
 			//TODO: free aggregates
 			super.free();

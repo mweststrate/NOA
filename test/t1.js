@@ -23,9 +23,10 @@ exports.test1 = function(test) {
     x.debugName("x");
 
 	//base set
-	x.add(3);
-	x.add(2);
-	x.add(6);
+
+    x.add(3);
+    x.add(2);
+    x.add(6);
     testIndexes(x, test);
 
     //mutations
@@ -57,12 +58,11 @@ exports.test1 = function(test) {
     x.move(2,1)
     test.deepEqual(x.toJSON(), [3,1,7]);
     testIndexes(x, test);
-
     x.die();
 
 	test.equal(NOA.List.count, 0);
+    test.equal(NOA.Constant.count, 0);
     test.equal(NOA.Variable.count, 0);
-	test.equal(NOA.Constant.count, 0);
 
 	test.done();
 };
@@ -88,10 +88,28 @@ exports.smallmap1 = function(test) {
     test.done();
 }
 
+exports.smallmap0 = function(test) {
+
+    var x = new NOA.List();
+   // x.add(3);
+    var y = x.map("k", NOA.Lang.get("k")).live();
+ //   x.add(4);
+ //   x.set(0, 12);
+
+    //test.deepEqual(x.toJSON(),[3,4])
+  //  test.deepEqual(y.toJSON(),[3])
+    y.die();
+
+    test.equal(NOA.List.count, 0);
+    test.equal(NOA.Constant.count, 0);
+    test.equal(NOA.Variable.count, 0);
+
+    test.done();
+}
+
 exports.smallmap2 = function(test) {
 
     var x = new NOA.List();
-    x.add(3);
     var y = x.map("k", NOA.Lang.mul(NOA.Lang.get("k"), 2)).live();
    /* var y = x.map("k", function() {
         var v = NOA.Lang.get("k");
@@ -101,7 +119,8 @@ exports.smallmap2 = function(test) {
         })
     }).live();
 */
-//    x.add(4);
+    //x.add(3);
+    //x.add(4);
  //   x.set(0, 12);
 
     //test.deepEqual(x.toJSON(),[3,4])

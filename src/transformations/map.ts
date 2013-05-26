@@ -15,6 +15,9 @@ module NOA {
 			super(source);
 
 			this.func = func;
+			if (this.func instanceof Base)
+				this.func.live();
+
 			this.varname = name;
 
 			this.startup();
@@ -68,5 +71,10 @@ module NOA {
 			return this.toASTHelper("map", this.varname); //TODO: function, use toString for real funcs
 		}
 
+		free() {
+			super.free();
+			if(this.func instanceof Base)
+				this.die();
+		}
 	}
 }
