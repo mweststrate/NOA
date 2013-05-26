@@ -28,7 +28,7 @@ module NOA {
 			var source = this.source.cell(index);
 			//scope.set(this.varname, source);
 
-			console.log("inserting new item!");
+			console.log("inserting new item for " + source);
 
 			if (this.func instanceof Base) { //Poor way expression check
 				console.dir(this.func.toAST());

@@ -28,7 +28,8 @@ module NOA {
 		}
 
 		toString(): string {
-			return ["[Expression#", this.noaid, "=", <any>this.funcName,"(", this.args.join(","), ")]"].join("");
+			//return ["[Expression#", this.noaid, "=", <any>this.funcName,"(", this.args.join(","), ")]"].join("");
+			return this.funcName + "(" + this.args.join(", ") + ")";
 		}
 
 	}

@@ -9,9 +9,9 @@ module NOA {
 			switch (type) {
 				case ValueType.Any: return true;
 				case ValueType.Error: return value instanceof ErrorValue;
-				case ValueType.List: return value['insert'];//MWE: typescript cannot check against interfaces
-				case ValueType.Record: return value['put'];
-				case ValueType.PlainValue: return value['get'];
+				case ValueType.List: return !!value['insert'];//MWE: typescript cannot check against interfaces
+				case ValueType.Record: return !!value['put'];
+				case ValueType.PlainValue: return !!value['get'];
 			}
 			Util.notImplemented();
 		}
