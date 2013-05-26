@@ -46,7 +46,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 					(LangUtils.is(newvalue, ValueType.PlainValue)) &&
 					(LangUtils.is(oldvalue, ValueType.PlainValue));
 
-				this.teardown(oldvalue, withEvents,combineChangeEvent);
+				this.teardown(oldvalue, withEvents, !combineChangeEvent);
 
 				this.value = newvalue;
 
@@ -59,9 +59,9 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 					this.setup(new ErrorValue("Expected '", this.expectedType, "' but found:", newvalue), true);
 				}
 				else
-					this.setup(newvalue, withEvents, combineChangeEvent);
+					this.setup(newvalue, withEvents, !combineChangeEvent);
 
-				if (!combineChangeEvent && withEvents) {
+				if (combineChangeEvent && withEvents) {
 					var nv = newvalue ? (<IPlainValue>newvalue).get() : undefined;
 					if (nv != ov)
 						this.fire('change', nv, ov); //TODO: do not use changed but some constant!

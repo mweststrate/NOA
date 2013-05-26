@@ -44,15 +44,23 @@ module NOA {
 					var realname = (<any>varname).get();
 					Util.assert(Util.isString(realname));
 
-					var v = Lang.SCOPE[realname];
+					var v : Variable = Lang.SCOPE[realname];
 					if (!v) {
 						//create the variable, so that a 'let' can claim it
 						v = Lang.SCOPE[realname] = new Variable(ValueType.Any, undefined);
+
 						//check if anybody claims this var
 						setTimeout(() => {
 							if (v == Lang.SCOPE[realname])
 								v.set(new ErrorValue("Undefined variable '" + varname + "'"));
 						}, 1);
+
+						//make sure this var is removed from scope if no longer used!
+						//mwe: hmm, doesn't that identify scopes are mixed?! TODO:!!
+						v.onFree(null, () => {
+							if (v == Lang.SCOPE[realname])
+								delete Lang.SCOPE[realname];
+						});
 					}
 
 					Util.debug("Resolved " + varname + " to " + v);
