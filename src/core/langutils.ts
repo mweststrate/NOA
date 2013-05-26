@@ -104,7 +104,7 @@ module NOA {
 
 		static followEvent(source: IBase, event: string, dest: IBase, follow: bool) {
 			if (follow) {
-				dest.listen(source, event, (...args: any[]) => {
+				dest.listen(source, event, function(...args: any[]) {
 					args.unshift(event);
 					this.fire.apply(this, args);
 				});
@@ -119,52 +119,18 @@ module NOA {
 			new NOA.Unserializer(Util.notImplemented).unserialize(ast, cb);
 		}
 
-		private static parseArguments(argtypes, args: any[], destination: Variable): IValue[] {
-			//converts to IValue
-			//Throws if not correct
-			//TODO: use args.. to separate function?
-			return Util.map(args, arg => {
-				var val = LangUtils.toValue(arg);
-				destination.uses(val);
-				return val;
-			})
-		}
+		static define(impl: (...args: IValue[]) => any, name: string, argtypes?: ValueType[], resultType?: ValueType, memoize: bool = false): Function {
+			return NOA.Lang[name] = function (...args: any[]) {
 
-		static define(name: string, argtypes: ValueType[], resultType: ValueType, impl: (...args: IValue[]) => any, memoize: bool = false): Function {
-			return Lang[name] = function (...args: any[]) {
-				var result = new Variable(resultType, undefined);
-				var realArgs = parseArguments(argtypes, args, result);
+				var realArgs = args.map(LangUtils.toValue);
+				var result = new Expression(name, realArgs);
+
+				//TODO: shouldn't watchfunction be the responsibility of Expression?
 				var wrapper = LangUtils.watchFunction(impl, result);
 				wrapper.apply(null, realArgs);
+
 				return result;
 			}
-
-
-			/*function (...args: any[]) {
-			var res = new Variable(result, undefined);
-			var cbcalled = false;
-
-			var scope : Scope = Scope.getCurrentScope(); //TODO: maybe just pass scopes around?
-
-			var cb = function (newvalue) {
-				cbcalled = true;
-				res.set(LangUtils.toValue(newvalue));
-			}
-
-			try {
-
-				args = parseArguments(argtypes, args);
-				args.forEach(arg => res.uses(arg));
-				args.unshift(cb);
-
-				var res = impl.apply(cb, args);
-				if (res !== undefined && cbcalled == false)
-					cb(res);
-			}
-			catch (e) {
-				res.set(new ErrorValue(e));
-			}
-		}*/
 		}
 
 		/**
@@ -216,7 +182,7 @@ module NOA {
 
 			args.forEach((arg, index) => {
 				result.uses(arg);
-				if (arg.is(ValueType.PlainValue)) {
+				if (arg && arg.is(ValueType.PlainValue)) {
 					(<IPlainValue>arg).get(null, (newvalue, _) => {
 						realargs[index] = LangUtils.dereference(newvalue);
 						update();

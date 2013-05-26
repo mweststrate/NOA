@@ -117,13 +117,13 @@ module NOA{
 
 				//result handler
 				() => {
-					var source = args[0];
-					var func = source[ast.name];
+					//var source = args[0];
+					var func = NOA.Lang[ast.name];
 					if (!func)
-						throw new Error("Undefined method '" + ast.name + "' for " + source.toString());
+						throw new Error("Undefined method '" + ast.name + "'");
 
-					args.shift();
-					outercb(func.apply(source, args));
+					//args.shift();
+					outercb(func.apply(null, args));
 				}
 			);
 		}

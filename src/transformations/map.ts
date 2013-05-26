@@ -25,7 +25,11 @@ module NOA {
 			var source = this.source.cell(index);
 			//scope.set(this.varname, source);
 
+			console.log("inserting new item!");
+
 			if (this.func instanceof Base) { //Poor way expression check
+				console.dir(this.func.toAST());
+
 				LangUtils.clone(this.func, (clone: IValue) => {
 
 					console.info("MAP inserting expression clone: ");

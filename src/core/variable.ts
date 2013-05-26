@@ -27,7 +27,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		isError(): bool {
-			return this.value.isError();
+			return this.value && this.value.isError();
 		}
 
 		asError(): ErrorValue {
@@ -191,7 +191,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 
-		//TODO: move to Variable
+		//TODO: move to 'ContainedVariable'
 		addIndex(parent: CellContainer, index: any): Variable {
 			Util.assert(this.indexes[parent.noaid] === undefined);
 

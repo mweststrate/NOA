@@ -7,6 +7,7 @@
 ///<reference path='core/abstractvalue.ts'/>
 ///<reference path='core/constant.ts'/>
 ///<reference path='core/variable.ts'/>
+///<reference path='core/expression.ts'/>
 ///<reference path='core/varcontainer.ts'/>
 
 ///<reference path='core/list.ts'/>
