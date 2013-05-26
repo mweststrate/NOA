@@ -110,12 +110,13 @@ module NOA {
 		}
 
 		free() {
-			this.backingList.die().free();
-			this.backingRecord.die().free();
-			this.backingPlain.die().free();
+			super.free();
+
+			this.backingList.die();
+			this.backingRecord.die();
+			this.backingPlain.die();
 			if (this.cause)
 				this.cause.die();
-			super.free();
 		}
 
 		toString(): string {

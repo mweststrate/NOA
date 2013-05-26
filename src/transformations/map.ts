@@ -73,8 +73,9 @@ module NOA {
 
 		free() {
 			super.free();
+
 			if(this.func instanceof Base)
-				this.die();
+				this.func.die();
 		}
 	}
 }
