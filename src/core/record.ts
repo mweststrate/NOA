@@ -11,7 +11,7 @@ module NOA{
 	export class Record extends CellContainer implements IValue, IRecord, IMutableRecord {
 
 		data = {};
-		keys = new List();
+		keys = <List>new List().live();
 
 		put(key : string, value : any) {
 			if (!this.has(key)) {
@@ -19,6 +19,7 @@ module NOA{
 				//TODO: support function insertion a la list.map
 
 				var cell = this.data[key] = new Variable(ValueType.Any, LangUtils.toValue(value));
+				cell.live();
 				cell.addIndex(this, key);
 				this.keys.add(key);
 				this.fire(RecordEvent.PUT.toString() ,key, value, undefined);
@@ -38,7 +39,7 @@ module NOA{
 				return;
 
 			this.fire(RecordEvent.PUT.toString(), key, undefined, this.get(key));
-			(<Variable>this.data[key]).free();
+			(<Variable>this.data[key]).die();
 
 			this.keys.removeAll(key);
 			delete this.data[key];
@@ -93,12 +94,13 @@ module NOA{
 			return res;
 		}
 
-		free () {
-			for(var key in this.data)
-				(<Variable>this.data[key]).free();
-
-			this.keys.free();
+		free() {
 			super.free();
+
+			for(var key in this.data)
+				(<Variable>this.data[key]).die();
+
+			this.keys.die();
 		}
 	}
 }
