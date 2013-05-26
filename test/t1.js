@@ -88,16 +88,43 @@ exports.smallmap1 = function(test) {
     test.done();
 }
 
-exports.smallmap0 = function(test) {
+exports.smallmap0a = function(test) {
 
     var x = new NOA.List();
-   // x.add(3);
     var y = x.map("k", NOA.Lang.get("k")).live();
- //   x.add(4);
- //   x.set(0, 12);
+    y.die();
 
-    //test.deepEqual(x.toJSON(),[3,4])
-  //  test.deepEqual(y.toJSON(),[3])
+    test.equal(NOA.List.count, 0);
+    test.equal(NOA.Constant.count, 0);
+    test.equal(NOA.Variable.count, 0);
+
+    test.done();
+}
+
+exports.smallmap0b = function(test) {
+
+    var x = new NOA.List();
+    x.add(3);
+    var y = x.map("k", NOA.Lang.get("k")).live();
+    test.deepEqual(y.toJSON(),[3])
+    y.die();
+
+    test.equal(NOA.List.count, 0);
+    test.equal(NOA.Constant.count, 0);
+    test.equal(NOA.Variable.count, 0);
+
+    test.done();
+}
+
+exports.smallmap0c = function(test) {
+
+    var x = new NOA.List();
+    x.add(3);
+    var y = x.map("k", NOA.Lang.get("k")).live();
+    x.add(4);
+    x.set(0, 12);
+
+    test.deepEqual(y.toJSON(),[12,4])
     y.die();
 
     test.equal(NOA.List.count, 0);
@@ -110,21 +137,16 @@ exports.smallmap0 = function(test) {
 exports.smallmap2 = function(test) {
 
     var x = new NOA.List();
-    var y = x.map("k", NOA.Lang.mul(NOA.Lang.get("k"), 2)).live();
-   /* var y = x.map("k", function() {
-        var v = NOA.Lang.get("k");
-        var cb = this;
-        v.get(this, function(x) {
-            cb(x * 2)
-        })
-    }).live();
-*/
-    //x.add(3);
-    //x.add(4);
- //   x.set(0, 12);
+    x.add(3);
 
-    //test.deepEqual(x.toJSON(),[3,4])
-    test.deepEqual(y.toJSON(),[6,8])
+    //var y = x.map("k", NOA.Lang.mul(NOA.Lang.get("k"), 2)).live();
+    var y = x.map("k", NOA.Lang.mul(NOA.Lang.get("k"), 2)).live();
+
+    x.add(4);
+   // x.set(0, 12);
+
+    test.deepEqual(x.toJSON(),[12,4])
+    test.deepEqual(y.toJSON(),[24,8])
     y.die();
 
     test.equal(NOA.List.count, 0);
