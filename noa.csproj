@@ -56,16 +56,24 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="src\aggregations\aggregations.ts" />
+    <Content Include="src\core\abstractvalue.ts" />
+    <Content Include="src\core\constant.ts" />
+    <Content Include="src\core\expression.ts" />
+    <Content Include="src\core\langutils.ts" />
+    <TypeScriptCompile Include="src\core\sleepable.ts" />
+    <Content Include="src\core\sleepable.js">
+      <DependentUpon>sleepable.ts</DependentUpon>
+    </Content>
+    <Content Include="src\core\varcontainer.ts" />
     <Content Include="src\util\base.ts" />
     <Content Include="src\util\binding.ts" />
-    <Content Include="src\containers.ts" />
     <Content Include="src\core\variable.ts" />
     <TypeScriptCompile Include="src\core\error.ts" />
     <Content Include="src\core\error.js">
       <DependentUpon>error.ts</DependentUpon>
     </Content>
     <TypeScriptCompile Include="src\core\lang.ts" />
-    <Content Include="src\interfaces.ts" />
+    <Content Include="src\core\interfaces.ts" />
     <Content Include="src\core\lang.js">
       <DependentUpon>lang.ts</DependentUpon>
     </Content>
