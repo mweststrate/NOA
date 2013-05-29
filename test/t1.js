@@ -142,12 +142,13 @@ exports.smallmap2 = function(test) {
     //var y = x.map("k", NOA.Lang.mul(NOA.Lang.get("k"), 2)).live();
     var y = x.map("k", NOA.Lang.mul(NOA.Lang.get("k"), 2)).live();
 
-    //x.add(4);
+   // x.add(4);
     NOA.Util.debug("-------------------------------")
-    x.set(0, 12);
+   // x.set(0, 12);
+    NOA.Util.debug("-------------------------------")
 
-    //test.deepEqual(x.toJSON(),[12,4])
-    test.deepEqual(y.toJSON(),[24,8])
+  //  test.deepEqual(x.toJSON(),[12,4])
+    test.deepEqual(y.toJSON(),[24, 8])
     y.die();
 
     test.equal(NOA.List.count, 0);

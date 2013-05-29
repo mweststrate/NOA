@@ -90,6 +90,18 @@ module NOA {
 			}
 		}
 
+		static getSize(collection: any): number {
+			if (Util.isArray(collection))
+				return collection.length;
+			if (Util.isObject(collection)) {
+				var cnt = 0;
+				for (var key in collection)
+					cnt += 1;
+				return cnt;
+			}
+			return 0;
+		}
+
 		//TODO: kill map/filter/each? are provided by default already in typescript
 		static map(collection: any[], cb: (value: any, index: number) => any, scope?: Object): any[];
 		static map(collection : Object, cb : (value : any, key : string) => any, scope? : Object) : Object;
@@ -180,14 +192,14 @@ module NOA {
 		static parallel(collection : Object, onItem : (item: any, index: string, cb : () => void) => void, callback : () => void);
 		static parallel(collection : any[], onItem : (item: any, index: number, cb : () => void) => void, callback : () => void);
 		static parallel(collection : any, func1 : Function, func2? : Function) {
-			var left = 0;
+			var left = Util.getSize(collection);
 			var onItem   = func1;
 			var callback = func2;
 
 			function itemdone() {
 				left -= 1;
-					if (left == 0)
-						callback();
+				if (left == 0)
+					callback();
 			}
 
 			if (arguments.length == 2) {
@@ -197,10 +209,12 @@ module NOA {
 				}
 			}
 
-			Util.each(collection, (item, index) => {
-				left +=1;
-				onItem(item, index, itemdone)
-			})
+			if (left == 0)
+				callback()
+			else
+				Util.each(collection, (item, index) => {
+					onItem(item, index, itemdone)
+				})
 		}
 
 		//equals parallelMap, but preserves order, only supports array
