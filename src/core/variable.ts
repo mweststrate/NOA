@@ -46,7 +46,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 					(LangUtils.is(newvalue, ValueType.PlainValue)) &&
 					(LangUtils.is(oldvalue, ValueType.PlainValue));
 
-				this.teardown(oldvalue, withEvents, !combineChangeEvent);
+				this.teardown(oldvalue, withEvents, combineChangeEvent);
 
 				this.value = newvalue;
 
@@ -59,7 +59,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 					this.setup(new ErrorValue("Expected '", this.expectedType, "' but found:", newvalue), true);
 				}
 				else
-					this.setup(newvalue, withEvents, !combineChangeEvent);
+					this.setup(newvalue, withEvents, combineChangeEvent);
 
 				if (combineChangeEvent && withEvents) {
 					var nv = newvalue ? (<IPlainValue>newvalue).get() : undefined;
@@ -85,7 +85,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			super.free();
 		}
 
-		teardown(value: IValue, withEvents: bool, suppressPrimitiveGet: bool) {
+		teardown(value: IValue, withEvents: bool, suppressGetCallback: bool) {
 			if (!value)
 				return;
 
@@ -106,12 +106,12 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			}
 			if (value.is(ValueType.PlainValue)) {
 				var ov = (<IPlainValue>value).get();
-				if (!suppressPrimitiveGet && ov !== undefined)
+				if (!suppressGetCallback && ov !== undefined)
 					this.fire("change", undefined, ov);
 			}
 		}
 
-		setup(value: IValue, withEvents: bool, suppressPrimitiveGet = false) {
+		setup(value: IValue, withEvents: bool, suppressGetCallback = false) {
 			if (!value)
 				return;
 
@@ -130,7 +130,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			}
 			if (value.is(ValueType.PlainValue)) {
 				var nv = (<IPlainValue>value).get();
-				if (!suppressPrimitiveGet && nv !== undefined)
+				if (!suppressGetCallback && nv !== undefined)
 					this.fire("change", nv, undefined);
 			}
 		}

@@ -74,7 +74,8 @@ module NOA {
 		static mul(left, right): IValue {
 			return LangUtils.define(
 				function (l : IValue, r: IValue) {
-					return LangUtils.withValues([l,r], function (l,r) {
+					return LangUtils.withValues([l, r], function (l, r) {
+						//Util.debug("Mul: ", l, r, "-> ", l * r);
 						return l * r;
 					});
 				}, 

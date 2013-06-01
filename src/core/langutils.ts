@@ -177,18 +177,21 @@ module NOA {
 			var wrapped = LangUtils.watchFunction(func, result);
 
 			var update = function () {
+				//Util.debug(result, "updating for changed arguments", JSON.stringify(realargs));
 				wrapped.apply(null, realargs);
 			};
 
 			args.forEach((arg, index) => {
 				result.uses(arg);
-				if (arg && arg.is(ValueType.PlainValue)) {
-					(<IPlainValue>arg).get(null, (newvalue, _) => {
+				//if (arg.is(ValueType.PlainValue)) { //TODO: should be asserted
+					(<IPlainValue>arg).get(<Base>{}, (newvalue, _) => { //TODO: scope? //TODO: seems not to be triggered yet..
 						realargs[index] = LangUtils.dereference(newvalue);
 						update();
 					}, false);
-				}
+				//}
 			});
+
+//			Util.debug(result, "listening to", args.map(arg => arg.toString()).join(", "));
 
 			update();
 
