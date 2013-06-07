@@ -120,6 +120,7 @@ module NOA {
 		}
 
 		static define(impl: (...args: IValue[]) => any, name: string, argtypes?: ValueType[], resultType?: ValueType, memoize: bool = false): Function {
+			//TODO: if type of first argument is List, then add this function on List.prototype as well
 			return NOA.Lang[name] = function (...args: any[]) {
 
 				var realArgs = args.map(LangUtils.toValue);

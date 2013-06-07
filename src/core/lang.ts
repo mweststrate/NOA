@@ -4,6 +4,12 @@ module NOA {
 
 		static SCOPE = {};
 
+		static fun(fun : Function) :Fun ;
+		static fun(argnames : String[], stats: IValue) : Fun;
+		static fun(argnames : any, stats?: IValue) : Fun {
+			return new Fun(argnames, stats);
+		}
+
 		//TODO: swap varname and expr
 		static let(expr: IValue, varname: any, stats: IValue) {
 			return LangUtils.define(
@@ -78,7 +84,7 @@ module NOA {
 						//Util.debug("Mul: ", l, r, "-> ", l * r);
 						return l * r;
 					});
-				}, 
+				},
 				"mul",
 				[ValueType.PlainValue, ValueType.PlainValue],
 				ValueType.Any

@@ -2,7 +2,7 @@
 module NOA {
 
 	export class MappedList extends ListTransformation {
-		func : any; //function or expession
+		func : Fun; //function or expession
 		varname : string;
 		/**
 		 * Constructs a new list with all the mapped items in this list. If name is defined, the current value to which the filter is applied is available
@@ -11,14 +11,13 @@ module NOA {
 		 * @param  {[type]} func [description]
 		 * @return {[type]}
 		 */
-		constructor(source: List, name: string, func: any /* Function or Expression */) {
+		constructor(source: List, name: string, func: Fun) {
 			super(source);
 
 			this.func = func;
-			if (this.func instanceof Base)
-				this.func.live();
 
 			this.varname = name;
+			this.unlisten(source, ListEvent.SET.toString()); //TODO: if func is just a js func, onSet should also reeavaluate the func
 
 			this.startup();
 		}
@@ -30,33 +29,7 @@ module NOA {
 
 			console.log("inserting new item for " + source);
 
-			if (this.func instanceof Base) { //Poor way expression check
-				console.dir(this.func.toAST());
-
-				LangUtils.clone(this.func, (clone: IValue) => {
-
-					console.info("MAP inserting expression clone: ");
-					console.dir(clone);
-
-					this.insert(index, Lang.let(
-						source,
-						this.varname,
-						clone
-					));
-				});
-			}
-			else if (Util.isFunction(this.func)) {
-				this.insert(index, Lang.let(
-					source,
-					this.varname,
-					LangUtils.withValues([source], this.func)
-				));
-			}
-			//TODO: support string and parse
-
-			else
-				throw new Error("Map function should be JS function or expression");
-
+			this.insert(index, this.func.call(source));
 		}
 
 		onSourceRemove(index: number, value) {

@@ -9,6 +9,7 @@
 ///<reference path='core/variable.ts'/>
 ///<reference path='core/expression.ts'/>
 ///<reference path='core/varcontainer.ts'/>
+///<reference path='core/fun.ts'/>
 
 ///<reference path='core/list.ts'/>
 ///<reference path='core/record.ts'/>

@@ -59,6 +59,7 @@
     <Content Include="src\core\abstractvalue.ts" />
     <Content Include="src\core\constant.ts" />
     <Content Include="src\core\expression.ts" />
+    <Content Include="src\core\fun.ts" />
     <Content Include="src\core\langutils.ts" />
     <TypeScriptCompile Include="src\core\sleepable.ts" />
     <Content Include="src\core\sleepable.js">

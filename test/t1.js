@@ -91,7 +91,7 @@ exports.smallmap1 = function(test) {
 exports.smallmap0a = function(test) {
 
     var x = new NOA.List();
-    var y = x.map("k", NOA.Lang.get("k")).live();
+    var y = x.map(NOA.Lang.fun("k", NOA.Lang.get("k"))).live();
     y.die();
 
     test.equal(NOA.List.count, 0);
@@ -138,7 +138,9 @@ exports.smallmap2 = function(test) {
 
     var x = new NOA.List();
     x.add(3);
-
+    //TODO: far too much calcutions right now, but working.
+    //
+    //TODO: should improve using sleepless stuff?
     //var y = x.map("k", NOA.Lang.mul(NOA.Lang.get("k"), 2)).live();
     var y = x.map("k", NOA.Lang.mul(NOA.Lang.get("k"), 2)).live();
 
@@ -201,7 +203,7 @@ exports.test2 = function(test) {
 		var v = NOA.Lang.get('x');
 
    		//console.log("DOUBLEMAP: " + v + " * 2 = " + (v * 2));
-		return v * 2;
+		return v.get() * 2;
 
    	}).live().debugName("y");
 
@@ -227,8 +229,8 @@ exports.test2 = function(test) {
 	x.move(1,0); //JOIN fails if this is not disabled
 
 	test.deepEqual(x.toJSON(), [7,3,1]);
-	test.deepEqual(y.toJSON(), [14,6,2])
 	test.deepEqual(z.toJSON(), [14, 6, 2])
+    test.deepEqual(y.toJSON(), [14,6,2])
 	test.deepEqual(a.toJSON(), [14, 6, 2])
 
 	x.die();
