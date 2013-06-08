@@ -238,8 +238,8 @@ module NOA {
 		 */
 
 		/** transform functions */
-		map(name: string, func: any /*funciton or Expression */): List {
-			return new MappedList(this, name, func);
+		map(func: Fun): List {
+			return new MappedList(this, func);
 		}
 
 		/**
@@ -249,8 +249,8 @@ module NOA {
 		 * @param  {[type]} func [description]
 		 * @return {[type]}
 		 */
-		filter(name: string, func: any /* Expression or function */): List {
-			return new FilteredList(this, name, func)
+		filter(func: Fun): List {
+			return new FilteredList(this, func)
 		}
 
 		/**

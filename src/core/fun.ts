@@ -49,8 +49,9 @@ module NOA {
 		}
 
 		public free() {
-			super.free;
-			this.statement.die();
+			super.free();
+			if (!this.isJSFun)
+				this.statement.die();
 		}
 	}
 }

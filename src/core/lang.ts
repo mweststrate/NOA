@@ -111,18 +111,18 @@ module NOA {
 		static list(...vals: IValue[]): List {
 			return null;
 		}
-
+/*
 		static powerset(list: List): IValue {
-			return list.map("x",
-				list.map("y",
+			return list.map(Lang.fun("x",
+				list.map(Lang.fun("y",
 					Lang.list(
 						Lang.variable("x"),
 						Lang.variable("y")
 					)
-				)
-			);
+				))
+			));
 		}
-
+*/
 
 		static div(left: IValue, right: IValue): IValue {
 			return null;

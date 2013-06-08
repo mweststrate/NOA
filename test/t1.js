@@ -71,9 +71,9 @@ exports.smallmap1 = function(test) {
 
     var x = new NOA.List();
     x.add(3);
-    var y = x.map("k", function(v) {
+    var y = x.map(NOA.Lang.fun(function(v) {
         return v*2
-    }).live();
+    })).live();
 
     x.add(4);
 
@@ -105,7 +105,7 @@ exports.smallmap0b = function(test) {
 
     var x = new NOA.List();
     x.add(3);
-    var y = x.map("k", NOA.Lang.get("k")).live();
+    var y = x.map(NOA.Lang.fun("k", NOA.Lang.get("k"))).live();
     test.deepEqual(y.toJSON(),[3])
     y.die();
 
@@ -120,7 +120,7 @@ exports.smallmap0c = function(test) {
 
     var x = new NOA.List();
     x.add(3);
-    var y = x.map("k", NOA.Lang.get("k")).live();
+    var y = x.map(NOA.Lang.fun("k", NOA.Lang.get("k"))).live();
     x.add(4);
     x.set(0, 12);
 
@@ -142,7 +142,7 @@ exports.smallmap2 = function(test) {
     //
     //TODO: should improve using sleepless stuff?
     //var y = x.map("k", NOA.Lang.mul(NOA.Lang.get("k"), 2)).live();
-    var y = x.map("k", NOA.Lang.mul(NOA.Lang.get("k"), 2)).live();
+    var y = x.map(NOA.Lang.fun("k", NOA.Lang.mul(NOA.Lang.get("k"), 2))).live();
 
     x.add(4);
     NOA.Util.debug("-------------------------------")
@@ -166,12 +166,12 @@ exports.errortest = function(test) {
     var x = new NOA.List();
     x.add(3);
 
-    var y = x.map("k", function(v) {
+    var y = x.map(NOA.Lang.fun(function(v) {
         if (v == 6)
             throw "should not be six!"
         else
             return v*2;
-    }).live();
+    })).live();
 
     x.add(6);
     x.add(9);
