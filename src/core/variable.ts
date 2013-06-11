@@ -40,8 +40,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			//Q: should use Lang.equal? -> No, because we should setup the new events
 			if (newvalue != this.value) {
 				var oldvalue = this.value;
-				//TODO: FIXME: oldvalue is not necessearyle a plain value
-				var ov = oldvalue ? (<IPlainValue>oldvalue).get() : undefined;
+				var ov = LangUtils.dereference(oldvalue);
 
 				var combineChangeEvent =
 					(LangUtils.is(newvalue, ValueType.PlainValue)) &&
@@ -63,7 +62,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 					this.setup(newvalue, withEvents, combineChangeEvent);
 
 				if (combineChangeEvent && withEvents) {
-					var nv = newvalue ? (<IPlainValue>newvalue).get() : undefined;
+					var nv = LangUtils.dereference(newvalue);
 					if (nv != ov)
 						this.fire('change', nv, ov); //TODO: do not use changed but some constant!
 				}

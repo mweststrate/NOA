@@ -55,7 +55,8 @@ module NOA {
 
 			var sublistInsert = function (subindex, _) {
 				var idx = cell.getIndex(this.source); //TODO: is this the proper scope?
-				this.insert(this.getOffset(idx, subindex));
+				var subcell = (<List>cell.get()).cell(subindex); //Blegh! TODO: make nice!
+				this.insert(this.getOffset(idx, subindex), subcell);
 				this.updateLmap(idx, +1);
 			}
 

@@ -11,7 +11,7 @@ module NOA {
 				case ValueType.Error: return value instanceof ErrorValue;
 				case ValueType.List: return !!value['insert'];//MWE: typescript cannot check against interfaces
 				case ValueType.Record: return !!value['put'];
-				case ValueType.PlainValue: return !!value['get'];
+				case ValueType.PlainValue: return !!value['get']; //TODO: holds for list as well!
 			}
 			Util.notImplemented();
 		}

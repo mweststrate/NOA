@@ -493,16 +493,16 @@ exports.testjoin = function(test) {
     y.add(3)
 
     var j = xy.join().live();
-    test.deepEqual(j.toJSON(), [1,3]);
     testIndexes(j, test);
+    test.deepEqual(j.toJSON(), [1,3]);
 
     x.add(2);
-    test.deepEqual(j.toJSON(), [1,2,3]);
     testIndexes(j, test);
+    test.deepEqual(j.toJSON(), [1,2,3]);
 
     y.add(4);
-    test.deepEqual(j.toJSON(), [1,2,3,4]);
     testIndexes(j, test);
+    test.deepEqual(j.toJSON(), [1,2,3,4]);
 
     test.equal(x, xy.get(0));
     test.equal(y, xy.get(1));
