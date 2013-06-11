@@ -198,23 +198,15 @@ exports.errortest = function(test) {
 exports.test2 = function(test) {
 	var x = new NOA.List().live();//.debugName("x");;
 
-   	var y = x.map("x", function() {
-        //debugger;
-		var v = NOA.Lang.get('x');
+   	var y = x.map(function(x) {
+        return x*2;
+    }).live().debugName("y");
 
-   		//console.log("DOUBLEMAP: " + v + " * 2 = " + (v * 2));
-		return v.get() * 2;
-
-   	}).live().debugName("y");
-
-   	var z = x.map("x", function (v) {
-   		//debugger;
-   		//console.log("DOUBLEMAP: " + v + " * 2 = " + (v * 2));
-
+   	var z = x.map(function (v) {
    		this(v * 2);
    	}).live().debugName("z");
 
-   	var a = x.map("x", NOA.Lang.mul(NOA.Lang.get("x"), 2)).live().debugName("a");
+   	var a = x.map(NOA.Lang.fun("x", NOA.Lang.mul(NOA.Lang.get("x"), 2))).live().debugName("a");
 
 	//base set
 	x.add(3);
@@ -239,7 +231,7 @@ exports.test2 = function(test) {
 	a.die();
 
 	test.equal(NOA.List.count, 0);
-	test.equal(NOA.Cell.count, 0);
+	test.equal(NOA.Variable.count, 0);
 	test.equal(NOA.Expression.count, 0);
 
 	test.done();
@@ -252,9 +244,8 @@ exports.filterlive = function(test) {
     x.debugName("x");
     test.equal(NOA.List.count, 1);
 
-    var z = x.filter("c", function(x) {
-        return this.variable("c") < 4;
-        //return x < 10;
+    var z = x.filter(function(x) {
+        return x < 4;
     }).live();
     z.debugName("z");
     test.equal(NOA.List.count, 3);
@@ -267,24 +258,22 @@ exports.filterlive = function(test) {
     var x = new NOA.List().live();
     test.equal(NOA.List.count, 1);
 
-    var z = x.filter("c", function(x) {
-        return this.variable("c") < 4;
-        //return x < 10;
+    var z = x.filter(function(x) {
+        return x < 4;
     }).live();
     x.add(3);
 
     test.deepEqual(z.toJSON(), [3])
 
     test.equal(NOA.List.count, 3);
-    test.equal(NOA.Cell.count, 3);
-    test.equal(NOA.Expression.count,1);
+    test.equal(NOA.Variable.count, 4);
 
     x.die();
     z.die();
 
     test.equal(NOA.List.count, 0);
-    test.equal(NOA.Cell.count, 0);
-    test.equal(NOA.Expression.count,0);
+    test.equal(NOA.Variable.count, 0);
+    test.equal(NOA.Base.count,0);
 
     test.done();
 }
@@ -293,9 +282,8 @@ exports.test3filter = function(test) {
     var x = new NOA.List().live();
     x.debugName("x");
 
-    var z = x.filter("c", function(x) {
-        return this.variable("c") < 4;
-        //return x < 10;
+    var z = x.filter(function(x) {
+        return x < 4;
     }).live();
     z.debugName("z");
 
@@ -337,8 +325,8 @@ exports.test3filter = function(test) {
     z.die();
 
     test.equal(NOA.List.count, 0);
-    test.equal(NOA.Cell.count, 0);
-    test.equal(NOA.Expression.count, 0);
+    test.equal(NOA.Variable.count, 0);
+    test.equal(NOA.Base.count, 0);
 
     test.done();
 }
@@ -347,16 +335,13 @@ exports.test3 = function(test) {
     var x = new NOA.List().live();
     x.debugName("x");
 
-    var y = x.map("x", function() {
-        var v = this.variable('x');
-        //console.log("DOUBLEMAP: " + v + " * 2 = " + (v * 2));
+    var y = x.map(function(v) {
         return v * 2;
     }).live();
     y.debugName("y");
 
-    var z = y.filter("c", function(x) {
-        return this.variable("c") < 10;
-        //return x < 10;
+    var z = y.filter(function(x) {
+        return x < 10;
     }).live();
     z.debugName("z");
 
@@ -380,8 +365,8 @@ exports.test3 = function(test) {
     z.die();
 
     test.equal(NOA.List.count, 0);
-    test.equal(NOA.Cell.count, 0);
-    test.equal(NOA.Expression.count, 0);
+    test.equal(NOA.Variable.count, 0);
+    test.equal(NOA.Base.count, 0);
 
     test.done();
 
@@ -415,7 +400,7 @@ exports.test4 = function(test) {
     test.equal(y.destroyed, true);
 
     test.equal(NOA.List.count, 0);
-    test.equal(NOA.Cell.count, 0);
+    test.equal(NOA.Base.count, 0);
 
     test.done();
 
@@ -430,16 +415,11 @@ exports.test5 = function(test) {
     console.info(x.toString());
 
 
-    var y = x.map("x", function() {
-        var v = this.variable('x');
-        //console.log("DOUBLEMAP: " + v + " * 2 = " + (v * 2));
-        return v * 2;
-    }).live();
+    var y = x.map(NOA.Lang.fun("x", NOA.Lang.mul(2, NOA.Lang.get("x")))).live();
     y.debugName("y")
 
-    var z = y.filter("c", function(x) {
-        return this.variable("c") < 10;
-        //return x < 10;
+    var z = y.filter(function(x) {
+        return x < 10;
     }).live();
     z.debugName("z");
 

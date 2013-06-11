@@ -10,10 +10,12 @@ module NOA {
 		 * @param  {[type]} func [description]
 		 * @return {[type]}
 		 */
-		constructor(source: List, func: Fun) {
+		constructor(source: List, func: Fun);
+		constructor(source: List, func: Function);
+		constructor(source: List, func: any) {
 			super(source);
 
-			this.func = func;
+			this.func = Util.isFunction(func) ? NOA.Lang.fun(func) : func;
 			this.func.live(); //TODO: maybe live is not needed here at all?
 
 			this.unlisten(source, ListEvent.SET.toString()); //TODO: if func is just a js func, onSet should also reeavaluate the func

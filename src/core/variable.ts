@@ -40,6 +40,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			//Q: should use Lang.equal? -> No, because we should setup the new events
 			if (newvalue != this.value) {
 				var oldvalue = this.value;
+				//TODO: FIXME: oldvalue is not necessearyle a plain value
 				var ov = oldvalue ? (<IPlainValue>oldvalue).get() : undefined;
 
 				var combineChangeEvent =
@@ -174,7 +175,12 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			}
 
 			//Plain value
-			var value = this.value ? (<any>this.value).get() : undefined;
+			var value = undefined;
+			if (this.value instanceof Variable || this.value instanceof Constant) //TODO: fix check! this.is(ValueType.PlainValue))
+				var value = (<PlainValue>this.value).get();
+			else
+				value = this.value; //either nothing or list
+
 
 			//callback provided? signature is (scope, callback, fireevents)
 			if (args[1]) {
