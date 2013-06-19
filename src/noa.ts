@@ -4,7 +4,6 @@
 
 ///<reference path='core/interfaces.ts'/>
 
-///<reference path='core/abstractvalue.ts'/>
 ///<reference path='core/constant.ts'/>
 ///<reference path='core/variable.ts'/>
 ///<reference path='core/expression.ts'/>

@@ -56,7 +56,7 @@ module NOA {
 	//NumberFilter, and use it inside, min,max,avg and such. Numberfilter is just List.map(NOA.util.isNumber)
 
 	//AttributeMap(list, attr):
-	//  list.filter(x, x instanceof NOA.Record)
+	//  list.filter(x, x instanceofx NOA.Record)
 	//      .filter(y, y.getKeys().contains(attr))
 	//      .map(z, z.get(attr));
 
@@ -64,8 +64,8 @@ module NOA {
 	//Is its mapping not to extensively implemented now? Can we avoid it being a parameter to many standard functions?
 
 	//Contains(col, value)
-	//  if (col instanceof List) -> col.distinct().contains(value) //assumes distinct is sorted and has effecient contains
-	//  if (col instanceof Record) -> col.getKeys().contains(col, value) //Note: can be made more effecient by not using distinct but direclty operate getKeys
+	//  if (col instanceofx List) -> col.distinct().contains(value) //assumes distinct is sorted and has effecient contains
+	//  if (col instanceofx Record) -> col.getKeys().contains(col, value) //Note: can be made more effecient by not using distinct but direclty operate getKeys
 	//  else -> ImmutableValue(false)
 	//  If result is list, subscribe to insert and remove
 

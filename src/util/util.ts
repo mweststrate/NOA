@@ -70,9 +70,9 @@ module NOA {
 		/**
 		 assert the value argument to be true, throws an exception otherwise
 		 */
-		static assert (value : any) {
+		static assert(value: any, msg: string = "NOA assertion failed!") {
 			if (!value)
-				throw "NOA assertion failed!";
+				throw new Error(msg);
 		}
 
 		/**
@@ -381,6 +381,37 @@ module NOA {
 		static identity (x) { return x }
 		static noop () {}
 		public static notImplemented(): any { throw new Error("Not implemented. This function is TODO or supposed to be abstract"); }
+
+		public static applyConstructor(ctor: new (...args: any[]) => any, params: any[]) : any {
+			//Source: http://stackoverflow.com/questions/3871731/dynamic-object-construction-in-javascript
+			var obj, newobj;
+
+			// Use a fake constructor function with the target constructor's
+			// `prototype` property to create the object with the right prototype
+			function fakeCtor() {
+			}
+			fakeCtor.prototype = ctor.prototype;
+			obj = new fakeCtor();
+
+			// Set the object's `constructor`
+			obj.constructor = ctor;
+
+			// Call the constructor function
+			newobj = ctor.apply(obj, params);
+
+			// Use the returned object if there is one.
+			// Note that we handle the funky edge case of the `Function` constructor,
+			// thanks to Mike's comment below. Double-checked the spec, that should be
+			// the lot.
+			if (newobj !== null
+				&& (typeof newobj === "object" || typeof newobj === "function")
+				) {
+				obj = newobj;
+			}
+
+			// Done
+			return obj;
+		}
 
 		static randomUUID () {
 			return "todo";

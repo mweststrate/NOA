@@ -4,22 +4,30 @@
 module NOA {
 	export class Expression/*<T extends IValue>*/ extends Variable {
 
-		funcName: string;
+		funcName: string = undefined;
 		args: IValue[];
 
-		constructor(name: string, args : IValue[]) {
-			super(ValueType.Any, undefined);
-			this.funcName = name;
+		constructor(args : IValue[]) {
+			super(Lang.None());
 			this.args = args;
 			this.args.forEach(arg => arg.live());
 		}
 
+		setName(name: string) {
+			this.funcName = name;
+		}
+
+		getName() {
+			Util.assert(this.funcName, "Name of expression is not defined!");
+			return this.funcName;
+		}
+
 		toJSON() {
-			return this.value === undefined ? undefined : this.value.toJSON.apply(this.value, arguments);
+			return this.value().toJSON.apply(this.value(), arguments);
 		}
 
 		toAST(): Object {
-			return Serializer.serializeFunction(this.funcName, this.args);
+			return Serializer.serializeFunction(this.getName(), this.args);
 		}
 
 		free() {

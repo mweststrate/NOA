@@ -3,13 +3,13 @@ module NOA {
 
 	//TODO: aggregations should listen to input arguments if applicable
 
-	export class ListAggregation extends PlainValue { //TODO: should be variable //Generic on return type!
+	export class ListAggregation extends Expression { //TODO: should be variable //Generic on return type!
 		//TODO: make aggregations evaluate on first evaluation
 
 		source: IList; //TODO: remove parent?
 
-		constructor(source: IList, initialValue: any) {
-			super(initialValue);
+		constructor(source: IList) {
+			super([source]);
 			//TODO: register at parent so the aggregate can be freed
 			this.source = source;
 			this.uses(source);
@@ -55,52 +55,51 @@ module NOA {
 	export class ListCount extends ListAggregation {
 
 		constructor(source: List) {
-			super(source, 0);
+			super(source);
 			this.unlisten(source, ListEvent.MOVE.toString())
 			this.unlisten(source, ListEvent.SET.toString())
 			this.startup();
 		}
 
 		onSourceInsert(index: number, value) {
-			this.set(this.get() + 1)
+			this.set(this.value() + 1)
 		}
 
 		onSourceRemove(index: number, value) {
-			this.set(this.get() - 1)
+			this.set(this.value() - 1)
 		}
 
 		toAST(): Object {
 			return this.toASTHelper("count");
 		}
-
 	}
 
 	//TODO: just replace by numberfilter().count()
 	export class ListNumberCount extends ListAggregation {
 
 		constructor(source: IList) {
-			super(source, 0);
+			super(source);
 			this.unlisten(source, ListEvent.MOVE.toString())
 			this.startup();
 		}
 
 		onSourceInsert(index: number, value) {
 			if (Util.isNumber(value))
-				this.set(this.value + 1)
+				this.set(this.value() + 1)
 		}
 
 		onSourceRemove(index: number, value) {  //TODO: check if remove provides old value!
 			if (Util.isNumber(value))
-				this.set(this.value - 1)
+				this.set(this.value() - 1)
 		}
 
 		onSourceSet(index: number, newvalue, oldvalue) {
 			var lin = Util.isNumber(newvalue);
 			var rin = Util.isNumber(oldvalue);
 			if (lin && !rin)
-				this.set(this.value + 1)
+				this.set(this.value() + 1)
 			else if (rin && !lin)
-				this.set(this.value - 1);
+				this.set(this.value() - 1);
 		}
 
 		toAST(): Object {
@@ -111,7 +110,7 @@ module NOA {
 	export class ListSum extends ListAggregation {
 
 		constructor(source: IList) {
-			super(source, 0);
+			super(source);
 			this.unlisten(source, ListEvent.MOVE.toString())
 			this.startup();
 		}
@@ -132,7 +131,7 @@ module NOA {
 				delta += newvalue;
 			if (Util.isNumber(oldvalue))
 				delta -= oldvalue;
-			this.set(this.value + delta);
+			this.set(this.value() + delta);
 		}
 
 		toAST(): Object {
@@ -192,7 +191,7 @@ module NOA {
 	export class ListMax extends ListAggregation {
 
 		constructor(source: List) {
-			super(source, undefined);
+			super(source);
 			this.unlisten(source, ListEvent.MOVE.toString())
 
 			this.findNewMax();
@@ -233,7 +232,7 @@ module NOA {
 	export class ListMin extends ListAggregation {
 
 		constructor(source: List) {
-			super(source, undefined);
+			super(source);
 			this.unlisten(source, ListEvent.MOVE.toString())
 
 			this.findNewMin();
@@ -278,7 +277,7 @@ module NOA {
 		realindex : number;
 
 		constructor(source: IList, index: number) {
-			super(source, undefined);
+			super(source);
 			this.unlisten(source, ListEvent.SET.toString())
 			this.index = index;
 			this.updateRealIndex();

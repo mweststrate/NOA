@@ -2,31 +2,22 @@
 module NOA {
 
 	export class LangUtils {
-		static is(value: any, type: ValueType): bool {
-			if (!(value instanceof Base))
-				return type == ValueType.Any;
 
-			switch (type) {
-				case ValueType.Any: return true;
-				case ValueType.Error: return value instanceof ErrorValue;
-				case ValueType.List: return !!value['insert'];//MWE: typescript cannot check against interfaces
-				case ValueType.Record: return !!value['put'];
-				case ValueType.PlainValue: return !!value['get']; //TODO: holds for list as well!
-			}
-			Util.notImplemented();
+		static is(thing: IValue, type: ValueType): bool {
+			return thing && thing.is && thing.is(type);
+		}
+
+		static canBe(thing: IValue, type: ValueType): bool {
+			return thing instanceof Variable || LangUtils.is(thing, type);
 		}
 
 		static toValue(value: any): IValue {
+			if (Util.isPrimitive(value))
+				return new Constant(value);
+			if (!(value instanceof Base))
+				throw new Error("Unable to convert value to NOA.IValue: " + value);
 
-			if (value instanceof Base) //MWE: todo: bwegh...
-				return <IValue> value;
-
-			//TODO: object, array?
-
-			//TODO: check primitives
-			//TODO: make primitives pointer equal by sharing?
-
-			return new Constant(value);
+			return <IValue> value;
 		}
 
 		/**
@@ -35,24 +26,12 @@ module NOA {
 
 			Other values will be returned directly
 		*/
-		static dereference(v: IValue): any { //TODO: better name?
+		static dereferencex(v: any): any { //TODO: better name?
 			if (v === null || v === undefined)
 				return v;
 			if (Util.isPrimitive(v))
 				return v;
-			if (v instanceof Variable) {
-				return dereference((<Variable>v).value);
-			}
-			if (v.is(ValueType.List) || v.is(ValueType.Record) || v.is(ValueType.Error)) {
-				return v;
-			}
-			if (v.is(ValueType.PlainValue))
-				return (<IPlainValue>v).get();
-			throw new Error("Uncomparable: " + v);
-		}
-
-		static equal(left: IValue, right: IValue): bool {
-			return dereference(left) == dereference(right);
+			return v.dereference();
 		}
 
 		static followHelper(dest: IValue, source: IValue, follow: bool) {
@@ -61,31 +40,26 @@ module NOA {
 			(<Base><any>dest).debug((follow ? "Following " : "Unfollowing") + source);
 
 			//MWE: mweh implementation
-			var listenList =
-				(dest instanceof List || dest instanceof Variable) &&
-				(source instanceof List || source instanceof Variable || source instanceof ErrorValue);
-
-			var listenRecord =
-				(dest instanceof Record || dest instanceof Variable) &&
-				(source instanceof Record || source instanceof Variable || source instanceof ErrorValue);
-
-			var listenPlain =
-				(dest instanceof PlainValue || dest instanceof Variable) &&
-				(source instanceof Constant || source instanceof PlainValue || source instanceof Variable || source instanceof ErrorValue)
+			var listenList   = LangUtils.canBe(dest, ValueType.List)   && LangUtils.canBe(source, ValueType.List);
+			var listenRecord = LangUtils.canBe(dest, ValueType.Record) && LangUtils.canBe(source, ValueType.Record);
+			var listenPlain  = LangUtils.canBe(dest, ValueType.Primitive)  && LangUtils.canBe(source, ValueType.Primitive);
 
 			if (!(listenList || listenPlain || listenRecord))
 				throw new Error("Follow not supported for " + source + " and " + dest);
 
 			if (listenPlain)
-				LangUtils.followEvent(source, PlainValueEvent.UPDATE.toString(), dest, follow);
-			if (listenList) {
-				LangUtils.followEvent(source, ListEvent.INSERT.toString(), dest, follow);
-				LangUtils.followEvent(source, ListEvent.MOVE.toString(), dest, follow);
-				LangUtils.followEvent(source, ListEvent.REMOVE.toString(), dest, follow);
-				LangUtils.followEvent(source, ListEvent.SET.toString(), dest, follow);
-			}
-			if (listenRecord)
-				LangUtils.followEvent(source, RecordEvent.PUT.toString(), dest, follow);
+				for(var key in PlainValueEvent)
+					LangUtils.followEvent(source, key, dest, follow);
+
+			if (listenPlain)
+				for(var key in ListEvent)
+					LangUtils.followEvent(source, key, dest, follow);
+
+
+			if (listenPlain)
+				for(var key in RecordEvent)
+					LangUtils.followEvent(source, key, dest, follow);
+
 
 			//live / die
 			if (follow)
@@ -119,16 +93,29 @@ module NOA {
 			new NOA.Unserializer(Util.notImplemented).unserialize(ast, cb);
 		}
 
-		static define(impl: (...args: IValue[]) => any, name: string, argtypes?: ValueType[], resultType?: ValueType, memoize: bool = false): Function {
+		static define(impl: (...args: IValue[]) => any, name: string, argtypes?: ValueType[], resultType?: ValueType, memoize: bool = false): Function;
+		static define(exprConstructor: new (...args: IValue[]) => Expression, name: string);
+		static define(...defineargs: any[]) {
 			//TODO: if type of first argument is List, then add this function on List.prototype as well
+			var name = defineargs[2];
+
 			return NOA.Lang[name] = function (...args: any[]) {
+				var result: Expression;
+				var realArgs : IValue[] = args.map(LangUtils.toValue);
 
-				var realArgs = args.map(LangUtils.toValue);
-				var result = new Expression(name, realArgs);
+				if (defineargs.length == 2) {
+					var constr = <new (...args: IValue[]) => Expression> defineargs[0];
+					result = Util.applyConstructor(constr, realArgs);
+					result.setName(name);
+				}
+				else {
+					result = new Expression(realArgs);
+					result.setName(name);
 
-				//TODO: shouldn't watchfunction be the responsibility of Expression?
-				var wrapper = LangUtils.watchFunction(impl, result);
-				wrapper.apply(null, realArgs);
+					//TODO: shouldn't watchfunction be the responsibility of Expression?
+					var wrapper = LangUtils.watchFunction(args[0], result);
+					wrapper.apply(null, realArgs);
+				}
 
 				return result;
 			}
@@ -172,8 +159,8 @@ module NOA {
 		}
 
 		static withValues(args: IValue[], func): IValue {
-			var realargs = args.map(LangUtils.dereference);
-			var result = new Variable(ValueType.Any, undefined);
+			var realargs = args.map(arg => arg.value());
+			var result = new Variable();
 			//result.debugName("with-values-result" + result.noaid);
 			var wrapped = LangUtils.watchFunction(func, result);
 
@@ -186,7 +173,7 @@ module NOA {
 				result.uses(arg);
 				//if (arg.is(ValueType.PlainValue)) { //TODO: should be asserted
 					(<IPlainValue>arg).get(<Base>{}, (newvalue, _) => { //TODO: scope? //TODO: seems not to be triggered yet..
-						realargs[index] = LangUtils.dereference(newvalue);
+						realargs[index] = newvalue.value();
 						update();
 					}, false);
 				//}

@@ -3,7 +3,7 @@
 module NOA {
 
 	//TODO: rename to var container
-	export class CellContainer extends AbstractValue {
+	export class CellContainer extends Base {
 
 		constructor() {
 			super();
@@ -24,7 +24,9 @@ module NOA {
 		}
 	}
 
-	export class PlainValue extends AbstractValue implements IPlainValue {
+	//TODO: remove code below?
+	/*
+	export class PlainValue extends Base implements IPlainValue {
 		value: any;
 
 		constructor(initialValue: any) {
@@ -61,9 +63,9 @@ module NOA {
 				if (LangUtils.is(newvalue, ValueType.PlainValue));
 					LangUtils.follow(this, newvalue);
 
-				if (newvalue instanceof Base)
+				if (newvalue instanceofx Base)
 					newvalue.live();
-				if (oldvalue instanceof Base)
+				if (oldvalue instanceofx Base)
 					oldvalue.die();
 
 				if (ov != nv)
@@ -97,7 +99,7 @@ module NOA {
 		}
 	}
 
-	
+	*/
 
 	/**
 	This class just follows some IValue and just wraps it. The advantage is that others can just register events
@@ -117,7 +119,7 @@ module NOA {
 				var oldvalue = this.value;
 				this.value = newvalue;
 
-				if (oldvalue instanceof List) {
+				if (oldvalue instanceofx List) {
 					this.unlisten(<Base> oldvalue);
 
 					var l = (<List>oldvalue).cells.length;
@@ -127,10 +129,10 @@ module NOA {
 				//TODO: same for record
 
 				else {
-					this.changed(newvalue instanceof List || newvalue instanceof Record ? undefined : newvalue, oldvalue);
+					this.changed(newvalue instanceofx List || newvalue instanceofx Record ? undefined : newvalue, oldvalue);
 				}
 
-				if (newvalue instanceof List) {
+				if (newvalue instanceofx List) {
 					(<List>newvalue).each(this, (index, value) => this.fire('insert', index, value));
 
 					//TODO: listen to all events
@@ -138,20 +140,20 @@ module NOA {
 				//TODO: same for record
 
 				//No else for primitives; unless previous value was a list or record
-				else if (oldvalue instanceof List || oldvalue instanceof Record) {
+				else if (oldvalue instanceofx List || oldvalue instanceofx Record) {
 					this.changed(newvalue, undefined);
 				}
 
-				if (newvalue instanceof Base)
+				if (newvalue instanceofx Base)
 					(<Base><any>newvalue).live();
-				if (oldvalue instanceof Base)
+				if (oldvalue instanceofx Base)
 					(<Base>oldvalue).die();
 			}
 		}
 
 		public free() {
 			super.free();
-			if (this.value instanceof Base)
+			if (this.value instanceofx Base)
 				this.value.die();
 		}
 	}*/

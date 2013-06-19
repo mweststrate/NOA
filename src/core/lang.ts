@@ -2,7 +2,14 @@
 module NOA {
 	export class Lang {
 
-		static SCOPE = {};
+		static SCOPE = {}; //TODO: refacter to scope calls
+
+		static None(): Constant {
+			Lang.None = function () {
+				return new Constant(undefined);
+			}
+			return Lang.None();
+		}
 
 		static fun(fun : Function) :Fun ;
 		static fun(argnames : String[], stats: IValue) : Fun;
@@ -17,7 +24,7 @@ module NOA {
 					//TODO: note that varname is in scope of expr as well! thats dangerous...
 					//TODO: swap expr, varname to make that clear
 					//TODO: let the arguments live or use define
-					Util.assert(varname && LangUtils.is(varname, ValueType.PlainValue));
+					Util.assert(varname && LangUtils.is(varname, ValueType.String));
 
 					//TODO: note that varname is not allowed to change
 					var realname = (<any>varname).get();
@@ -44,7 +51,7 @@ module NOA {
 			return LangUtils.define(
 				function (varname: IValue) {
 					//TODO: varname is a variable
-					Util.assert(varname && LangUtils.is(varname, ValueType.PlainValue));
+					Util.assert(varname && LangUtils.is(varname, ValueType.String));
 
 					//TODO: note that varname is not allowed to change
 					var realname = (<any>varname).get();
@@ -53,7 +60,7 @@ module NOA {
 					var v : Variable = Lang.SCOPE[realname];
 					if (!v) {
 						//create the variable, so that a 'let' can claim it
-						v = Lang.SCOPE[realname] = new Variable(ValueType.Any, undefined);
+						v = Lang.SCOPE[realname] = new Variable();
 
 						//check if anybody claims this var
 						setTimeout(() => {
@@ -86,8 +93,8 @@ module NOA {
 					});
 				},
 				"mul",
-				[ValueType.PlainValue, ValueType.PlainValue],
-				ValueType.Any
+				[ValueType.Number, ValueType.Number],
+				ValueType.Number
 			)(left, right);
 		}
 
@@ -102,8 +109,9 @@ module NOA {
 					//TODO:
 				},
 				"eq",
-				[ValueType.Any, ValueType.Any],
-				ValueType.PlainValue, //bool
+				[],
+//				[null, null], //Null means any?
+				ValueType.Bool,
 				false
 			)(left, right);
 		}
@@ -146,7 +154,7 @@ module NOA {
 
 		static sum(list: IList) : IValue {
 			//TODO: memoize
-			return new ListSum(list);
+			return LangUtils.define(ListSum, "sum");//(list);
 		}
 
 		static numbercount(list: IList): IValue {
@@ -161,7 +169,7 @@ module NOA {
 			Lang.declare_(
 				"avg",
 				[ValueType.List, ValueType.List],
-				ValueType.PlainValue,
+				ValueType.Number,
 				function(cb, list: Variable){
 					return Lang.let(
 						Lang.numbercount(list),

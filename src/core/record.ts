@@ -5,7 +5,6 @@ module NOA{
 
 	export class RecordEvent {
 		public static PUT = "put";
-		public static FREE = "free";
 	}
 
 	export class Record extends CellContainer implements IValue, IRecord, IMutableRecord {
@@ -13,12 +12,13 @@ module NOA{
 		data = {};
 		keys = <List>new List().live();
 
-		put(key : string, value : any) {
+		put(key: string, value: any) {
+			Util.assert(Util.isString(key));
 			if (!this.has(key)) {
 
 				//TODO: support function insertion a la list.map
 
-				var cell = this.data[key] = new Variable(ValueType.Any, LangUtils.toValue(value));
+				var cell = this.data[key] = new Variable(LangUtils.toValue(value));
 				cell.live();
 				cell.addIndex(this, key);
 				this.keys.add(key);
@@ -61,6 +61,12 @@ module NOA{
 		has (key: string): bool {
 			return key in this.data;
 		}
+
+		is(type: ValueType): bool {
+			return type === ValueType.Record;
+		}
+
+		value(): any { return this; }
 
 		replaySets(handler: (key:string, value:any)=> void) {
 			for(var key in this.data) //TODO: use this.keys, to preserve order

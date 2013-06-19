@@ -79,7 +79,7 @@ module NOA {
 		}
 
 		unregisterSublist(value) {
-			if (value instanceof List) {
+			if (LangUtils.is(value, ValueType.List)) {
 				this.unlisten(value, 'insert');
 				this.unlisten(value, 'remove');
 				this.unlisten(value, 'move');
@@ -87,7 +87,7 @@ module NOA {
 		}
 
 		onSourceInsert(index : number, value) {
-			if (!(value instanceof List)) { //plain value, insert right away
+			if (!LangUtils.is(value, ValueType.List)) { //plain value, insert right away
 				this.insertLmap(index, 1);
 				this.insert(this.getOffset(index), value);
 			}
@@ -110,7 +110,7 @@ module NOA {
 
 		onSourceSet(index: number, newvalue, oldvalue) {
 			var curlength = this.getLength(index);
-			var newlength = newvalue instanceof List ? (<List>newvalue).cells.length : 1;
+			var newlength = LangUtils.is(newvalue, ValueType.List) ? (<List>newvalue).size() : 1;
 			this.updateLmap(index, newlength - curlength);
 
 			this.unregisterSublist(oldvalue);

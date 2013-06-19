@@ -1,15 +1,11 @@
 ///<reference path='../noa.ts'/>
 
 module NOA {
-	export class Constant extends AbstractValue implements IPlainValue {
-		value: any;
-
+	export class Constant extends Base implements IPlainValue {
+		fvalue: any;
 		constructor(value: any) {
 			super();
-
-			this.value = LangUtils.dereference(value);
-			if (this.value instanceof Base)
-				this.value.live();
+			Util.assert(Util.isPrimitive(value));
 		}
 
 		public changed(...args: any[]) {
@@ -20,32 +16,51 @@ module NOA {
 		get (caller?: Base, callback?: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any {
 			//onChange is never triggered, so do not register an event
 			if (callback && fireInitialEvent !== false)
-				callback.call(caller, this.value, undefined);
+				callback.call(caller, this.fvalue, undefined);
 
-			return this.value;
+			return this.fvalue;
+		}
+
+		is(type: ValueType): bool {
+			switch(type) {
+				case ValueType.Bool:
+					return Util.isBool(this.fvalue);
+				case ValueType.None:
+					return this.fvalue === null || this.fvalue === undefined;
+				case ValueType.Number:
+					return Util.isNumber(this.fvalue);
+				case ValueType.Primitive:
+					return true;
+				case ValueType.String:
+					return Util.isString(this.fvalue);
+				case ValueType.Error:
+				case ValueType.Function:
+				case ValueType.List:
+				case ValueType.Record:
+					return false;
+				default:
+					throw new Error("Unimplemented type: " + type);
+			}
+		}
+
+		value(): any {
+			return this.fvalue;
 		}
 
 		toJSON(): any {
-			if (this.value instanceof Base)
-				return (<IValue> this.value).toJSON();
-			return this.value;
+			return this.fvalue;
 		}
 
 		toAST(): Object {
-			if (this.value instanceof Base)
-				return (<IValue> this.value).toAST();
-			return this.value;
+			return this.fvalue;
 		}
 
 		toString(): string {
-			//return ["[Constant#", this.noaid, "=", this.value, "]"].join("");
-			return this.value;
+			//return ["[Constant#", this.noaid, "=", this.fvalue, "]"].join("");
+			return this.fvalue;
 		}
 
 		free() {
-			if (this.value instanceof Base)
-				this.value.die();
-
 			super.free();
 		}
 	}

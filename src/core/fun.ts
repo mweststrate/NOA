@@ -29,7 +29,7 @@ module NOA {
 			if (this.isJSFun)
 				return LangUtils.withValues(args, this.jsFun);
 			else {
-				var res = new Variable(ValueType.Any, undefined);
+				var res = new Variable();
 
 				//MWE: TODO: async is weird here, AST should be (de)serialied synchronouszly. Or, just use stats.clone?! That would be nice since it could avoid cloning of constants
 				LangUtils.clone(this.statement, (clone) => {
@@ -53,5 +53,11 @@ module NOA {
 			if (!this.isJSFun)
 				this.statement.die();
 		}
+
+		is(type: ValueType): bool {
+			return type === ValueType.Function || type == ValueType.Primitive;
+		}
+
+		value(): any { return this; }
 	}
 }

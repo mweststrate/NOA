@@ -4,65 +4,50 @@
 module NOA {
 export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO: IRecord...*/ {
 
-	value: IValue;
+	fvalue: IValue;
 	hasPrimitive: bool;
 	indexes: any;
 
-		constructor(private expectedType : ValueType, value: IValue) {
+		constructor(value: IValue = Lang.None()) {
 			//TODO: null type?
 			super();
-			this.value = value;
+			this.fvalue = value;
 			this.indexes = {};
 			this.setup(value, false); //Nobody is listening yet
 		}
 
-		getType(): ValueType {
-			return this.value.getType();
-		}
-
 		is(expected: ValueType) : bool {
-			if (this.value === null || this.value === undefined)
-				return expected == ValueType.Any || expected == ValueType.PlainValue; //TODO: weird.. now the case because it is gettable...?!
-			return this.value.is(expected);
+			return this.fvalue.is(expected);
 		}
 
-		isError(): bool {
-			return this.value && this.value.isError();
+		value(): any {
+			return this.fvalue.value();
 		}
 
-		asError(): ErrorValue {
-			return this.value.asError();
-		}
-
-		set(newvalue: IValue, withEvents: bool = true) {
-			newvalue = LangUtils.toValue(newvalue); //MWE: either not this, or make newvalue 'any'
+		set (newvalue: IValue, withEvents: bool = true);
+		set (newvalue: any, withEvents: bool = true);
+		set(newv: any, withEvents: bool = true) {
+			var newvalue = LangUtils.toValue(newv); //MWE: either not this, or make newvalue 'any'
 
 			//Q: should use Lang.equal? -> No, because we should setup the new events
-			if (newvalue != this.value) {
-				var oldvalue = this.value;
-				var ov = LangUtils.dereference(oldvalue);
+			if (newvalue != this.fvalue) {
+				var oldvalue = this.fvalue;
+				var ov = oldvalue.value();
 
-				var combineChangeEvent =
-					(LangUtils.is(newvalue, ValueType.PlainValue)) &&
-					(LangUtils.is(oldvalue, ValueType.PlainValue));
+				this.teardown(oldvalue, withEvents);
 
-				this.teardown(oldvalue, withEvents, combineChangeEvent);
+				this.fvalue = newvalue;
 
-				this.value = newvalue;
-
-				if (newvalue.isError()) {
+				/*if (newvalue.isError()) {
 					//TODO: creating new errors for each new type might be expensive?
 					//this.setup(newvalue.asError().wrap("Expected ", this.expectedType, "but found error", newvalue.asError().getRootCause()), true);
 					this.setup(newvalue, true);
 				}
-				else if (!LangUtils.is(newvalue, this.expectedType)) {
-					this.setup(new ErrorValue("Expected '", this.expectedType, "' but found:", newvalue), true);
-				}
-				else
-					this.setup(newvalue, withEvents, combineChangeEvent);
+				else*/
+					this.setup(newvalue, withEvents);
 
-				if (combineChangeEvent && withEvents) {
-					var nv = LangUtils.dereference(newvalue);
+				if (withEvents) {
+					var nv = newvalue.value();
 					if (nv != ov)
 						this.fire('change', nv, ov); //TODO: do not use changed but some constant!
 				}
@@ -70,22 +55,22 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		toJSON() {
-			return this.value === undefined ? undefined : this.value.toJSON.apply(this.value, arguments);
+			return this.fvalue === undefined ? undefined : this.fvalue.toJSON.apply(this.fvalue, arguments);
 		}
 
 		toAST(): Object {
-			return this.value === undefined ? undefined : this.value.toAST.apply(this.value, arguments);
+			return this.fvalue === undefined ? undefined : this.fvalue.toAST.apply(this.fvalue, arguments);
 		}
 
 		free() {
 			//TODO: for all destructors, first free, then fire events and such.
 			//That saves unnecessary firing and processing of free events of other objects
-			this.teardown(this.value, false, false);
+			this.teardown(this.fvalue, false);
 
 			super.free();
 		}
 
-		teardown(value: IValue, withEvents: bool, suppressGetCallback: bool) {
+		teardown(value: IValue, withEvents: bool) {
 			if (!value)
 				return;
 
@@ -104,14 +89,9 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 				//TODO: record:.
 
 			}
-			if (value.is(ValueType.PlainValue)) {
-				var ov = (<IPlainValue>value).get();
-				if (!suppressGetCallback && ov !== undefined)
-					this.fire("change", undefined, ov);
-			}
 		}
 
-		setup(value: IValue, withEvents: bool, suppressGetCallback = false) {
+		setup(value: IValue, withEvents: bool) {
 			if (!value)
 				return;
 
@@ -128,11 +108,6 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			if (value.is(ValueType.Record)) {
 				//TODO: Record
 			}
-			if (value.is(ValueType.PlainValue)) {
-				var nv = (<IPlainValue>value).get();
-				if (!suppressGetCallback && nv !== undefined)
-					this.fire("change", nv, undefined);
-			}
 		}
 
 		//Event and interface wrappers
@@ -140,7 +115,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		onInsert(caller: Base, cb: (index: number, value) => void , fireInitialEvents?: bool) {
 			this.on('insert', caller, cb);
 			if (fireInitialEvents !== false)
-				(<IList>this.value).each(caller, cb);
+				(<IList>this.fvalue).each(caller, cb);
 		}
 
 		onMove(caller: Base, cb: (from: number, to: number) => void ) {
@@ -156,12 +131,12 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		size(): number {
-			return this.value ? (<IList>this.value).size() : 0;
+			return this.fvalue ? (<IList>this.fvalue).size() : 0;
 		}
 
 		each(...args: any[]) {
-			if (this.value)
-				(<IList>this.value).each.apply(this.value, args);
+			if (this.fvalue)
+				(<IList>this.fvalue).each.apply(this.fvalue, args);
 		}
 
 		get (index: number): IValue;
@@ -170,18 +145,15 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		get (...args: any[]) {
 			//record or list?
 			if (Util.isNumber(args[0]) || Util.isString(args[0])) {
-				return this.value ? (<any>this.value).get(args[0]) : undefined;
+				Util.assert(this.is(ValueType.List) || this.is(ValueType.Record) || this.is(ValueType.Error))
+				return this.fvalue ? (<any>this.fvalue).get(args[0]) : undefined;
 			}
 
 			//Plain value
-			var value = undefined;
-			if (this.value instanceof Variable || this.value instanceof Constant) //TODO: fix check! this.is(ValueType.PlainValue))
-				var value = (<PlainValue>this.value).get();
-			else
-				value = this.value; //either nothing or list
-
+			var value = this.fvalue.value();
 
 			//callback provided? signature is (scope, callback, fireevents)
+			//TODO: how does this effect errors and such? maybe write out instead of delegate
 			if (args[1]) {
 				this.on(PlainValueEvent.UPDATE.toString(), args[0], args[1]);
 				if (args[2] !== false)
@@ -192,7 +164,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		toString(): string {
-			return ["[Variable#", this.noaid, "=", <any>this.value, "]"].join("");
+			return ["[Variable#", this.noaid, "=", <any>this.fvalue, "]"].join("");
 		}
 
 

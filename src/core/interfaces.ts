@@ -2,29 +2,47 @@
 module NOA {
 
 	export enum ValueType {
+		/*
+		Error
+None
+Primitive -> is either string, bool or number
+List
+Record
+Function
+
+Plain -> has .get() method -> Variable
+FirstClass = List | Record | Error | None | Primitive
+Plain? = Error | None | Primivite
+
+dereference -> converts to first class
+*/
+		Primitive,
+		None,
+		String,
+		Bool,
+		Number,
 		Error,
 		List,
 		Record,
-		PlainValue, //TODO: split to 'primitive' and 'valuecontainer (or similar)'
-		Any
+		Function
 	}
 
 	export class PlainValueEvent {
 		public static UPDATE = "change";
-		public static FREE = "free";
 	}
 
 	export interface IValue extends IBase {
 		toJSON(): any;
 		toAST(): Object;
 
-		getType(): ValueType;
 		is(expected: ValueType): bool;
 		//TODO:
 		//mightbe(expected): bool
 
-		isError() : bool;
-		asError() : ErrorValue;
+		//isError() : bool;
+
+		value() : any;
+
 	}
 
 	export interface IPlainValue extends IValue { //TODO: cell and expression implement IPlainValue

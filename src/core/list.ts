@@ -7,7 +7,6 @@ module NOA {
 		public static REMOVE = "remove";
 		public static MOVE = "move";
 		public static SET = "set";
-		public static FREE = "free";
 	}
 
 	export class List extends CellContainer implements IValue, IList, IMutableList {
@@ -27,14 +26,14 @@ module NOA {
 		/** core functions */
 		insert(index: number, value: any): List;
 		insert(index: number, value: any): List {
-			if (index < 0 || index > this.cells.length)
+			if (!Util.isNumber(index) || index < 0 || index > this.cells.length)
 				throw new Error("Insert out of bounds: " + index + " not in 0.." + this.cells.length)
 
 			/* Question, if value is an variable, we could insert it directly, instead of wrapping it in a variable?
 			Yes, that is true, and maybe faster. But a lot more complicated as well. We need to update callbacks, use live/die etc.
 			Lets keep it simple for now
 			*/
-			var cell = new Variable(ValueType.Any, LangUtils.toValue(value));
+			var cell = new Variable(LangUtils.toValue(value));
 			cell.live();
 
 			this.debugIn("Insert at " + index + ": " + cell + " for value " + value);
@@ -201,6 +200,12 @@ module NOA {
 			return res;
 		}
 
+		is(type: ValueType): bool {
+			return type === ValueType.List;
+		}
+
+		value(): any { return this; }
+
 		toFullAST(): Object {
 			var res = {
 				type: 'List',
@@ -312,7 +317,7 @@ module NOA {
 		/*
 		avg () : Expression {
 			var scope = Scope.newScope(null);
-			scope.set("this", new Constant(ValueType.Any, this));
+			scope.set("this", this);
 			return <Expression> new Expression(function() {
 				var count = this.variable("this", "numbercount");
 				var sum = this.variable("this", "sum");
