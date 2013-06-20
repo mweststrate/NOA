@@ -6,11 +6,16 @@ module NOA {
 
 		funcName: string = undefined;
 		args: IValue[];
+		scopeDependencies : IScopeDependency[] = [];
 
 		constructor(args : IValue[]) {
 			super(Lang.None());
 			this.args = args;
-			this.args.forEach(arg => arg.live());
+			this.args.forEach(arg => {
+				arg.live();
+				if (arg instanceof Expression)
+					this.scopeDependencies = this.scopeDependencies.concat((<Expression>arg).getScopeDependencies())
+			});
 		}
 
 		setName(name: string) {
@@ -30,6 +35,14 @@ module NOA {
 			return Serializer.serializeFunction(this.getName(), this.args);
 		}
 
+		getScopeDependencies() : IScopeDependency[] {
+			return this.scopeDependencies;
+		}
+
+		addScopeDependency(dep: IScopeDependency) {
+			this.scopeDependencies.push(dep);
+		}
+
 		free() {
 			super.free();
 			this.args.forEach(arg => arg.die());
@@ -40,6 +53,12 @@ module NOA {
 			return this.funcName + "#" + this.noaid + "(" + (this.args ? this.args.join(", ") : "") + ")";
 		}
 
+	}
+
+	export interface IScopeDependency {
+		name: string;
+		value: Variable;
+		claimed: bool;
 	}
 
 }

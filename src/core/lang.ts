@@ -2,8 +2,6 @@
 module NOA {
 	export class Lang {
 
-		static SCOPE = {}; //TODO: refacter to scope calls
-
 		static None(): Constant {
 			Lang.None = function () {
 				return new Constant(undefined);
@@ -19,73 +17,68 @@ module NOA {
 
 		//TODO: swap varname and expr
 		static let(expr: IValue, varname: any, stats: IValue) {
-			return LangUtils.define(
-				function (expr: IValue, varname: IValue, stats: IValue) {
-					//TODO: note that varname is in scope of expr as well! thats dangerous...
-					//TODO: swap expr, varname to make that clear
-					//TODO: let the arguments live or use define
-					Util.assert(varname && LangUtils.is(varname, ValueType.String));
+			Util.assert(Util.isString(varname) || LangUtils.is(varname, ValueType.String));
 
-					//TODO: note that varname is not allowed to change
-					var realname = (<any>varname).get();
-					Util.assert(Util.isString(realname));
+			var expr = LangUtils.toValue(expr);
+			var stats = LangUtils.toValue(stats);
 
-					var v = Lang.SCOPE[realname];
-					if (v) {
-						delete Lang.SCOPE[realname]; //claim it!
+			//TODO: prevent varname from changing!
+			var realname =  Util.isString(varname) ? varname : (<any>varname).value();
+			var res = new Expression([<IValue>expr, LangUtils.toValue(varname), <IValue>stats]);
+			res.setName("let");
 
-						Util.debug("Claiming " + v + " as " + realname + ", assigning: " + expr);
+			var scopeDependencies = [];
+			var used = false;
 
-						v.set(expr);
+			if (expr instanceof Expression)
+				expr.getScopeDependencies().forEach(dep => scopeDependencies.push(dep));
+			if (stats instanceof Expression) {
+				stats.getScopeDependencies().forEach(dep => {
+					if (dep.name === realname) {
+						Util.debug("Claiming " + dep.value + " as " + realname + ", assigning: " + expr);
+						used = true;
+						dep.value.set(expr);
+						dep.claimed = true;
 					}
 					else
-						Util.warn("Unused variable '" + realname + "'");
+						scopeDependencies.push(dep);
+				});
+			}
 
-					return stats;
-				},
-				"let",
-				[null, ValueType.String, null],
-				null
-			)(expr, varname, stats);
+			if (!used)
+				Util.warn("Unused variable '" + realname + "'");
+
+			res.scopeDependencies = scopeDependencies;
+			res.set(stats);
+
+			return res;
 		}
 
 		static get (varname): IValue {
-			return (LangUtils.define(
-				function (varname: IValue) {
-					//TODO: varname is a variable
-					Util.assert(varname && LangUtils.is(varname, ValueType.String));
+			Util.assert(Util.isString(varname) || LangUtils.is(varname, ValueType.String));
 
-					//TODO: note that varname is not allowed to change
-					var realname = (<any>varname).get();
-					Util.assert(Util.isString(realname));
+			//TODO: prevent varname from changing, or, act accordingly!
+			var realname =  Util.isString(varname) ? varname : (<any>varname).value();
+			var res = new Expression([LangUtils.toValue(varname)]);
+			res.setName("get");
 
-					var v : Variable = Lang.SCOPE[realname];
-					if (!v) {
-						//create the variable, so that a 'let' can claim it
-						v = Lang.SCOPE[realname] = new Variable();
+			var dep = {
+				name : realname,
+				value: new Variable(),
+				claimed: false
+			};
 
-						//check if anybody claims this var
-						setTimeout(() => {
-							if (v == Lang.SCOPE[realname])
-								v.set(new ErrorValue("Undefined variable '" + varname + "'"));
-						}, 1);
+			dep.value.live();
+			res.addScopeDependency(dep);
+			res.onFree(null, () => dep.value.die());
 
-						//make sure this var is removed from scope if no longer used!
-						//mwe: hmm, doesn't that identify scopes are mixed?! TODO:!!
-						v.onFree(null, () => {
-							if (v == Lang.SCOPE[realname])
-								delete Lang.SCOPE[realname];
-						});
-					}
+			//check if anybody claims this var
+			setTimeout(() => {
+				if (!dep.claimed)
+					res.set(new ErrorValue("Undefined variable '" + realname + "'"));
+			}, 1);
 
-					Util.debug("Resolved " + varname + " to " + v);
-
-					return v;
-				},
-				"get",
-				[ValueType.String],
-				null
-			))(varname);
+			return res;
 		}
 
 		static mul(left, right): IValue {
