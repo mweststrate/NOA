@@ -6,6 +6,7 @@ module NOA {
 		constructor(value: any) {
 			super();
 			Util.assert(Util.isPrimitive(value));
+			this.fvalue = value;
 		}
 
 		public changed(...args: any[]) {

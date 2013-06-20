@@ -23,7 +23,7 @@ module NOA {
 		}
 
 		toJSON() {
-			return this.value().toJSON.apply(this.value(), arguments);
+			return this.fvalue.toJSON();
 		}
 
 		toAST(): Object {
@@ -37,7 +37,7 @@ module NOA {
 
 		toString(): string {
 			//return ["[Expression#", this.noaid, "=", <any>this.funcName,"(", this.args.join(","), ")]"].join("");
-			return this.funcName + "#" + this.noaid + "(" + this.args.join(", ") + ")";
+			return this.funcName + "#" + this.noaid + "(" + (this.args ? this.args.join(", ") : "") + ")";
 		}
 
 	}

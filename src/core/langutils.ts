@@ -93,18 +93,22 @@ module NOA {
 			new NOA.Unserializer(Util.notImplemented).unserialize(ast, cb);
 		}
 
-		static define(impl: (...args: IValue[]) => any, name: string, argtypes?: ValueType[], resultType?: ValueType, memoize: bool = false): Function;
+		static define(impl: (...args: IValue[]) => any, name: string, argtypes: ValueType[], resultType: ValueType, memoize: bool = false): Function;
 		static define(exprConstructor: new (...args: IValue[]) => Expression, name: string);
 		static define(...defineargs: any[]) {
 			//TODO: if type of first argument is List, then add this function on List.prototype as well
-			var name = defineargs[2];
+			var func = defineargs[0];
+			var name = defineargs[1];
+			Util.assert(Util.isFunction(func));
+			Util.assert(Util.isString(name));
+
 
 			return NOA.Lang[name] = function (...args: any[]) {
 				var result: Expression;
 				var realArgs : IValue[] = args.map(LangUtils.toValue);
 
 				if (defineargs.length == 2) {
-					var constr = <new (...args: IValue[]) => Expression> defineargs[0];
+					var constr = <new (...args: IValue[]) => Expression> func;
 					result = Util.applyConstructor(constr, realArgs);
 					result.setName(name);
 				}
@@ -113,7 +117,7 @@ module NOA {
 					result.setName(name);
 
 					//TODO: shouldn't watchfunction be the responsibility of Expression?
-					var wrapper = LangUtils.watchFunction(args[0], result);
+					var wrapper = LangUtils.watchFunction(func, result);
 					wrapper.apply(null, realArgs);
 				}
 
@@ -130,6 +134,9 @@ module NOA {
 		5. - call this(result). (This will update the value of destination).
 		*/
 		static watchFunction(func, destination: Variable): Function {
+			Util.assert(Util.isFunction(func));
+			Util.assert(destination instanceof Variable);
+
 			var cbcalled = false;
 			var cb = function (newvalue) {
 				cbcalled = true;

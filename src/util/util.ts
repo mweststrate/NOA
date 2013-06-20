@@ -304,7 +304,7 @@ module NOA {
 		}
 
 		static isPrimitive(thing: any): bool {
-			return Util.isString(thing) || Util.isBool(thing) || Util.isNumber(thing); //TODO: Date? Regex?
+			return thing === null || thing === undefined || Util.isString(thing) || Util.isBool(thing) || Util.isNumber(thing); //TODO: Date? Regex?
 		}
 
 		static isArray (thing : any) : bool {

@@ -43,12 +43,14 @@ module NOA {
 
 					return stats;
 				},
-				"let"
+				"let",
+				[null, ValueType.String, null],
+				null
 			)(expr, varname, stats);
 		}
 
 		static get (varname): IValue {
-			return LangUtils.define(
+			return (LangUtils.define(
 				function (varname: IValue) {
 					//TODO: varname is a variable
 					Util.assert(varname && LangUtils.is(varname, ValueType.String));
@@ -80,8 +82,10 @@ module NOA {
 
 					return v;
 				},
-				"get"
-			)(varname);
+				"get",
+				[ValueType.String],
+				null
+			))(varname);
 		}
 
 		static mul(left, right): IValue {
