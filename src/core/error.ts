@@ -38,6 +38,10 @@ module NOA {
 
 		value(): any { return this; }
 
+		getError() : string {
+			return this.error;
+		}
+
 		getCause(): ErrorValue {
 			return this.cause;
 		}

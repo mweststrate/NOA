@@ -184,11 +184,11 @@ exports.errortest = function(test) {
     test.equal(y.cell(1).toJSON().error, "should not be six!");
     test.equal(y.cell(2).toJSON(),18)
 
-    test.ok(!y.isError())
-    test.ok(!x.isError())
-    test.ok(y.cell(1).isError())
-    test.ok(!y.cell(2).isError())
-    test.ok(!x.cell(1).isError())
+    test.ok(!y.is(NOA.ValueType.Error))
+    test.ok(!x.is(NOA.ValueType.Error))
+    test.ok(y.cell(1).is(NOA.ValueType.Error))
+    test.ok(!y.cell(2).is(NOA.ValueType.Error))
+    test.ok(!x.cell(1).is(NOA.ValueType.Error))
 
     y.die();
 
