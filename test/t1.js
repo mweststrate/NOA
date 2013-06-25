@@ -480,7 +480,7 @@ exports.test5 = function(test) {
     e.die();
 
     test.equal(NOA.Expression.count, 0);
-    test.equal(NOA.Cell.count, 0);
+    test.equal(NOA.Base.count, 0);
     test.equal(NOA.List.count, 0);
 
     test.done();
@@ -555,7 +555,7 @@ exports.testjoin = function(test) {
 
     j.die();
     test.equal(NOA.List.count, 0);
-    test.equal(NOA.Cell.count, 0);
+    test.equal(NOA.Base.count, 0);
 
     test.done();
 }
@@ -564,14 +564,11 @@ exports.test6a = function(test) {
     var x = new NOA.List().debugName("x");
     var y = new NOA.List().debugName("y");
 
-    var xy = x.map("xvar", function() {
-        var tmp = this.variable("xvar");
-        return y.map("yvar", function() {
-            var x = this.variable("xvar")
-            var y = this.variable("yvar")
+    var xy = x.map(function(x) {
+        return y.map(function(y) {
             console.log(x + " * " + y + " = " + (x*y))
             return x * y;
-        }).debugName("xy-for-x-" + tmp);
+        }).debugName("xy-for-x-" + x);
     }).debugName("xy");
 
     var xyj = xy.join().debugName("xyjoin").live();
@@ -592,22 +589,47 @@ exports.test6a = function(test) {
 
     xyj.die()
     test.equal(NOA.List.count, 0)
-    test.equal(NOA.Cell.count, 0)
-    test.equal(NOA.Expression.count, 0)
+    test.equal(NOA.Variable.count, 0)
+    test.equal(NOA.Base.count, 0)
     test.done();
 }
+
+exports.test6a2 = function(test) {
+    var x = new NOA.List().debugName("x");
+    var y = new NOA.List().debugName("y");
+
+    var xy = x.map(NOA.Lang.fun("x", NOA.Lang.fun("y", NOA.Lang.mul(NOA.Lang.get("x"), NOA.Lang.get("y")))));
+
+    var xyj = xy.join().debugName("xyjoin").live();
+
+    test.deepEqual(xyj.toJSON(),[]);
+    x.add(3);
+    test.deepEqual(xyj.toJSON(),[]);
+    y.add(2)
+    test.deepEqual(x.toJSON(),[3]);
+    test.deepEqual(y.toJSON(),[2]);
+    test.deepEqual(xyj.toJSON(),[6]);
+    y.add(4);
+    y.add(8);
+    test.deepEqual(xyj.toJSON(),[6,12,24]);
+    x.add(30);
+    x.add(300)
+    test.deepEqual(xyj.toJSON(),[6,12,24,60,120,240,600,1200,2400]);
+
+    xyj.die()
+    test.equal(NOA.List.count, 0)
+    test.equal(NOA.Variable.count, 0)
+    test.equal(NOA.Base.count, 0)
+    test.done();
+}
+
 
 exports.test6b1 = function(test) {
     var x = new NOA.List().debugName("x");
     var y = new NOA.List().debugName("y");
 
-    var z = x.map("x", function() {
-        return y.map("y", function() {
-            var x = this.variable("x");
-            var y = this.variable("y");
-            return x * y;
-        })
-    }).debugName("z");
+    var z = x.map(NOA.Lang.fun("x", NOA.Lang.fun("y", NOA.Lang.mul(NOA.Lang.get("x"), NOA.Lang.get("y")))));
+    z.debugName("z");
 
     var j = z.join().debugName("j").live();
 
