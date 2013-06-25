@@ -3,7 +3,7 @@ module NOA {
 	export class Lang {
 
 		static None(): Constant {
-			Lang.None = function () {
+			Lang.None = function () { //TODO: reuse same instance? note live / die
 				return new Constant(undefined);
 			}
 			return Lang.None();
@@ -62,22 +62,15 @@ module NOA {
 			var res = new Expression([LangUtils.toValue(varname)]);
 			res.setName("get");
 
+			res.set(new ErrorValue("Undefined variable '" + realname + "'"));
+
 			var dep = {
 				name : realname,
-				value: new Variable(),
+				value: res,
 				claimed: false
 			};
 
-			dep.value.live();
 			res.addScopeDependency(dep);
-			res.onFree(null, () => dep.value.die());
-
-			//check if anybody claims this var
-			setTimeout(() => {
-				if (!dep.claimed)
-					res.set(new ErrorValue("Undefined variable '" + realname + "'"));
-			}, 1);
-
 			return res;
 		}
 

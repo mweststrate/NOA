@@ -153,7 +153,7 @@ exports.smallmap2 = function(test) {
 
     x.set(0, 12);
     test.deepEqual(x.toJSON(),[12,4])
-    test.deepEqual(y.toJSON(),[24, 8])
+    test.deepEqual(y.toJSON(),[24,8])
 
     y.die();
 

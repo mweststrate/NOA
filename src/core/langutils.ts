@@ -49,16 +49,15 @@ module NOA {
 
 			if (listenPlain)
 				for(var key in PlainValueEvent)
-					LangUtils.followEvent(source, key, dest, follow);
+					LangUtils.followEvent(source, PlainValueEvent[key], dest, follow);
 
-			if (listenPlain)
+			if (listenList)
 				for(var key in ListEvent)
-					LangUtils.followEvent(source, key, dest, follow);
+					LangUtils.followEvent(source, ListEvent[key], dest, follow);
 
-
-			if (listenPlain)
+			if (listenRecord)
 				for(var key in RecordEvent)
-					LangUtils.followEvent(source, key, dest, follow);
+					LangUtils.followEvent(source, RecordEvent[key], dest, follow);
 
 
 			//live / die
@@ -76,6 +75,7 @@ module NOA {
 			LangUtils.followHelper(dest, source, false);
 		}
 
+		//TODO: swap dest / source arguments, this is weird
 		static followEvent(source: IBase, event: string, dest: IBase, follow: bool) {
 			if (follow) {
 				dest.listen(source, event, function(...args: any[]) {
@@ -117,6 +117,7 @@ module NOA {
 					result.setName(name);
 
 					//TODO: shouldn't watchfunction be the responsibility of Expression?
+					//TODO: if one of the values is error, set result as error (in watch function?)
 					var wrapper = LangUtils.watchFunction(func, result);
 					wrapper.apply(null, realArgs);
 				}
@@ -180,7 +181,7 @@ module NOA {
 				result.uses(arg);
 				//if (arg.is(ValueType.PlainValue)) { //TODO: should be asserted
 					(<IPlainValue>arg).get(<Base>{}, (newvalue, _) => { //TODO: scope? //TODO: seems not to be triggered yet..
-						realargs[index] = newvalue.value();
+						realargs[index] = newvalue;
 						update();
 					}, false);
 				//}

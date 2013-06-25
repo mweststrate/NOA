@@ -49,7 +49,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 				if (withEvents) {
 					var nv = newvalue.value();
 					if (nv != ov)
-						this.fire('change', nv, ov); //TODO: do not use changed but some constant!
+						this.fire(PlainValueEvent.CHANGE, nv, ov); //TODO: do not use changed but some constant!
 				}
 			}
 		}
@@ -155,7 +155,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			//callback provided? signature is (scope, callback, fireevents)
 			//TODO: how does this effect errors and such? maybe write out instead of delegate
 			if (args[1]) {
-				this.on(PlainValueEvent.UPDATE.toString(), args[0], args[1]);
+				this.on(PlainValueEvent.CHANGE.toString(), args[0], args[1]);
 				if (args[2] !== false)
 					args[1].apply(args[0], [value, undefined]);
 			}

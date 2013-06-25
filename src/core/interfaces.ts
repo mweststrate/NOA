@@ -28,7 +28,7 @@ dereference -> converts to first class
 	}
 
 	export class PlainValueEvent {
-		public static UPDATE = "change";
+		public static CHANGE = "change";
 	}
 
 	export interface IValue extends IBase {
