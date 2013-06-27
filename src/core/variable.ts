@@ -62,6 +62,10 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			return this.fvalue === undefined ? undefined : this.fvalue.toAST.apply(this.fvalue, arguments);
 		}
 
+		getScopeDependencies() : IScopeDependency[] {
+			return this.fvalue ? this.fvalue.getScopeDependencies() : [];
+		}
+
 		free() {
 			//TODO: for all destructors, first free, then fire events and such.
 			//That saves unnecessary firing and processing of free events of other objects
@@ -199,7 +203,6 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			delete this.indexes[parent.noaid];
 			return this;
 		}
-
 
 		getIndex(parent: CellContainer): any {
 			Util.assert(this.indexes[parent.noaid] !== undefined);

@@ -5,7 +5,7 @@ module NOA {
 
 		lmap : any[] = []; //list with [startindex, length]
 
-		constructor(source: List) {
+		constructor(source: IList) {
 			super(source);
 			this.startup();
 		}

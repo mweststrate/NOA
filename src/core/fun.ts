@@ -8,6 +8,7 @@ module NOA {
 
 		private argnames: string[];
 		private statement: IValue;
+		private scopeDependencies: IScopeDependency[] = [];
 
 		constructor(f: Function);
 		constructor(argnames: string[], statement : IValue); //statement should be expression? neuh, a constant value is a valid function as well for example..
@@ -22,6 +23,10 @@ module NOA {
 			else {
 				this.argnames = Util.isArray(a) ? a : [a];
 				this.statement = b;
+				this.statement.getScopeDependencies().forEach(dep => {
+					if (!Util.inArray(dep.name, this.argnames))
+						this.scopeDependencies.push(dep);
+				});
 				this.statement.live();
 			}
 		}
@@ -46,11 +51,8 @@ module NOA {
 					res.set(wrap);
 
 					//copy all scope dependencies of wrap and args to res
-					//TODO: can clone be a function?
-					if (clone instanceof Expression)
-						(<Expression>clone).getScopeDependencies().forEach(dep => res.addScopeDependency(dep));
-					if (wrap instanceof Expression)
-						(<Expression>wrap).getScopeDependencies().forEach(dep => res.addScopeDependency(dep));
+					clone.getScopeDependencies().forEach(dep => res.addScopeDependency(dep));
+					wrap.getScopeDependencies().forEach(dep => res.addScopeDependency(dep));
 				});
 
 				return res;
@@ -76,5 +78,10 @@ module NOA {
 		toJSON(): any {
 			return this.isJSFun ? <any>this.jsFun : "fun(" + this.argnames.join(",") + ")";
 		}
+
+		getScopeDependencies() : IScopeDependency[] {
+			return this.scopeDependencies;
+		}
+
 	}
 }

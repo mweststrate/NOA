@@ -29,20 +29,17 @@ module NOA {
 			var scopeDependencies = [];
 			var used = false;
 
-			if (expr instanceof Expression)
-				expr.getScopeDependencies().forEach(dep => scopeDependencies.push(dep));
-			if (stats instanceof Expression) {
-				stats.getScopeDependencies().forEach(dep => {
-					if (dep.name === realname) {
-						Util.debug("Claiming " + dep.value + " as " + realname + ", assigning: " + expr);
-						used = true;
-						dep.value.set(expr);
-						dep.claimed = true;
-					}
-					else
-						scopeDependencies.push(dep);
-				});
-			}
+			expr.getScopeDependencies().forEach(dep => scopeDependencies.push(dep));
+			stats.getScopeDependencies().forEach(dep => {
+				if (dep.name === realname) {
+					Util.debug("Claiming " + dep.value + " as " + realname + ", assigning: " + expr);
+					used = true;
+					dep.value.set(expr);
+					dep.claimed = true;
+				}
+				else
+					scopeDependencies.push(dep);
+			});
 
 			if (!used)
 				Util.warn("Unused variable '" + realname + "'");
@@ -149,6 +146,10 @@ module NOA {
 		static map(list: IList, fun: Fun): IValue {
 			return new MappedList(list, fun);
 			//return LangUtils.define(MappedList, "map");//([list, fun]);
+		}
+
+		static join(list: IList): IValue {
+			return new JoinedList(list);
 		}
 
 		static numbercount(list: IList): IValue {

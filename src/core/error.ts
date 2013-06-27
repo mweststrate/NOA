@@ -76,6 +76,8 @@ module NOA {
 				this.cause.die();
 		}
 
+		getScopeDependencies() : IScopeDependency[] { return []; }
+
 		toString(): string {
 			return "[Error#" + this.noaid + "] " + this.error + (this.cause? "\n\t" + this.cause.toString() : "");
 		}

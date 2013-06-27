@@ -13,8 +13,7 @@ module NOA {
 			this.args = args;
 			this.args.forEach(arg => {
 				arg.live();
-				if (arg instanceof Expression)
-					this.scopeDependencies = this.scopeDependencies.concat((<Expression>arg).getScopeDependencies())
+				this.scopeDependencies = this.scopeDependencies.concat((<Expression>arg).getScopeDependencies())
 			});
 		}
 
@@ -55,10 +54,5 @@ module NOA {
 
 	}
 
-	export interface IScopeDependency {
-		name: string;
-		value: Variable;
-		claimed: bool;
-	}
 
 }

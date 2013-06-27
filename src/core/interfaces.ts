@@ -43,6 +43,7 @@ dereference -> converts to first class
 
 		value() : any;
 
+		getScopeDependencies() : IScopeDependency[];
 	}
 
 	export interface IPlainValue extends IValue { //TODO: cell and expression implement IPlainValue
@@ -73,5 +74,11 @@ dereference -> converts to first class
 
 	export interface IMutableRecord extends IRecord {
 		put(key: string, value: IValue);
+	}
+
+	export interface IScopeDependency {
+		name: string;
+		value: Variable;
+		claimed: bool;
 	}
 }

@@ -606,7 +606,7 @@ exports.test6a2 = function(test) {
             ))
         ));
 
-    var xyj = xy.join().debugName("xyjoin").live();
+    var xyj = NOA.Lang.join(xy).debugName("xyjoin").live();
 
     test.deepEqual(xyj.toJSON(),[]);
     x.add(3);
@@ -799,8 +799,8 @@ exports.record2 = function(test) {
     o.put("b", 2);
     var Lang = NOA.Lang;
     var f = Lang.let(
-        o,
         "this",
+        o,
         NOA.LangUtils.withValues([], function() { //TODO: what is withValues without values? watchFunction?
             return Lang.dot("this","a") + Lang.dot("this","b");
         })

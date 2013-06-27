@@ -45,6 +45,10 @@ module NOA {
 			return this.toASTHelper("map", "TODO:"); //TODO: function, use toString for real funcs
 		}
 
+		getScopeDependencies() : IScopeDependency[] {
+			return this.source.getScopeDependencies().concat(this.func.getScopeDependencies());
+		}
+
 		free() {
 			super.free();
 

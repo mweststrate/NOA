@@ -342,9 +342,6 @@ module NOA {
 			return new ListIndex(this, index);
 		}
 
-
-		isError(): bool {
-			return false;
-		}
+		getScopeDependencies() : IScopeDependency[] { return []; }
 	}
 }

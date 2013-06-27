@@ -100,6 +100,8 @@ module NOA{
 			return res;
 		}
 
+		getScopeDependencies() : IScopeDependency[] { return []; }
+
 		free() {
 			super.free();
 
