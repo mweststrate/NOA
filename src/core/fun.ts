@@ -39,7 +39,7 @@ module NOA {
 
 					//create a let for each argument, and wrap
 					for (var i = args.length - 1; i >= 0; i--) {
-						wrap = Lang.let(args[i], this.argnames[i], wrap);
+						wrap = Lang.let(this.argnames[i], args[i], wrap);
 
 					}
 

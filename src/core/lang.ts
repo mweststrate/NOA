@@ -15,8 +15,7 @@ module NOA {
 			return new Fun(argnames, stats);
 		}
 
-		//TODO: swap varname and expr
-		static let(expr: IValue, varname: any, stats: IValue) {
+		static let(varname: any, expr: IValue, stats: IValue) {
 			Util.assert(Util.isString(varname) || LangUtils.is(varname, ValueType.String));
 
 			var expr = LangUtils.toValue(expr);
@@ -167,8 +166,8 @@ module NOA {
 				ValueType.Number,
 				function(cb, list: Variable){
 					return Lang.let(
-						Lang.numbercount(list),
 						"count",
+						Lang.numbercount(list),
 						Lang.if_(
 							Lang.eq(Lang.variable("count"), 0),//new Constant(0)),
 							0, //new Constant(0),
@@ -187,8 +186,8 @@ module NOA {
 		static avgOLD(list: List/*TODO: ListVariable*/, cb : (value: IValue) => void) : IValue {
 			return <IValue><any> (<Base><any>(
 				Lang.let(
-					Lang.numbercount(list),
 					"count",
+					Lang.numbercount(list),
 					Lang.if_(
 						Lang.eq(Lang.variable("count"), 0), //new Constant(0)),
 						0, //new Constant(0),
