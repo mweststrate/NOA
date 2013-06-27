@@ -598,7 +598,13 @@ exports.test6a2 = function(test) {
     var x = new NOA.List().debugName("x");
     var y = new NOA.List().debugName("y");
 
-    var xy = x.map(NOA.Lang.fun("x", NOA.Lang.fun("y", NOA.Lang.mul(NOA.Lang.get("x"), NOA.Lang.get("y")))));
+    var xy = NOA.Lang.let("y", y, NOA.Lang.let("x", x,
+            NOA.Lang.map(NOA.Lang.get("x"), NOA.Lang.fun("a",
+                NOA.Lang.map(NOA.Lang.get("y"), NOA.Lang.fun("b",
+                    NOA.Lang.mul(NOA.Lang.get("a"), NOA.Lang.get("b"))
+                ))
+            ))
+        ));
 
     var xyj = xy.join().debugName("xyjoin").live();
 

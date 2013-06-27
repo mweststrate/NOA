@@ -135,8 +135,17 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		each(...args: any[]) {
-			if (this.fvalue)
+			if (this.fvalue && this.fvalue.is(ValueType.List))
 				(<IList>this.fvalue).each.apply(this.fvalue, args);
+		}
+
+		cell(index: string): Variable;
+		cell(index: number): Variable;
+		cell(index: any): Variable {
+			if (this.fvalue && (this.fvalue.is(ValueType.List) || this.fvalue.is(ValueType.Record)))
+				return (<any>this.fvalue).cell(index);
+			else
+				throw new Error("Illegal state: variable is not a cell or record");
 		}
 
 		get (index: number): IValue;

@@ -16,7 +16,7 @@ module NOA {
 
 		onSourceInsert(index: number, _) {
 			if (index < this.start){
-				if (this.source.cells.length > this.start)
+				if (this.source.size() > this.start)
 					this.insert(0, this.source.get(this.start));
 			}
 			else

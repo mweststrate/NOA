@@ -7,9 +7,9 @@ module NOA {
 	export class ListTransformation extends List implements IList {
 		//TODO: make transformation evaluate on first evaluation (that is, first 'cell' call)?
 
-		source : List; //TODO: remove parent?
+		source : IList; //TODO: remove parent?
 
-		constructor(source: List) {
+		constructor(source: IList) {
 			super();
 			this.source = source;
 			this.uses(source);

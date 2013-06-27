@@ -10,7 +10,7 @@ module NOA {
 		}
 
 		static fun(fun : Function) :Fun ;
-		static fun(argnames : String[], stats: IValue) : Fun;
+		static fun(argnames : string[], stats: IValue) : Fun;
 		static fun(argnames : any, stats?: IValue) : Fun {
 			return new Fun(argnames, stats);
 		}
@@ -144,7 +144,12 @@ module NOA {
 
 		static sum(list: IList) : IValue {
 			//TODO: memoize
-			return LangUtils.define(ListSum, "sum");//(list);
+			return LangUtils.define(ListSum, "sum");//([list]); //eeh why not just return listsum?
+		}
+
+		static map(list: IList, fun: Fun): IValue {
+			return new MappedList(list, fun);
+			//return LangUtils.define(MappedList, "map");//([list, fun]);
 		}
 
 		static numbercount(list: IList): IValue {

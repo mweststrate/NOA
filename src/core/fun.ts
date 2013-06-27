@@ -1,6 +1,6 @@
 ///<reference path='../noa.ts'/>
 module NOA {
-	export class Fun extends Base { //TODO: extend IValue for serializability and such?
+	export class Fun extends Base implements IValue {
 
 		private isJSFun: bool;
 
@@ -11,6 +11,7 @@ module NOA {
 
 		constructor(f: Function);
 		constructor(argnames: string[], statement : IValue); //statement should be expression? neuh, a constant value is a valid function as well for example..
+		constructor(argname: string, statement : IValue); //statement should be expression? neuh, a constant value is a valid function as well for example..
 		constructor(a: any, b?: any) {
 			super();
 
@@ -19,7 +20,7 @@ module NOA {
 			if (this.isJSFun)
 				this.jsFun = a;
 			else {
-				this.argnames = a;
+				this.argnames = Util.isArray(a) ? a : [a];
 				this.statement = b;
 				this.statement.live();
 			}
@@ -29,19 +30,27 @@ module NOA {
 			if (this.isJSFun)
 				return LangUtils.withValues(args, this.jsFun);
 			else {
-				var res = new Variable();
+				var res = new Expression(<IValue[]>[this].concat(args));
+				res.setName("call"); //MWE: mweh? introduce in lang??
 
 				//MWE: TODO: async is weird here, AST should be (de)serialied synchronouszly. Or, just use stats.clone?! That would be nice since it could avoid cloning of constants
 				LangUtils.clone(this.statement, (clone) => {
 					var wrap = clone;
 
 					//create a let for each argument, and wrap
-					for (var i = args.length - 1; i >= 0; i--)
+					for (var i = args.length - 1; i >= 0; i--) {
 						wrap = Lang.let(args[i], this.argnames[i], wrap);
+
+					}
 
 					res.set(wrap);
 
-					//TODO: copy all scope dependencies of wrap to res
+					//copy all scope dependencies of wrap and args to res
+					//TODO: can clone be a function?
+					if (clone instanceof Expression)
+						(<Expression>clone).getScopeDependencies().forEach(dep => res.addScopeDependency(dep));
+					if (wrap instanceof Expression)
+						(<Expression>wrap).getScopeDependencies().forEach(dep => res.addScopeDependency(dep));
 				});
 
 				return res;
@@ -59,5 +68,13 @@ module NOA {
 		}
 
 		value(): any { return this; }
+
+		toAST(): Object {
+			return Serializer.serializeFunction("fun", (<any[]>this.argnames).concat([this.statement]));
+		}
+
+		toJSON(): any {
+			return this.isJSFun ? <any>this.jsFun : "fun(" + this.argnames.join(",") + ")";
+		}
 	}
 }

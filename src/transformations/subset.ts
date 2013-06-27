@@ -23,7 +23,7 @@ module NOA {
 		}
 
 		addLast() {
-			if (this.end < this.source.cells.length) //add another item at the end
+			if (this.end < this.source.size()) //add another item at the end
 				this.add(this.source.cell(this.end));
 		}
 
@@ -33,7 +33,7 @@ module NOA {
 		}
 
 		addFirst() {
-			if (this.begin < this.source.cells.length)
+			if (this.begin < this.source.size())
 				this.insert(0, this.source.cell(this.begin))
 		}
 

@@ -59,6 +59,7 @@ dereference -> converts to first class
 
 		each(scope, cb: (index: number, value: any) => void );
 		size(): number;
+		cell(index: number): Variable;
 		get(index: number): IValue;
 	}
 

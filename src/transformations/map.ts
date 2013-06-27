@@ -10,9 +10,9 @@ module NOA {
 		 * @param  {[type]} func [description]
 		 * @return {[type]}
 		 */
-		constructor(source: List, func: Fun);
-		constructor(source: List, func: Function);
-		constructor(source: List, func: any) {
+		constructor(source: IList, func: Fun);
+		constructor(source: IList, func: Function);
+		constructor(source: IList, func: any) {
 			super(source);
 
 			this.func = Util.isFunction(func) ? NOA.Lang.fun(func) : func;
