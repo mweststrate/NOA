@@ -42,7 +42,7 @@ module NOA {
 		}
 
 		toAST(): Object {
-			return this.toASTHelper("map", "TODO:"); //TODO: function, use toString for real funcs
+			return this.toASTHelper("map", this.source, this.func);
 		}
 
 		getScopeDependencies() : IScopeDependency[] {

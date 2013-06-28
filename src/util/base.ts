@@ -102,13 +102,13 @@ module NOA {
 
 			var listeners = this.noabase.getListeners(event);
 			//TODO: randomize the listners array before firing for test purposes
-			Util.debugIn(this,"fires",event,":",a);
+			//Util.debugIn(this,"fires",event,":",a);
 
 			for(var key in listeners)
 				if (listeners[key])
 					listeners[key].fire.apply(listeners[key], a); //Note, event name is included in the call
 
-			Util.debugOut();
+			//Util.debugOut();
 			return this;
 		}
 
@@ -198,7 +198,7 @@ module NOA {
 
 		live () {
 			this.noabase.refcount += 1;
-			this.debug("live", this.noabase.refcount);
+			//this.debug("live", this.noabase.refcount);
 
 			if (this.destroyed)
 				throw new Error(this + " Attempt to resurrect!");
@@ -211,7 +211,7 @@ module NOA {
 				return this;
 
 			this.noabase.refcount -= 1;
-			this.debug("die", this.noabase.refcount);
+			//this.debug("die", this.noabase.refcount);
 			if (this.noabase.refcount == 0)
 				this.free();
 			else if (this.noabase.refcount < 0)

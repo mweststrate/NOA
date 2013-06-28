@@ -2,6 +2,7 @@
 module NOA {
 	export class Lang {
 
+		//TODO: should be global scope to share this general available items in, such as None, Hour etc...
 		static None(): Constant {
 			Lang.None = function () { //TODO: reuse same instance? note live / die
 				return new Constant(undefined);
@@ -32,7 +33,7 @@ module NOA {
 			expr.getScopeDependencies().forEach(dep => scopeDependencies.push(dep));
 			stats.getScopeDependencies().forEach(dep => {
 				if (dep.name === realname) {
-					Util.debug("Claiming " + dep.value + " as " + realname + ", assigning: " + expr);
+					Util.debug(dep.value.toString() + " LET " + realname + " => " + expr.value());
 					used = true;
 					dep.value.set(expr);
 					dep.claimed = true;

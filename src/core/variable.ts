@@ -26,7 +26,8 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 
 		set (newvalue: IValue, withEvents: bool = true);
 		set (newvalue: any, withEvents: bool = true);
-		set(newv: any, withEvents: bool = true) {
+		set (newv: any, withEvents: bool = true) {
+			this.debug("SET", newv && newv.value ? newv.value() : newv);
 			var newvalue = LangUtils.toValue(newv); //MWE: either not this, or make newvalue 'any'
 
 			//Q: should use Lang.equal? -> No, because we should setup the new events

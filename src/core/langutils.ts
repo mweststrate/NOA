@@ -37,7 +37,7 @@ module NOA {
 		static followHelper(dest: IValue, source: IValue, follow: bool) {
 
 			Util.assert(source != null && dest != null);
-			(<Base><any>dest).debug((follow ? "Following " : "Unfollowing") + source);
+			//(<Base><any>dest).debug((follow ? "Following " : "Unfollowing") + source);
 
 			//MWE: mweh implementation
 			var listenList   = LangUtils.canBe(dest, ValueType.List)   && LangUtils.canBe(source, ValueType.List);
@@ -141,13 +141,13 @@ module NOA {
 			var cbcalled = false;
 			var cb = function (newvalue) {
 				cbcalled = true;
-				destination.debug("Received new value: " + newvalue)
+				//destination.debug("Received new value: " + newvalue)
 				destination.set(LangUtils.toValue(newvalue));
-				destination.debugOut();
+				//destination.debugOut();
 			}
 
 			var f = function () {
-				destination.debugIn("Recalculating..");
+				//destination.debugIn("Recalculating..");
 
 				try {
 					cbcalled = false;
