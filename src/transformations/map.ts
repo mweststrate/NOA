@@ -45,6 +45,12 @@ module NOA {
 			return this.toASTHelper("map", this.source, this.func);
 		}
 
+		toGraph() {
+			var res = super.toGraph();
+			res.func = this.func.toGraph();
+			return res;
+		}
+
 		getScopeDependencies() : IScopeDependency[] {
 			return this.source.getScopeDependencies().concat(this.func.getScopeDependencies());
 		}

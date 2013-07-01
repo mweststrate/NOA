@@ -34,6 +34,13 @@ module NOA {
 			return Serializer.serializeFunction(this.getName(), this.args);
 		}
 
+		toGraph(): any {
+			var res = super.toGraph();
+			res.name = this.getName();
+			res.args = this.args.map(arg => arg.toGraph());
+			return res;
+		}
+
 		getScopeDependencies() : IScopeDependency[] {
 			return this.scopeDependencies;
 		}

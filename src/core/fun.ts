@@ -79,6 +79,15 @@ module NOA {
 			return this.isJSFun ? <any>this.jsFun : "fun(" + this.argnames.join(",") + ")";
 		}
 
+		toGraph() {
+			return {
+				name: 'Fun',
+				args: this.argnames,
+				body : this.isJSFun ? this.jsFun.toString() : this.statement.toGraph(),
+				deps: this.getScopeDependencies().map(dep => dep.name)
+			}
+		}
+
 		getScopeDependencies() : IScopeDependency[] {
 			return this.scopeDependencies;
 		}

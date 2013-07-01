@@ -134,7 +134,7 @@ exports.smallmap0c = function(test) {
     test.done();
 }
 
-exports.smallmap2 = function(test) {
+exports.smallmap2a = function(test) {
 
     var x = new NOA.List();
     x.add(3);
@@ -163,6 +163,39 @@ exports.smallmap2 = function(test) {
 
     test.done();
 }
+
+exports.smallmap2b = function(test) {
+
+    var x = new NOA.List().debugName("x").live();
+
+    x.add(3);
+
+    var y =  NOA.Lang.let("x", x, NOA.Lang.map(NOA.Lang.get("x"), NOA.Lang.fun("a",
+        NOA.Lang.mul(NOA.Lang.get("a"), 2)//NOA.Lang.get("b"))
+    ))).live();
+
+    test.deepEqual(x.toJSON(),[3])
+    test.deepEqual(y.toJSON(),[6])
+
+    x.add(4);
+    test.deepEqual(x.toJSON(),[3,4])
+    test.deepEqual(y.toJSON(),[6,8])
+
+    x.set(0, 12);
+    test.deepEqual(x.toJSON(),[12,4])
+    test.deepEqual(y.toJSON(),[24,8])
+
+    y.die();
+    x.die();
+
+    test.equal(NOA.List.count, 0);
+    test.equal(NOA.Variable.count, 0);
+    test.equal(NOA.Constant.count, 0);
+
+
+    test.done();
+}
+
 
 
 exports.errortest = function(test) {
@@ -608,12 +641,16 @@ exports.test6a2 = function(test) {
 
     var xyj = NOA.Lang.join(xy).debugName("xyjoin").live();
 
+//    console.dir(xyj.toGraph());
+
     test.deepEqual(xyj.toJSON(),[]);
     x.add(3);
     test.deepEqual(xyj.toJSON(),[]);
     y.add(2)
+    console.dir(xyj.toGraph());
     test.deepEqual(x.toJSON(),[3]);
     test.deepEqual(y.toJSON(),[2]);
+
     test.deepEqual(xyj.toJSON(),[6]);
     y.add(4);
     y.add(8);

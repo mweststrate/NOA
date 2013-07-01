@@ -11,6 +11,8 @@ module NOA {
 
 		constructor(source: IList) {
 			super();
+
+			Util.assert(source && LangUtils.canBe(source, ValueType.List));
 			this.source = source;
 			this.uses(source);
 
@@ -55,6 +57,12 @@ module NOA {
 
 		toASTHelper(name : string, ...args: any[]) : Object {
 			return Serializer.serializeFunction(name, args);
+		}
+
+		toGraph() {
+			var res = super.toGraph();
+			res.source = this.source.toGraph();
+			return res;
 		}
 	}
 

@@ -63,6 +63,16 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			return this.fvalue === undefined ? undefined : this.fvalue.toAST.apply(this.fvalue, arguments);
 		}
 
+		toGraph(): any {
+			var val = this.value();
+			return {
+				name: 'Variable',
+				value : val && val.toGraph ? val.toGraph() : val,
+				source: this.fvalue.toGraph(),
+				deps: this.getScopeDependencies().map(dep => dep.name)
+			}
+		}
+
 		getScopeDependencies() : IScopeDependency[] {
 			return this.fvalue ? this.fvalue.getScopeDependencies() : [];
 		}

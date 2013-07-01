@@ -32,6 +32,10 @@ module NOA {
 			return { "type": "error", "error": this.error };
 		}
 
+		toGraph(): any {
+			return this.getError();
+		}
+
 		is(type: ValueType): bool {
 			return type === ValueType.Error || type == ValueType.Primitive;
 		}

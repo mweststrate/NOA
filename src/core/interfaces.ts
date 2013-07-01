@@ -34,6 +34,7 @@ dereference -> converts to first class
 	export interface IValue extends IBase {
 		toJSON(): any;
 		toAST(): Object;
+		toGraph(): any;
 
 		is(expected: ValueType): bool;
 		//TODO:

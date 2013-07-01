@@ -85,6 +85,18 @@ module NOA{
 			return res;
 		}
 
+		toGraph(): any {
+			var items = {};
+			for (var key in this.data)
+				items[key] = this.data[key].toGraph();
+
+			return {
+				name: 'Record',
+				items : items,
+				deps: this.getScopeDependencies().map(dep => dep.name)
+			}
+		}
+
 		isError(): bool {
 			return false;
 		}

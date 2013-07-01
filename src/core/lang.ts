@@ -16,22 +16,22 @@ module NOA {
 			return new Fun(argnames, stats);
 		}
 
-		static let(varname: any, expr: IValue, stats: IValue) {
+		static let(varname: any, expression: IValue, statement: IValue) {
 			Util.assert(Util.isString(varname) || LangUtils.is(varname, ValueType.String));
 
-			var expr = LangUtils.toValue(expr);
-			var stats = LangUtils.toValue(stats);
+			var expr = LangUtils.toValue(expression);
+			var stat = LangUtils.toValue(statement);
 
 			//TODO: prevent varname from changing!
 			var realname =  Util.isString(varname) ? varname : (<any>varname).value();
-			var res = new Expression([<IValue>expr, LangUtils.toValue(varname), <IValue>stats]);
+			var res = new Expression([<IValue>expr, LangUtils.toValue(varname), <IValue>stat]);
 			res.setName("let");
 
 			var scopeDependencies = [];
 			var used = false;
 
 			expr.getScopeDependencies().forEach(dep => scopeDependencies.push(dep));
-			stats.getScopeDependencies().forEach(dep => {
+			stat.getScopeDependencies().forEach(dep => {
 				if (dep.name === realname) {
 					Util.debug(dep.value.toString() + " LET " + realname + " => " + expr.value());
 					used = true;
@@ -46,7 +46,14 @@ module NOA {
 				Util.warn("Unused variable '" + realname + "'");
 
 			res.scopeDependencies = scopeDependencies;
-			res.set(stats);
+			res.set(stat);
+			/*res.toGraph = function () {
+				return {
+					let: realname,
+					value: expr.toGraph(),
+					body: stat.toGraph()
+				}
+			}*/
 
 			return res;
 		}
@@ -68,6 +75,12 @@ module NOA {
 			};
 
 			res.addScopeDependency(dep);
+			res.toGraph = function () {
+				return {
+					get: realname,
+					value: this.fvalue.toGraph()
+				}
+			}
 			return res;
 		}
 

@@ -200,6 +200,14 @@ module NOA {
 			return res;
 		}
 
+		toGraph(): any {
+			return {
+				name: (<any>this).constructor.name,
+				items: this.cells.map(arg => arg.toGraph()),
+				deps: this.getScopeDependencies().map(dep => dep.name)
+			}
+		}
+
 		is(type: ValueType): bool {
 			return type === ValueType.List;
 		}

@@ -56,6 +56,10 @@ module NOA {
 			return this.fvalue;
 		}
 
+		toGraph(): any {
+			return this.toString();
+		}
+
 		getScopeDependencies() : IScopeDependency[] { return []; }
 
 		toString(): string {
