@@ -54,7 +54,7 @@ module NOA {
 			var cell = this.source.cell(index); //the cell knows our position in lmap reliable when handling events, so the join transformation does not need to track that.
 
 			var sublistInsert = function (subindex, _) {
-				var idx = cell.getIndex(this.source); //TODO: is this the proper scope?
+				var idx = cell.getIndex(); 
 				var subcell = (<List>cell.get()).cell(subindex); //Blegh! TODO: make nice!
 				this.insert(this.getOffset(idx, subindex), subcell);
 				this.updateLmap(idx, +1);
@@ -67,12 +67,12 @@ module NOA {
 
 			sublist.onInsert(this, sublistInsert, false);
 			sublist.onMove(this, function (sf: number, st: number) {
-				var idx = cell.getIndex(this.source);
+				var idx = cell.getIndex();
 				this.move(this.getOffset(idx, sf), this.getOffset(idx, st));
 			});
 
 			sublist.onRemove(this, function (sf: number) {
-				var idx = cell.getIndex(this.source);
+				var idx = cell.getIndex();
 				this.remove(this.getOffset(idx, sf));
 				this.updateLmap(idx, -1);
 			});

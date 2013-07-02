@@ -38,14 +38,14 @@ module NOA {
 
 			this.debug("INSERT AT " + index + ": " + cell.value() + " (" + value + ")");
 
-			cell.addIndex(this, index); //TODO: just assing index property?
+			cell.setIndex(index); //TODO: just assing index property?
 			this.cells.splice(index, 0, cell);
 
 			this._updateIndexes(index +1);
 			this.fire(ListEvent.INSERT.toString(), index, cell.get());
 
 			cell.get(this, (newvalue: any, oldvalue: any): void => {
-				this.fire(ListEvent.SET.toString(), cell.getIndex(this), newvalue, oldvalue);
+				this.fire(ListEvent.SET.toString(), cell.getIndex(), newvalue, oldvalue);
 			}, false);
 
 			return this;
@@ -74,7 +74,6 @@ module NOA {
 			this.debug("REMOVE AT " + index + ": " + origcell.value() + " (" + origvalue + ")");
 
 
-			origcell.removeIndex(this);
 			this.cells.splice(index, 1);
 			this._updateIndexes(index);
 
@@ -153,7 +152,7 @@ module NOA {
 				return this._updateIndexes(end, start);
 
 			for(var i = start; i <= end; i++)
-				this.cells[i].updateIndex(this, i);
+				this.cells[i].setIndex(i);
 			return this;
 		}
 

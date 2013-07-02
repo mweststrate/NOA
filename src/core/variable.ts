@@ -7,13 +7,12 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 	//TODO: rename fvalue to source
 	fvalue: IValue;
 	hasPrimitive: bool;
-	indexes: any;
+	index: any = undefined;
 
 		constructor(value: IValue = Lang.None()) {
 			//TODO: null type?
 			super();
 			this.fvalue = value;
-			this.indexes = {};
 			this.setup(value, false); //Nobody is listening yet
 
 			//for debugging purposes only
@@ -197,33 +196,15 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 
-		//TODO: move to 'ContainedVariable'
-		addIndex(parent: CellContainer, index: any): Variable {
-			Util.assert(this.indexes[parent.noaid] === undefined);
-
-			this.indexes[parent.noaid] = index;
+		//TODO: set/get Index should be in separate cell container class
+		setIndex(index: any): Variable {
+			this.index = index;
 			return this;
 		}
 
-
-		updateIndex(parent: CellContainer, index: any): Variable {
-			Util.assert(this.indexes[parent.noaid] !== undefined);
-
-			this.indexes[parent.noaid] = index;
-			return this;
-		}
-
-		removeIndex(parent: CellContainer): Variable {
-			Util.assert(this.indexes[parent.noaid] !== undefined);
-
-			delete this.indexes[parent.noaid];
-			return this;
-		}
-
-		getIndex(parent: CellContainer): any {
-			Util.assert(this.indexes[parent.noaid] !== undefined);
-
-			return this.indexes[parent.noaid];
+		getIndex(): any {
+			Util.assert(this.index != undefined);
+			return this.index;
 		}
 	}
 

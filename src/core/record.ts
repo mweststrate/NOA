@@ -20,12 +20,12 @@ module NOA{
 
 				var cell = this.data[key] = new Variable(LangUtils.toValue(value));
 				cell.live();
-				cell.addIndex(this, key);
+				cell.setIndex(key);
 				this.keys.add(key);
 				this.fire(RecordEvent.PUT.toString() ,key, value, undefined);
 
 				cell.get(this, (newvalue, oldvalue) => {
-					this.fire(RecordEvent.PUT.toString(), cell.getIndex(this), newvalue, oldvalue);
+					this.fire(RecordEvent.PUT.toString(), cell.getIndex(), newvalue, oldvalue);
 				},false)
 			}
 
