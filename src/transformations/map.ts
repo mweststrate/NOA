@@ -28,7 +28,7 @@ module NOA {
 			var source = this.source.cell(index);
 			//scope.set(this.varname, source);
 
-			console.log("inserting new item for " + source);
+//			console.log("inserting new item for " + source);
 
 			this.insert(index, this.func.call(source));
 		}

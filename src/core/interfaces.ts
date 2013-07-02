@@ -42,7 +42,7 @@ dereference -> converts to first class
 
 		//isError() : bool;
 
-		value() : any;
+		value() : any; //TODO: rename to toValue
 
 		getScopeDependencies() : IScopeDependency[];
 	}

@@ -36,7 +36,7 @@ module NOA {
 			var cell = new Variable(LangUtils.toValue(value));
 			cell.live();
 
-			this.debugIn("Insert at " + index + ": " + cell + " for value " + value);
+			this.debug("INSERT AT " + index + ": " + cell.value() + " (" + value + ")");
 
 			cell.addIndex(this, index); //TODO: just assing index property?
 			this.cells.splice(index, 0, cell);
@@ -48,7 +48,6 @@ module NOA {
 				this.fire(ListEvent.SET.toString(), cell.getIndex(this), newvalue, oldvalue);
 			}, false);
 
-			this.debugOut();
 			return this;
 		}
 
@@ -58,10 +57,9 @@ module NOA {
 			if (index < 0 || index >= this.cells.length)
 				throw new Error("Set out of bounds: " + index + " not in 0.." + this.cells.length)
 
-
 			this.cells[index].set(value);
+			this.debug("SET AT " + index + ": " + this.cells[index].value() + " (" + value + ")");
 
-			this.debugOut();
 			return this;
 		}
 
@@ -72,6 +70,9 @@ module NOA {
 
 			var origcell = this.cells[index];
 			var origvalue = origcell.get();
+
+			this.debug("REMOVE AT " + index + ": " + origcell.value() + " (" + origvalue + ")");
+
 
 			origcell.removeIndex(this);
 			this.cells.splice(index, 1);

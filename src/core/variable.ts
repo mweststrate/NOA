@@ -4,6 +4,7 @@
 module NOA {
 export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO: IRecord...*/ {
 
+	//TODO: rename fvalue to source
 	fvalue: IValue;
 	hasPrimitive: bool;
 	indexes: any;
@@ -14,6 +15,9 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			this.fvalue = value;
 			this.indexes = {};
 			this.setup(value, false); //Nobody is listening yet
+
+			//for debugging purposes only
+			this.on(PlainValueEvent.CHANGE, this, (newvalue) => this.debug("CHANGE: " + newvalue));
 		}
 
 		is(expected: ValueType) : bool {
@@ -27,7 +31,6 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		set (newvalue: IValue, withEvents: bool = true);
 		set (newvalue: any, withEvents: bool = true);
 		set (newv: any, withEvents: bool = true) {
-			this.debug("SET", newv && newv.value ? newv.value() : newv);
 			var newvalue = LangUtils.toValue(newv); //MWE: either not this, or make newvalue 'any'
 
 			//Q: should use Lang.equal? -> No, because we should setup the new events
@@ -52,6 +55,8 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 					if (nv != ov)
 						this.fire(PlainValueEvent.CHANGE, nv, ov); //TODO: do not use changed but some constant!
 				}
+
+				this.debug("SET " + this.value() + " (" + this.fvalue + ")");
 			}
 		}
 
