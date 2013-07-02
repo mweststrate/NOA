@@ -315,7 +315,7 @@ module NOA {
 			return Object.prototype.toString.call(thing) === '[object Object]'
 		}
 
-		static inArray (thing : any, array : any[]) {
+		static find(thing : any, array : any[]) : number {
 			if (!Util.isArray(array))
 				throw "Second argument should be array";
 			for (var i = 0; i < array.length; i++)
