@@ -673,197 +673,43 @@ exports.test6b1 = function(test) {
     var x = new NOA.List().debugName("x");
     var y = new NOA.List().debugName("y");
 
-    var z = x.map(NOA.Lang.fun("x", NOA.Lang.fun("y", NOA.Lang.mul(NOA.Lang.get("x"), NOA.Lang.get("y")))));
-    z.debugName("z");
+    var xy =
+    NOA.Lang.let("x", x,
+        NOA.Lang.let("y", y,
+            NOA.Lang.map(NOA.Lang.get("x"), NOA.Lang.fun("a",
+                NOA.Lang.map(NOA.Lang.get("y"), NOA.Lang.fun("b",
+                    NOA.Lang.mul(NOA.Lang.get("a"), NOA.Lang.get("b"))
+                ))
+            ))
+        ));
 
-    var j = z.join().debugName("j").live();
+    var xyj = NOA.Lang.join(xy).debugName("xyjoin").live();
 
     x.add(1);
     x.add(2);
     y.add(3);
     y.add(4);
-    test.deepEqual(j.toJSON(), [3, 4, 6, 8])
+    test.deepEqual(xyj.toJSON(), [3, 4, 6, 8])
 
     y.move(1,0);
-    test.deepEqual(j.toJSON(), [4, 3, 8, 6])
+    test.deepEqual(xyj.toJSON(), [4, 3, 8, 6])
 
     y.move(0,1);
-    test.deepEqual(j.toJSON(), [3, 4, 6, 8])
+    test.deepEqual(xyj.toJSON(), [3, 4, 6, 8])
 
     x.move(0,1);
-    test.deepEqual(j.toJSON(), [6, 8, 3, 4])
+    test.deepEqual(xyj.toJSON(), [6, 8, 3, 4])
 
     x.move(1, 0);
-    test.deepEqual(j.toJSON(), [3, 4, 6, 8])
+    test.deepEqual(xyj.toJSON(), [3, 4, 6, 8])
 
-    j.die();
-    test.equal(NOA.List.count, 0);
+    xyj.die();
+    test.equal(NOA.Base.count, 0);
     test.done();
 }
 
-exports.test6b2 = function(test) {
-    var x = new NOA.List().live().debugName("x");;
-
-    console.info(x.toString());
-
-    var xsuper = x.map("x", function(){
-        return x.map("y", function() {
-            var x = this.variable("x");
-            var y = this.variable("y");
-
-            console.log("\n\nSUPERMAP: " + x + " * " + y + ' = ' + (x * y));
-            return x * y;
-        });
-    }).debugName("xsuper").live();
-
-    var xjoin = xsuper.join().debugName("xjoin").live();
-
-    //base set
-    x.add(3);
-    x.add(2);
-    x.add(6);
-
-    test.deepEqual( x.toJSON(), [3,2,6]);
-    test.deepEqual(xjoin.toJSON(), [9,6,18,6,4,12,18,12,36])
-
-    //mutations
-    x.insert(2,7);
-
-    test.deepEqual( x.toJSON(), [3,2,7,6]);
-    test.deepEqual(xjoin.toJSON(), [9,6,21,18, 6,4,14,12, 21,14,49,42, 18,12,42,36])
-
-    x.remove(1);
-    test.deepEqual( x.toJSON(), [3,7,6]);
-    test.deepEqual(xjoin.toJSON(), [9,21,18, 21,49,42, 18,42,36])
-
-    x.cell(2).set(1);
-    test.deepEqual( x.toJSON(), [3,7,1]);
-    test.deepEqual(xjoin.toJSON(), [9,21,3, 21,49,7, 3,7,1])
-
-    x.move(1,0); //JOIN fails if this is not disabled
-
-    test.deepEqual( x.toJSON(), [7,3,1]);
-    // Was:                         [ 9,21,3, 21,49,7, 3,7,1]
-    test.deepEqual(xjoin.toJSON(), [49,21,7, 21, 9,3, 7,3,1])
-    // Is:                          [21, 9,3,  9,21,3, 7,3,1]
-
-    x.die();
-    xsuper.die();
-    xjoin.die();
-
-    test.equal(NOA.List.count, 0);
-    test.equal(NOA.Cell.count, 0);
-    test.equal(NOA.Expression.count, 0);
-
-    test.done();
-
-};
-
-exports.testavg = function(test) {
-    var x = new NOA.List();
-    var a = x.avg().live();
-
-
-    //TODO: fix
-    //test.equal(a.get() == NaN, true);
-
-    x.add(2);
-    test.equal(a.get(), 2);
-
-    x.add(4);
-    test.equal(a.get(), 3);
-
-    x.remove(0);
-    test.equal(a.get(), 4);
-
-    x.insert(0, 8)
-    test.equal(a.get(), 6);
-
-    x.move(0,1)
-    test.equal(a.get(), 6);
-
-    test.equal(x.noabase.refcount, 1);
-    a.die();
-    test.equal(x.noabase.refcount, 0);
-
-    test.equal(NOA.List.count, 0);
-    test.equal(NOA.Cell.count, 0);
-    test.equal(NOA.Expression.count, 0);
-
-    test.done();
-}
-
-//TODO: test exception
-
-exports.record1 = function(test) {
-
-    var o = new NOA.Record().live();
-    o.put("a", 2);
-    o.put("b", 2);
-    o.put("c", 5);
-    o.put("a", 1);
-    o.remove("b");
-
-    test.equal(JSON.stringify(o.toJSON()), '{"a":1,"c":5}');
-    test.deepEqual(o.keys.toJSON(), ["a","c"]);
-
-    o.put("b", 2);
-    o.put("a", 10);
-    o.put("b", 7);
-
-    o.die();
-
-    test.equal(NOA.List.count, 0);
-    test.equal(NOA.Record.count, 0);
-    test.equal(NOA.Variable.count, 0);
-    test.equal(NOA.Constant.count, 0);
-
-    test.done();
-
-};
-
-
-exports.record2 = function(test) {
-
-    var o = new NOA.Record().live();
-    o.put("a", 2);
-    o.put("b", 2);
-    o.put("c", 5);
-    o.put("a", 1);
-    o.remove("b");
-
-    test.equal(JSON.stringify(o.toJSON()), '{"a":1,"c":5}');
-    test.deepEqual(o.keys.toJSON(), ["a","c"]);
-
-    o.put("b", 2);
-    var Lang = NOA.Lang;
-    var f = Lang.let(
-        "this",
-        o,
-        NOA.LangUtils.withValues([], function() { //TODO: what is withValues without values? watchFunction?
-            return Lang.dot("this","a") + Lang.dot("this","b");
-        })
-    );
-
-    o.put("c", f);
-
-    test.equal(o.get("c"), '3');
-    o.put("a", 10);
-    o.put("b", 7);
-    test.equal(o.get("c"), '17');
-
-    o.die();
-
-    test.equal(NOA.List.count, 0);
-    test.equal(NOA.Record.count, 0);
-    test.equal(NOA.Variable.count, 0);
-    test.equal(NOA.Constant.count, 0);
-
-    test.done();
-};
-
-    if ((typeof(module) !== "undefined" && !module.parent) || typeof(window) !== "undefined")
-        NOA.Util.runtests(exports);
+if ((typeof(module) !== "undefined" && !module.parent) || typeof(window) !== "undefined")
+    NOA.Util.runtests(exports);
 
 })(typeof(exports) != "undefined" ?exports : (t1 = {}), typeof(require) !== "undefined" ? require("../build/noa.js") : window.NOA);
 

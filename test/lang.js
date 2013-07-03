@@ -1,5 +1,41 @@
 var NOA = typeof(require) !== "undefined" ? require("../build/noa.js") : window.NOA;
 
+
+exports.testavg = function(test) {
+    var x = new NOA.List();
+    var a = x.avg().live();
+
+
+    //TODO: fix
+    //test.equal(a.get() == NaN, true);
+
+    x.add(2);
+    test.equal(a.get(), 2);
+
+    x.add(4);
+    test.equal(a.get(), 3);
+
+    x.remove(0);
+    test.equal(a.get(), 4);
+
+    x.insert(0, 8)
+    test.equal(a.get(), 6);
+
+    x.move(0,1)
+    test.equal(a.get(), 6);
+
+    test.equal(x.noabase.refcount, 1);
+    a.die();
+    test.equal(x.noabase.refcount, 0);
+
+    test.equal(NOA.List.count, 0);
+    test.equal(NOA.Cell.count, 0);
+    test.equal(NOA.Expression.count, 0);
+
+    test.done();
+}
+
+
 function createTest(name, func, args, result) {
 	exports[name] = function(test) {
 		//Dirty...
