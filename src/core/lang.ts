@@ -91,6 +91,10 @@ module NOA {
 			if (args.length < 1)
 				res.set(new ErrorValue("Call expects at least one argument, the function"));
 
+			//Optimize: if the function itself will never change, there is no need to wrap an additional call expression.
+			if (args[0] instanceof Fun)
+				return (<Fun>args[0]).call.apply(args[0],args.slice(1));
+
 			var realargs = args.map(LangUtils.toValue);
 			var res = new Expression(realargs);
 			res.setName("call");

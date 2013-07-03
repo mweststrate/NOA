@@ -30,7 +30,7 @@ module NOA {
 
 //			console.log("inserting new item for " + source);
 
-			this.insert(index, this.func.call(source));
+			this.insert(index, Lang.call(this.func, source)); //Lang.call, allows func to chaneg in the future :)
 		}
 
 		onSourceRemove(index: number, value) {
