@@ -59,7 +59,7 @@ module NOA {
 					wrap.getScopeDependencies().forEach(dep => {
 						Util.assert(deps[dep.name], "Not defined in scope!: " + dep.name);
 						console.log("WRAPPING FUNC CALL CLOSURE SCOPE " + dep.name +  " -> " + deps[dep.name].value() + " <== " + deps[dep.name]);
-						wrap = Lang.let(dep.name, deps[dep.name], wrap)
+						wrap = Lang.let(dep.name, deps[dep.name], wrap) //TODO: these deps are already solved, so dep.value.set(deps[dep.name]) is probably more effecient?
 					})
 
 					res.set(wrap);

@@ -17,6 +17,7 @@ module NOA {
 		}
 
 		static let(varname: any, expression: IValue, statement: IValue) {
+			//TODO: allow a list of varnames and expressions, that saves a lot of let wraps for funcdtions and such! Big optimization
 			Util.assert(Util.isString(varname) || LangUtils.is(varname, ValueType.String));
 
 			var expr = LangUtils.toValue(expression);
@@ -26,7 +27,9 @@ module NOA {
 			var realname =  Util.isString(varname) ? varname : (<any>varname).value();
 			var res = new Expression([<IValue>expr, LangUtils.toValue(varname), <IValue>stat]);
 			res.setName("let");
-
+			//OPtimize: we could just return statement instead of expression, after removing the matching dependencies. However that makes it quite unclear where the
+			//dependencies are gone (unless claimed dependencies are not propagated further?) and it makes it a bit magic where dependencies are solved
+			//however, it saves a level of wrapping
 			var scopeDependencies = [];
 			var used = false;
 
