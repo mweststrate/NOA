@@ -3,6 +3,51 @@
 //TODO tests: first class function, map with first class function, recursive function (using call)
 // record with expression, record with function which is called from expression..
 
+
+exports.citizenfunction1 = function(test) {
+    var L = NOA.Lang;
+    var res = L.let(
+        "fun", L.fun("x", L.mul(L.get("x"), L.get("x"))),
+        L.call(L.get("fun"), 2)
+    ).live();
+
+    test.equal(res.value(), 4);
+
+    res.die();
+    test.equal(NOA.Base.count, 0);
+    test.done();
+}
+
+exports.citizenfunction2 = function(test) {
+    var L = NOA.Lang;
+
+    var doubler = L.fun("x", L.mul(L.get("x"), 2));
+    var square  = L.fun("x", L.mul(L.get("x"), L.get("x")))
+    var c = new NOA.Variable();
+    var f = new NOA.Variable(NOA.LangUtils.toValue(3));
+
+    var res = L.let(
+        "fun", c,
+        L.call(L.get("fun"), f)
+    ).live();
+
+    test.equal(res.value().is(NOA.ValueType.Error), true);
+
+    c.set(doubler);
+    test.equal(res.value(), 6);
+
+    c.set(square);
+    test.equal(res.value(), 9);
+
+    f.set(4);
+    test.equal(res.value(), 16);
+
+
+    res.die();
+    test.equal(NOA.Base.count, 0);
+    test.done();
+}
+
 exports.record1 = function(test) {
 
     var o = new NOA.Record().live();

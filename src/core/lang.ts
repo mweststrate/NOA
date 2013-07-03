@@ -87,6 +87,38 @@ module NOA {
 			return res;
 		}
 
+		static call(...args: IValue[]) : IValue {
+			if (args.length < 1)
+				res.set(new ErrorValue("Call expects at least one argument, the function"));
+
+			var realargs = args.map(LangUtils.toValue);
+			var res = new Expression(realargs);
+			res.setName("call");
+
+			var first = realargs[0];
+			if (!LangUtils.canBe(first,ValueType.Function))
+				res.set(new ErrorValue("First argument of call should be a function, found: " + first.value()));
+
+			function applyFun(fun) {
+				if (fun && fun.is(ValueType.Error))
+					res.set(fun);
+				else if (fun && fun.is(ValueType.Function))
+					res.set(fun.call.apply(fun, realargs.slice(1)));
+				else
+					res.set(new ErrorValue("Call expected function found " + (fun && fun.value ? fun.value() : fun)));
+
+			}
+
+			if (first instanceof Fun)
+				applyFun(fun);
+			else if (first instanceof Variable)
+				(<Variable>first).get(res, applyFun, true);
+			else
+				throw new Error("IllegalState");
+
+			return res;
+		}
+
 		static mul(left, right): IValue {
 			return LangUtils.define(
 				function (l : IValue, r: IValue) {
