@@ -58,7 +58,7 @@ module NOA {
 
 					wrap.getScopeDependencies().forEach(dep => {
 						Util.assert(deps[dep.name], "Not defined in scope!: " + dep.name);
-						console.log("WRAPPING FUNC CALL CLOSURE SCOPE " + dep.name +  " -> " + deps[dep.name].value() + " <== " + deps[dep.name]);
+						//console.log("WRAPPING FUNC CALL CLOSURE SCOPE " + dep.name +  " -> " + deps[dep.name].value() + " <== " + deps[dep.name]);
 						wrap = Lang.let(dep.name, deps[dep.name], wrap) //TODO: these deps are already solved, so dep.value.set(deps[dep.name]) is probably more effecient?
 					})
 
@@ -83,9 +83,9 @@ module NOA {
 					console.error(this + " deps: " + res.getScopeDependencies().length)
 */				});
 				//TODO: scop dependencies won't work properly if added later async..
-				this.debug("CALL result: " + res.value());
-				console.error(this + " deps: " + res.getScopeDependencies().length)
-
+				//this.debug("CALL result: " + res.value());
+				//console.error(this + " deps: " + res.getScopeDependencies().length)
+				
 				return res;
 			}
 		}

@@ -114,6 +114,18 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			if (!value)
 				return;
 
+			//If new values has unresolved scope dependencies, we might be able to solve them
+			//TOOD: BWEGH inefficient implementation, some general langutils function for this kind of stuff?
+			value.getScopeDependencies().forEach(dep => {
+				if (!dep.claimed) {
+					this.getScopeDependencies().forEach(mydep => {
+						if (mydep.claimed && mydep.name == dep.name)
+							dep.value.set(mydep.value);
+							dep.claimed = true;
+					})
+				}
+			})
+
 			LangUtils.follow(this, value);
 
 			if (withEvents === false)

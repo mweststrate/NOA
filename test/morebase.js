@@ -90,6 +90,45 @@ exports.citizenfunctionmap = function(test) {
     test.done();
 }
 
+exports.recurse = function(test) {
+
+    var L = NOA.Lang;
+    var v = new NOA.Variable();
+    v.set(4);
+
+    var res = L.let(
+        "product",
+        L.fun("x",
+            //L.if_(1,2,3)
+            L.if_(
+                false,//L.eq(L.get("x"), 0),
+                0,
+                L.mul(
+                    L.get("x"),
+                    L.call(
+                        L.get("product"),
+                        0//L.substract(L.get("x"), 1)
+                    )
+                )
+            )
+        ),
+        L.call(L.get("product"), v));
+
+    res.live();
+    test.equal(res.value(), 24);
+
+    v.set(5);
+    test.equal(res.value(), 120);
+
+    v.set(1);
+    test.equal(res.value(), 1);
+
+    res.die();
+
+    test.equal(NOA.Base.count, 0);
+    test.done();
+}
+
 exports.record1 = function(test) {
 
     var o = new NOA.Record().live();

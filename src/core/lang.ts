@@ -104,13 +104,12 @@ module NOA {
 				res.set(new ErrorValue("First argument of call should be a function, found: " + first.value()));
 
 			function applyFun(fun) {
-				if (fun && fun.is(ValueType.Error))
+				if (fun && fun instanceof Base && fun.is(ValueType.Error))
 					res.set(fun);
-				else if (fun && fun.is(ValueType.Function))
+				else if (fun && fun instanceof Base && fun.is(ValueType.Function))
 					res.set(fun.call.apply(fun, realargs.slice(1)));
 				else
 					res.set(new ErrorValue("Call expected function found " + (fun && fun.value ? fun.value() : fun)));
-
 			}
 
 			if (first instanceof Fun)
@@ -123,6 +122,7 @@ module NOA {
 			return res;
 		}
 
+		//TODO: make reusable binop
 		static mul(left, right): IValue {
 			return LangUtils.define(
 				function (l : IValue, r: IValue) {
@@ -137,9 +137,41 @@ module NOA {
 			)(left, right);
 		}
 
-		static if_(cond: any, iftrue: any, iffalse: any): IValue {
-			//TODO: make sure iftrue/ iffalse evaluate lazy..
-			return null;
+		static substract(left, right): IValue {
+			return LangUtils.define(
+				function (l : IValue, r: IValue) {
+					return LangUtils.withValues([l, r], function (l, r) {
+						//Util.debug("Mul: ", l, r, "-> ", l * r);
+						return l - r;
+					});
+				},
+				"mul",
+				[ValueType.Number, ValueType.Number],
+				ValueType.Number
+			)(left, right);
+		}
+
+		static if_(condition: any, truthy: any, falsy: any): IValue {
+			var cond = LangUtils.toValue(condition);
+			var iftrue = LangUtils.toValue(truthy);
+			var iffalse = LangUtils.toValue(falsy);
+
+			var res = new Expression([cond, iftrue, iffalse]);
+			res.setName("if_");
+
+			var applyCond = function(value) {
+				if (value instanceof Base && value.is(ValueType.Error))
+					res.set(value);
+				else
+					res.set(!!value ? iftrue : iffalse);
+			}
+
+			if (cond instanceof Variable)
+				(<Variable>cond).get(res, applyCond, true);
+			else
+				applyCond(!!cond.value());
+
+			return res;
 		}
 
 		static eq(left: any, right: any):IValue { //TODO: variable //TODO can cb be declared as type?
