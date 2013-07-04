@@ -303,7 +303,7 @@ exports.filterlive = function(test) {
     test.deepEqual(z.toJSON(), [3])
 
     test.equal(NOA.List.count, 3);
-    test.equal(NOA.Variable.count, 4);
+    test.equal(NOA.Variable.count== 4 || NOA.Variable.count ==5, true); //MWE: depends on wheter fun calls are optimized
 
     x.die();
     z.die();

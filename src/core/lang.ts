@@ -114,7 +114,7 @@ module NOA {
 			}
 
 			if (first instanceof Fun)
-				applyFun(fun);
+				applyFun(first);
 			else if (first instanceof Variable)
 				(<Variable>first).get(res, applyFun, true);
 			else
