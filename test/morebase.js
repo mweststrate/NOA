@@ -48,6 +48,48 @@ exports.citizenfunction2 = function(test) {
     test.done();
 }
 
+
+exports.citizenfunctionmap = function(test) {
+    var L = NOA.Lang;
+
+    var doubler = L.fun("x", L.mul(L.get("x"), 2));
+    var square  = L.fun("x", L.mul(L.get("x"), L.get("x")))
+    var c = new NOA.Variable();
+    var x = new NOA.List();
+
+    x.add(3);
+
+    var y = x.map(c).live();
+
+    test.equal(y.get(0).is(NOA.ValueType.Error), true);
+
+    c.set(doubler);
+
+    test.deepEqual(y.toJSON(), [6]);
+
+    x.add(4);
+    x.move(1,0);
+    x.add(6);
+
+    test.deepEqual(x.toJSON(), [4,3,6]);
+    test.deepEqual(y.toJSON(), [8,6,12]);
+
+    c.set(square);
+
+    test.deepEqual(y.toJSON(), [16,9,36]);
+
+    x.set(2, 5);
+    x.remove(1);
+
+    test.deepEqual(x.toJSON(), [4,5])
+    test.deepEqual(y.toJSON(), [16, 25]);
+
+    y.die();
+
+    test.equal(NOA.Base.count, 0);
+    test.done();
+}
+
 exports.record1 = function(test) {
 
     var o = new NOA.Record().live();
