@@ -44,7 +44,13 @@ dereference -> converts to first class
 
 		value() : any; //TODO: rename to toValue
 
-		getScopeDependencies() : IScopeDependency[];
+		getScopeDependencies(): IScopeDependency[];
+
+		//setResolver(resolver: IResolver);
+	}
+
+	export interface IResolver {
+		resolve(name: string, target: Variable): bool; //returns true if resolved
 	}
 
 	export interface IPlainValue extends IValue { //TODO: cell and expression implement IPlainValue

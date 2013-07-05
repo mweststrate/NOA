@@ -60,8 +60,10 @@
     <Content Include="src\core\expression.ts" />
     <Content Include="src\core\fun.ts" />
     <Content Include="src\core\langutils.ts" />
-    <Content Include="test\t1.js" />
-    <Content Include="test\t2.js" />
+    <Content Include="test\base.js" />
+    <Content Include="test\lang.js" />
+    <Content Include="test\morebase.js" />
+    <Content Include="test\perf.js" />
     <Content Include="test\test.html" />
     <TypeScriptCompile Include="src\core\sleepable.ts" />
     <Content Include="src\core\sleepable.js">

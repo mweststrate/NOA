@@ -251,8 +251,9 @@ module NOA {
 		 */
 
 		/** transform functions */
-		map(func: Fun): List {
-			return new MappedList(this, func);
+		map(func: Fun): IValue {
+			return Lang.map(this, func);
+			//return new MappedList(this, func);
 		}
 
 		/**

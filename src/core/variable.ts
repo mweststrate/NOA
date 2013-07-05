@@ -2,12 +2,14 @@
 
 
 module NOA {
-export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO: IRecord...*/ {
+export class Variable/*<T extends IValue>*/ extends Base implements IList, IResolver /*TODO: IRecord...*/ {
 
 	//TODO: rename fvalue to source
 	fvalue: IValue;
 	hasPrimitive: bool;
 	index: any = undefined;
+	resolver: IResolver = null;
+	pendingResolvers: any;
 
 		constructor(value: IValue = Lang.None()) {
 			//TODO: null type?
@@ -16,7 +18,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			this.setup(value, false); //Nobody is listening yet
 
 			//for debugging purposes only
-			this.on(PlainValueEvent.CHANGE, this, (newvalue) => this.debug("CHANGE: " + newvalue));
+			//this.on(PlainValueEvent.CHANGE, this, (newvalue) => this.debug("CHANGE: " + newvalue));
 		}
 
 		is(expected: ValueType) : bool {
@@ -47,7 +49,10 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 					this.setup(newvalue, true);
 				}
 				else*/
-					this.setup(newvalue, withEvents);
+
+				if (newvalue instanceof Variable)
+					(<Variable>newvalue).setResolver(this);
+				this.setup(newvalue, withEvents);
 
 				if (withEvents) {
 					var nv = newvalue.value();
@@ -81,10 +86,44 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			return this.fvalue ? this.fvalue.getScopeDependencies() : [];
 		}
 
+		resolve(name: string, target: Variable): bool {
+			var pending = true;
+			if (this.resolver)
+				pending = this.resolver.resolve(name, target);
+			
+			if (pending) {
+				if (!this.pendingResolvers)
+					this.pendingResolvers = {};
+				if (!(name in this.pendingResolvers))
+					this.pendingResolvers[name] = [target];
+				else
+					this.pendingResolvers[name].push(target);
+			}
+			return pending;
+		}
+
+		setResolver(resolver: IResolver) {
+			//TODO: enable?
+			//Util.assert(!this.resolver || this.resolver == resolver, "Illegal state: Resolver has already been assigned");
+
+			if (this.resolver == resolver)
+				return;
+
+			this.resolver = resolver;
+			for (var key in this.pendingResolvers) {
+				var ar: Variable[] = this.pendingResolvers[key];
+				for (var i = ar.length - 1; i >= 0; i--)
+					if (resolver.resolve(key, ar[i]))
+						ar.splice(i, 1);
+			}
+		}
+	
+
 		free() {
 			//TODO: for all destructors, first free, then fire events and such.
 			//That saves unnecessary firing and processing of free events of other objects
 			this.teardown(this.fvalue, false);
+			this.resolver = null; //help GC
 
 			super.free();
 		}

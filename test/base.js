@@ -67,6 +67,35 @@ exports.test1 = function(test) {
 	test.done();
 };
 
+exports.letget = function (test) {
+	var a = NOA.Lang.let("x", 3, NOA.Lang.get("x")).live();
+	
+	test.equal(a.value(), 3)
+	a.die();
+
+	var b = NOA.Lang.let("y", 4, NOA.Lang.let("x", 3, NOA.Lang.mul(NOA.Lang.get("x"), NOA.Lang.get("y")))).live();
+	test.equal(b.value(), 12)
+	b.die();
+
+	var c = NOA.Lang.let("x", 4, NOA.Lang.mul(NOA.Lang.let("x", 3, NOA.Lang.get("x")), NOA.Lang.get("x"))).live();
+	test.equal(b.value(), 12)
+	c.die();
+
+	test.equal(NOA.Base.count, 0);
+
+	test.done();
+}
+
+exports.funcall = function (test) {
+	var d = NOA.Lang.call(NOA.Lang.fun("x", NOA.Lang.get("x")), 3).live();
+	test.equal(d.value(), 3);
+	d.die();
+
+	test.equal(NOA.Base.count, 0);
+
+	test.done();
+}
+
 exports.smallmap1 = function(test) {
 
     var x = new NOA.List();

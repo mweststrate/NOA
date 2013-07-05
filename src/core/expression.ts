@@ -12,6 +12,8 @@ module NOA {
 			super(Lang.None());
 			this.args = args;
 			this.args.forEach(arg => {
+				if (arg instanceof Variable) //TODO: expression i presume?
+					(<Variable>arg).setResolver(this);
 				arg.live();
 				this.scopeDependencies = this.scopeDependencies.concat((<Expression>arg).getScopeDependencies())
 			});

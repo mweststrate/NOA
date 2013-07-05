@@ -1,5 +1,48 @@
 ///<reference path='../noa.ts'/>
 module NOA {
+
+	export class Let  extends Expression {
+
+		realvarname: string;
+
+		constructor(varname: IValue, private expr: IValue, private stat: IValue) {
+			super([]);
+			this.setName("let");
+
+			Util.assert(LangUtils.is(varname, ValueType.String));
+
+			//TODO: protect from changing
+			this.realvarname = varname.value();
+
+			this.args.push(varname, expr, stat);
+
+			this.args.forEach(arg => {
+				arg.live();
+			});
+
+			if (stat instanceof Variable)
+				(<Variable>stat).setResolver(this);
+			this.set(stat);
+		}
+
+		resolve (name: string, target: Variable): bool {
+			if (name == this.realvarname) {
+					target.set(this.expr);
+					return true;
+			}
+			else
+				return super.resolve(name, target);
+		}
+
+		setResolver(resolver: IResolver) {
+			//resolver should become the resolver of expression (instead of ourselves)
+			if (this.expr instanceof Variable)
+				(<Variable>this.expr).setResolver(resolver);
+			//.. and we should do a 'super'call, set our own resolver...
+			super.setResolver(resolver);
+		}
+	}
+
 	export class Lang {
 
 		//TODO: should be global scope to share this general available items in, such as None, Hour etc...
@@ -17,48 +60,11 @@ module NOA {
 		}
 
 		static let(varname: any, expression: IValue, statement: IValue) {
-			//TODO: allow a list of varnames and expressions, that saves a lot of let wraps for funcdtions and such! Big optimization
-			Util.assert(Util.isString(varname) || LangUtils.is(varname, ValueType.String));
-
-			var expr = LangUtils.toValue(expression);
-			var stat = LangUtils.toValue(statement);
-
-			//TODO: prevent varname from changing!
-			var realname =  Util.isString(varname) ? varname : (<any>varname).value();
-			var res = new Expression([<IValue>expr, LangUtils.toValue(varname), <IValue>stat]);
-			res.setName("let");
-			//OPtimize: we could just return statement instead of expression, after removing the matching dependencies. However that makes it quite unclear where the
-			//dependencies are gone (unless claimed dependencies are not propagated further?) and it makes it a bit magic where dependencies are solved
-			//however, it saves a level of wrapping
-			var scopeDependencies = [];
-			var used = false;
-
-			expr.getScopeDependencies().forEach(dep => scopeDependencies.push(dep));
-			stat.getScopeDependencies().forEach(dep => {
-				if (dep.name === realname) {
-					Util.debug(dep.value.toString() + " LET " + realname + " => " + expr.value());
-					used = true;
-					dep.value.set(expr);
-					dep.claimed = true;
-				}
-				else
-					scopeDependencies.push(dep);
-			});
-
-			if (!used)
-				Util.warn("Unused variable '" + realname + "'");
-
-			res.scopeDependencies = scopeDependencies;
-			res.set(stat);
-			/*res.toGraph = function () {
-				return {
-					let: realname,
-					value: expr.toGraph(),
-					body: stat.toGraph()
-				}
-			}*/
-
-			return res;
+			return new Let(
+				LangUtils.toValue(varname),
+				LangUtils.toValue(expression),
+				LangUtils.toValue(statement)
+			);
 		}
 
 		static get (varname): IValue {
@@ -71,6 +77,7 @@ module NOA {
 
 			res.set(new ErrorValue("Undefined variable '" + realname + "'"));
 
+			/*
 			var dep = {
 				name : realname,
 				value: res,
@@ -83,7 +90,11 @@ module NOA {
 					get: realname,
 					value: this.fvalue.toGraph()
 				}
-			}
+			}*/
+
+			res.pendingResolvers = {}; //will be picked up as soon as there is a resolver :)
+			res.pendingResolvers[realname] = [res];
+
 			return res;
 		}
 
@@ -92,10 +103,11 @@ module NOA {
 				res.set(new ErrorValue("Call expects at least one argument, the function"));
 
 			//Optimize: if the function itself will never change, there is no need to wrap an additional call expression.
-			if (args[0] instanceof Fun)
-				return (<Fun>args[0]).call.apply(args[0],args.slice(1));
-
 			var realargs = args.map(LangUtils.toValue);
+
+			if (realargs[0] instanceof Fun)
+				return (<Fun>realargs[0]).call.apply(realargs[0], realargs.slice(1));
+
 			var res = new Expression(realargs);
 			res.setName("call");
 
@@ -229,7 +241,11 @@ module NOA {
 		}
 
 		static map(list: IList, fun: Fun): IValue {
-			return new MappedList(list, fun);
+			//return new MappedList(list, fun);
+			var res = new Expression([list, fun]);
+			res.setName("map");
+			res.set(new MappedList(list, fun));
+			return res;
 			//return LangUtils.define(MappedList, "map");//([list, fun]);
 		}
 

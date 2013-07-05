@@ -101,7 +101,8 @@ exports.recurse = function(test) {
         L.fun("x",
             //L.if_(1,2,3)
             L.if_(
-                false,//L.eq(L.get("x"), 0),
+		//MWE: TODO: dies on start, because initial value of X is NaN, for which reason the else branch is always taken...Need support for None arguments to not start calculating anything...!
+                true,//L.eq(L.get("x"), 0),
                 0,
                 L.mul(
                     L.get("x"),
