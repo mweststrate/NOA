@@ -14,6 +14,8 @@ module NOA {
 		static toValue(value: any): IValue {
 			if (Util.isPrimitive(value))
 				return new Constant(value);
+			else if (Util.isFunction(value))
+				return new Fun(value);
 			if (!(value instanceof Base))
 				throw new Error("Unable to convert value to NOA.IValue: " + value);
 

@@ -242,12 +242,33 @@ module NOA {
 
 		static map(list: IList, fun: Fun): IValue {
 			//return new MappedList(list, fun);
-			var res = new Expression([list, fun]);
+			var rlist = <IList> LangUtils.toValue(list);
+			var rfun = <Fun> LangUtils.toValue(fun);
+
+			var res = new Expression([rlist, rfun]);
 			res.setName("map");
-			res.set(new MappedList(list, fun));
+			res.set(new MappedList(rlist, rfun));
 			return res;
 			//return LangUtils.define(MappedList, "map");//([list, fun]);
 		}
+
+		static filter(list: IList, fun: Fun): IValue {
+			//return new MappedList(list, fun);
+			var rlist = <IList> LangUtils.toValue(list);
+			var rfun = <Fun> LangUtils.toValue(fun);
+
+			var res = new Expression([rlist, rfun]);
+
+
+			res.setName("filter");
+			res.set(new FilteredList(rlist, rfun));
+
+			//rlist.die(); rfun.die(); //will receive a 'live' from map as well! //MWE askward, TODO: improve
+
+			return res;
+			//return LangUtils.define(MappedList, "map");//([list, fun]);
+		}
+
 
 		static join(list: IList): IValue {
 			return new JoinedList(list);

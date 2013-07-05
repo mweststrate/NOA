@@ -6,12 +6,12 @@ module NOA {
 		parent : List;
 		mapping : any[] = [];
 
-		constructor(source: List, func: Fun);
-		constructor(source: List, func: Function);
-		constructor(source: List, func: any) {
-			super(<List>source.map(Util.isFunction(func) ? NOA.Lang.fun(func) : func)); //do not follow the source but to the filtermap!
+		constructor(source: IList, func: Fun);
+		constructor(source: IList, func: Function);
+		constructor(source: IList, func: any) {
+			super(new MappedList(source, func)); //<IList>NOA.Lang.map(source, func));
 
-			this.parent = source;
+			this.parent = <List>source;
 			this.parent.debugName = (_?: string): any => "FilterMap-for-" + this.debugName();
 
 			this.startup();

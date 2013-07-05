@@ -263,8 +263,8 @@ module NOA {
 		 * @param  {[type]} func [description]
 		 * @return {[type]}
 		 */
-		filter(func: Fun): List {
-			return new FilteredList(this, func)
+		filter(func: Fun): IValue {
+			return Lang.filter(this, func);
 		}
 
 		/**
