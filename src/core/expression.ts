@@ -8,7 +8,7 @@ module NOA {
 		args: IValue[];
 		scopeDependencies : IScopeDependency[] = [];
 
-		constructor(args : IValue[]) {
+		constructor(args : IValue[]) { //TODO: first argument should be name: string
 			super(Lang.None());
 			this.args = args;
 			this.args.forEach(arg => {

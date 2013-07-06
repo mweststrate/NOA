@@ -1,7 +1,63 @@
 ///<reference path='../noa.ts'/>
 module NOA {
 
+	export interface IFunctionDefinition {
+		name: string;
+		documentation?: string;
+		implementation?: Function;
+		constr?: new (...args: IValue[])=> Expression;
+		autoTrigger?: bool;
+		memoize?: bool;
+		argTypes?: ValueType[];
+		resultType?: ValueType;
+		initialArgs?: any[];
+	}
+
 	export class LangUtils {
+
+		static define(d: IFunctionDefinition) {
+
+			Util.assert(!!d.implementation ^ !!d.constr);
+			if (d.autoTrigger)
+				Util.assert(d.implementation);
+
+			var f = function (...args: any[]) {
+				var result: Expression;
+				var realArgs: IValue[] = args.map(LangUtils.toValue);
+
+				if (d.constr) {
+					result = Util.applyConstructor(d.constr, realArgs);
+					result.setName(d.name);
+				}
+				else if (d.autoTrigger) {
+					result = new AutoTriggeredExpression(d.implementation, realArgs);
+				}
+				else {
+					result = new Expression(realArgs);
+
+					//TODO: shouldn't watchfunction be the responsibility of Expression?
+					//TODO: if one of the values is error, set result as error (in watch function?)
+					var wrapper = LangUtils.watchFunction(d.implementation,	result);
+					wrapper.apply(null, realArgs);
+				}
+
+				result.setName(d.name);
+				return result;
+			}
+
+			//declare
+			NOA.Lang[d.name] = f;
+
+			//declare on list / variable as convenience method..
+			if (d.argTypes && d.argTypes[0] == ValueType.List) {
+				Variable.prototype[name] = List.prototype[name] = function (...args: any) {
+					return f.apply(NOA.Lang, [this].concat(args));
+				}
+			}
+
+			if (Util.isArray(d.initialArgs))
+				return f.apply(NOA.Lang, d.initialArgs);
+		}
 
 		static is(thing: IValue, type: ValueType): bool {
 			return thing && thing.is && thing.is(type);
@@ -95,38 +151,7 @@ module NOA {
 			new NOA.Unserializer(Util.notImplemented).unserialize(ast, cb);
 		}
 
-		static define(impl: (...args: IValue[]) => any, name: string, argtypes: ValueType[], resultType: ValueType, memoize: bool = false): Function;
-		static define(exprConstructor: new (...args: IValue[]) => Expression, name: string);
-		static define(...defineargs: any[]) {
-			//TODO: if type of first argument is List, then add this function on List.prototype as well
-			var func = defineargs[0];
-			var name = defineargs[1];
-			Util.assert(Util.isFunction(func));
-			Util.assert(Util.isString(name));
 
-
-			return NOA.Lang[name] = function (...args: any[]) {
-				var result: Expression;
-				var realArgs : IValue[] = args.map(LangUtils.toValue);
-
-				if (defineargs.length == 2) {
-					var constr = <new (...args: IValue[]) => Expression> func;
-					result = Util.applyConstructor(constr, realArgs);
-					result.setName(name);
-				}
-				else {
-					result = new Expression(realArgs);
-					result.setName(name);
-
-					//TODO: shouldn't watchfunction be the responsibility of Expression?
-					//TODO: if one of the values is error, set result as error (in watch function?)
-					var wrapper = LangUtils.watchFunction(func, result);
-					wrapper.apply(null, realArgs);
-				}
-
-				return result;
-			}
-		}
 
 		/**
 		Function watcher watches a function and follows the result. A new function is returned. This function has the following properties:
@@ -148,52 +173,66 @@ module NOA {
 				//destination.debugOut();
 			}
 
-			var f = function () {
+			var f = function (...args: IValue[]) {
 				//destination.debugIn("Recalculating..");
 
-				try {
-					cbcalled = false;
-
-					//var scope: Scope = Scope.getCurrentScope(); //TODO: maybe just pass scopes around?
-					var value = func.apply(cb, arguments);
-
-					if (value !== undefined && cbcalled == false)
-						cb(value);
+				var errArg;
+				if (args.some(arg => {
+						var res = LangUtils.is(arg, ValueType.Error);
+						if (res)
+							errArg = arg;
+						return res;
+				})) {
+					cb(errArg);
 				}
-				catch (e) {
-					cb(new ErrorValue(e));
+				else {
+					try {
+						cbcalled = false;
+
+						//var scope: Scope = Scope.getCurrentScope(); //TODO: maybe just pass scopes around?
+						var value = func.apply(cb, args);
+
+						if (value !== undefined && cbcalled == false)
+							cb(value);
+					}
+					catch (e) {
+						cb(new ErrorValue(e));
+					}
 				}
 			};
 
 			return f;
 		}
 
-		static withValues(args: IValue[], func): IValue {
-			var realargs = args.map(arg => arg.value());
-			var result = new Variable();
+		
+	}
+
+	export class AutoTriggeredExpression extends Expression {
+		constructor(func: Function, argsToWatch: IValue[]) {
+			super(argsToWatch);
+
+			var currentArgs = argsToWatch.map(arg => arg.value());
+
 			//result.debugName("with-values-result" + result.noaid);
-			var wrapped = LangUtils.watchFunction(func, result);
+			var wrapped = LangUtils.watchFunction(func, this);
 
 			var update = function () {
 				//Util.debug(result, "updating for changed arguments", JSON.stringify(realargs));
-				wrapped.apply(null, realargs);
+				wrapped.apply(null, currentArgs);
 			};
 
-			args.forEach((arg, index) => {
-				result.uses(arg);
+			argsToWatch.forEach((arg, index) => {
+				//this.uses(arg);
 				//if (arg.is(ValueType.PlainValue)) { //TODO: should be asserted
-					(<IPlainValue>arg).get(<Base>{}, (newvalue, _) => { //TODO: scope? //TODO: seems not to be triggered yet..
-						realargs[index] = newvalue;
+				if (arg instanceof Variable) {
+					(<Variable>arg).get(<Base>{}, (newvalue: IValue, _) => { //TODO: scope? //TODO: seems not to be triggered yet..
+						currentArgs[index] = newvalue && newvalue.value ? newvalue.value() : newvalue;//TODO: does change evaluate its argument
 						update();
 					}, false);
-				//}
+				}
 			});
 
-//			Util.debug(result, "listening to", args.map(arg => arg.toString()).join(", "));
-
 			update();
-
-			return result;
 		}
 	}
 }

@@ -136,31 +136,25 @@ module NOA {
 
 		//TODO: make reusable binop
 		static mul(left, right): IValue {
-			return LangUtils.define(
-				function (l : IValue, r: IValue) {
-					return LangUtils.withValues([l, r], function (l, r) {
-						//Util.debug("Mul: ", l, r, "-> ", l * r);
-						return l * r;
-					});
+			return LangUtils.define({
+				name: "mul",
+				autoTrigger: true,
+				implementation : function (l, r) {
+					return l * r;
 				},
-				"mul",
-				[ValueType.Number, ValueType.Number],
-				ValueType.Number
-			)(left, right);
+				initialArgs : [left, right]
+			});
 		}
 
 		static substract(left, right): IValue {
-			return LangUtils.define(
-				function (l : IValue, r: IValue) {
-					return LangUtils.withValues([l, r], function (l, r) {
-						//Util.debug("Mul: ", l, r, "-> ", l * r);
-						return l - r;
-					});
+			return LangUtils.define({
+				name: "substract",
+				autoTrigger: true,
+				implementation: function (l, r) {
+					return l - r;
 				},
-				"mul",
-				[ValueType.Number, ValueType.Number],
-				ValueType.Number
-			)(left, right);
+				initialArgs: [left, right]
+			});
 		}
 
 		static if_(condition: any, truthy: any, falsy: any): IValue {
@@ -187,16 +181,17 @@ module NOA {
 		}
 
 		static eq(left: any, right: any):IValue { //TODO: variable //TODO can cb be declared as type?
-			return LangUtils.define(
-				(l: IValue, r: IValue) => {
-					//TODO:
-				},
-				"eq",
-				[],
-//				[null, null], //Null means any?
-				ValueType.Bool,
-				false
-			)(left, right);
+			/*		return LangUtils.define(
+						(l: IValue, r: IValue) => {
+							//TODO:
+						},
+						"eq",
+						[],
+		//				[null, null], //Null means any?
+						ValueType.Bool,
+						false
+					)(left, right);*/
+			return null;
 		}
 
 		static list(...vals: IValue[]): List {
@@ -237,11 +232,22 @@ module NOA {
 
 		static sum(list: IList) : IValue {
 			//TODO: memoize
-			return LangUtils.define(ListSum, "sum");//([list]); //eeh why not just return listsum?
+			return LangUtils.define({
+				constr: ListSum,
+				name: "sum",
+				initialArgs : [list]
+
+			});
 		}
 
 		static map(list: IList, fun: Fun): IValue {
 			//return new MappedList(list, fun);
+			/*return LangUtils.define({
+				constr: MappedList,
+				name: "map",
+				initialArgs : [list, fun]
+			});*/
+			
 			var rlist = <IList> LangUtils.toValue(list);
 			var rfun = <Fun> LangUtils.toValue(fun);
 

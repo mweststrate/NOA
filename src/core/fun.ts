@@ -36,7 +36,7 @@ module NOA {
 			this.debug("CALL with arguments: (" + args.map(x => x.value()).join(",") + ")");
 
 			if (this.isJSFun)
-				return LangUtils.withValues(args, this.jsFun);
+				return new AutoTriggeredExpression(this.jsFun, args.map(LangUtils.toValue)); //TODO: unecessary toValue?
 			else {
 				var res = new Expression(<IValue[]>[this].concat(args));
 				res.setName("call"); //MWE: mweh? introduce in lang??
