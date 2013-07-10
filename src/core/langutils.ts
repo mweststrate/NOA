@@ -30,10 +30,11 @@ module NOA {
 					result.setName(d.name);
 				}
 				else if (d.autoTrigger) {
-					result = new AutoTriggeredExpression(d.implementation, realArgs);
+					result = new AutoTriggeredExpression(d.name, d.implementation, realArgs);
 				}
 				else {
 					result = new Expression(realArgs);
+					result.setName(d.name);
 
 					//TODO: shouldn't watchfunction be the responsibility of Expression?
 					//TODO: if one of the values is error, set result as error (in watch function?)
@@ -41,7 +42,6 @@ module NOA {
 					wrapper.apply(null, realArgs);
 				}
 
-				result.setName(d.name);
 				return result;
 			}
 
@@ -50,7 +50,7 @@ module NOA {
 
 			//declare on list / variable as convenience method..
 			if (d.argTypes && d.argTypes[0] == ValueType.List) {
-				Variable.prototype[name] = List.prototype[name] = function (...args: any) {
+				Variable.prototype[d.name] = List.prototype[d.name] = function (...args: any) {
 					return f.apply(NOA.Lang, [this].concat(args));
 				}
 			}
@@ -176,14 +176,17 @@ module NOA {
 			var f = function (...args: IValue[]) {
 				//destination.debugIn("Recalculating..");
 
-				var errArg;
-				if (args.some(arg => {
+				var errArg; //TODO: auto propate errors
+				/*if (args.some(arg => {
 						var res = LangUtils.is(arg, ValueType.Error);
 						if (res)
 							errArg = arg;
 						return res;
 				})) {
 					cb(errArg);
+				}*/
+				if (false) {
+
 				}
 				else {
 					try {
@@ -204,12 +207,13 @@ module NOA {
 			return f;
 		}
 
-		
+
 	}
 
 	export class AutoTriggeredExpression extends Expression {
-		constructor(func: Function, argsToWatch: IValue[]) {
+		constructor(name: string, func: Function, argsToWatch: IValue[]) {
 			super(argsToWatch);
+			this.setName(name);
 
 			var currentArgs = argsToWatch.map(arg => arg.value());
 

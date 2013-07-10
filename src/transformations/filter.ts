@@ -1,4 +1,13 @@
 ///<reference path='../noa.ts'/>
+
+NOA.LangUtils.define({
+	name: "filter",
+	argTypes: [NOA.ValueType.List, NOA.ValueType.Function],
+	implementation: function(list: NOA.IValue, fun: NOA.IValue) {
+		return new NOA.FilteredList(<NOA.IList>list, <NOA.Fun>fun);
+	}
+});
+
 module NOA {
 
 	export class FilteredList extends ListTransformation {

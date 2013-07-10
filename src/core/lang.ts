@@ -9,10 +9,12 @@ module NOA {
 			super([]);
 			this.setName("let");
 
+
 			Util.assert(LangUtils.is(varname, ValueType.String));
 
 			//TODO: protect from changing
 			this.realvarname = varname.value();
+			console.info("LET " + this.realvarname + ": " + expr.value());
 
 			this.args.push(varname, expr, stat);
 
@@ -27,6 +29,7 @@ module NOA {
 
 		resolve (name: string, target: Variable): bool {
 			if (name == this.realvarname) {
+					console.info("LET UPDATE" + this.realvarname + ": " + target.value());
 					target.set(this.expr);
 					return true;
 			}
@@ -41,6 +44,13 @@ module NOA {
 			//.. and we should do a 'super'call, set our own resolver...
 			super.setResolver(resolver);
 		}
+
+		free() {
+			super.free();
+			this.args.forEach(arg => {
+				arg.die();
+			});
+		}
 	}
 
 	export class Lang {
@@ -53,10 +63,12 @@ module NOA {
 			return Lang.None();
 		}
 
-		static fun(fun : Function) :Fun ;
-		static fun(argnames : string[], stats: IValue) : Fun;
-		static fun(argnames : any, stats?: IValue) : Fun {
-			return new Fun(argnames, stats);
+		static fun(fun: Function) : Fun;
+		static fun(...args: IValue[]) : Fun;
+		static fun(...args: any[]) : Fun {
+			if (args.length == 1 && Util.isFunction(args[0]))
+				return new Fun(<Function> args[0]);
+			return Util.applyConstructor(Fun, args.map(LangUtils.toValue));
 		}
 
 		static let(varname: any, expression: IValue, statement: IValue) {
@@ -240,24 +252,9 @@ module NOA {
 			});
 		}
 
-		static map(list: IList, fun: Fun): IValue {
-			//return new MappedList(list, fun);
-			/*return LangUtils.define({
-				constr: MappedList,
-				name: "map",
-				initialArgs : [list, fun]
-			});*/
-			
-			var rlist = <IList> LangUtils.toValue(list);
-			var rfun = <Fun> LangUtils.toValue(fun);
-
-			var res = new Expression([rlist, rfun]);
-			res.setName("map");
-			res.set(new MappedList(rlist, rfun));
-			return res;
-			//return LangUtils.define(MappedList, "map");//([list, fun]);
+		static map(list: IList, fun: Fun) {
+			return Util.notImplemented();
 		}
-
 		static filter(list: IList, fun: Fun): IValue {
 			//return new MappedList(list, fun);
 			var rlist = <IList> LangUtils.toValue(list);

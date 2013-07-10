@@ -1,4 +1,13 @@
 ///<reference path='../noa.ts'/>
+
+NOA.LangUtils.define({
+	name: "join",
+	argTypes: [NOA.ValueType.List],
+	implementation: function(list: NOA.IValue) {
+		return new NOA.JoinedList(<NOA.IList>list);
+	}
+});
+
 module NOA {
 
 	export class JoinedList extends ListTransformation {
@@ -54,7 +63,7 @@ module NOA {
 			var cell = this.source.cell(index); //the cell knows our position in lmap reliable when handling events, so the join transformation does not need to track that.
 
 			var sublistInsert = function (subindex, _) {
-				var idx = cell.getIndex(); 
+				var idx = cell.getIndex();
 				var subcell = (<List>cell.get()).cell(subindex); //Blegh! TODO: make nice!
 				this.insert(this.getOffset(idx, subindex), subcell);
 				this.updateLmap(idx, +1);

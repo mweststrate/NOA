@@ -1,5 +1,28 @@
 ///<reference path='../noa.ts'/>
+
+//return new MappedList(list, fun);
+NOA.LangUtils.define({
+	name: "map",
+	argTypes: [NOA.ValueType.List, NOA.ValueType.Function],
+	implementation: function(list: NOA.IValue, fun: NOA.IValue) {
+		return new NOA.MappedList(<NOA.IList>list, <NOA.Fun>fun);
+	}
+});
+/*
+var rlist = <IList> LangUtils.toValue(list);
+var rfun = <Fun> LangUtils.toValue(fun);
+
+var res = new Expression([rlist, rfun]);
+res.setName("map");
+res.set(new MappedList(rlist, rfun));
+return res;
+*/
+//return LangUtils.define(MappedList, "map");//([list, fun]);
+
+
+
 module NOA {
+
 
 	export class MappedList extends ListTransformation {
 		func : Fun; //function or expession

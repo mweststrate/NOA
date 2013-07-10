@@ -1,6 +1,7 @@
 (function(exports, NOA) {
 
 function testIndexes(x, test) {
+    var x = x.value();
     for(var i = 0; i < x.cells.length; i++)
         test.equal(x.cells[i].getIndex(x), i);
     if (x instanceof NOA.JoinedList) {
@@ -69,7 +70,7 @@ exports.test1 = function(test) {
 
 exports.letget = function (test) {
 	var a = NOA.Lang.let("x", 3, NOA.Lang.get("x")).live();
-	
+
 	test.equal(a.value(), 3)
 	a.die();
 
@@ -91,9 +92,86 @@ exports.funcall = function (test) {
 	test.equal(d.value(), 3);
 	d.die();
 
+    test.equal(NOA.Let.count, 0);
+    test.equal(NOA.Fun.count, 0);
+    test.equal(NOA.Expression.count, 0);
+    test.equal(NOA.ErrorValue.count, 0);
+    test.equal(NOA.Variable.count, 0);
+    test.equal(NOA.Constant.count, 0);
 	test.equal(NOA.Base.count, 0);
 
 	test.done();
+}
+
+exports.outerscope1 = function (test) {
+    var d =
+    NOA.Lang.let(
+        "y", 4,
+        NOA.Lang.call(
+            NOA.Lang.fun("x",
+                NOA.Lang.mul(NOA.Lang.get("x"),NOA.Lang.get("y"))
+            ),
+            NOA.Lang.get("y"))
+    ).live();
+    test.equal(d.value(), 16);
+    d.die();
+
+    test.equal(NOA.Base.count, 0);
+
+    test.done();
+}
+
+exports.outerscope2 = function (test) {
+    var d =
+    NOA.Lang.let(
+        "y", 4,
+        NOA.Lang.let(
+            "double", NOA.Lang.fun("z", NOA.Lang.mul(NOA.Lang.get("z"), 2)),
+            NOA.Lang.call(
+                NOA.Lang.fun("x",
+                    NOA.Lang.call(NOA.Lang.get("double"),NOA.Lang.get("x"))
+                ),
+                NOA.Lang.get("y"))
+        )
+    ).live();
+    test.equal(d.value(), 8);
+    d.die();
+
+    test.equal(NOA.Base.count, 0);
+
+    test.done();
+}
+
+exports.outerscope3 = function (test) {
+    var d =
+    NOA.Lang.call(
+        NOA.Lang.fun("fun", "x", NOA.Lang.call(NOA.Lang.get("fun"), NOA.Lang.get("x"))),
+        NOA.Lang.fun("z", NOA.Lang.mul(NOA.Lang.get("z"), 2)),
+        4
+    ).live();
+    test.equal(d.value(), 8);
+    d.die();
+
+    test.equal(NOA.Base.count, 0);
+
+    test.done();
+}
+
+exports.outerscope4 = function (test) {
+    var $ = NOA.Lang;
+    var d =
+    $.let("x", 4,
+        $.let("fun", $.fun("y", $.mul($.get("x"), $.get("y"))),
+            $.let("x", 5,
+                $.call($.get("fun"),$.get("x")))));
+
+    d.live();
+    test.equal(d.value(), 20);
+    d.die();
+
+    test.equal(NOA.Base.count, 0);
+
+    test.done();
 }
 
 exports.smallmap1 = function(test) {
@@ -332,7 +410,7 @@ exports.filterlive = function(test) {
     test.deepEqual(z.toJSON(), [3])
 
     test.equal(NOA.List.count, 3);
-    test.equal(NOA.Variable.count== 4 || NOA.Variable.count ==5, true); //MWE: depends on wheter fun calls are optimized
+    //test.equal(NOA.Variable.count== 4 || NOA.Variable.count ==5, true); //MWE: depends on wheter fun calls are optimized
 
     x.die();
     z.die();
