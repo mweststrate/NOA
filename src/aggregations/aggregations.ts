@@ -188,6 +188,7 @@ module NOA {
 	}
 	*/
 
+	//TODO: Min / Max should initialize to NONE instead of INF.
 	export class ListMax extends ListAggregation {
 
 		constructor(source: List) {
