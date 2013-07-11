@@ -90,8 +90,8 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList, IReso
 			var pending = true;
 			if (this.resolver)
 				pending = this.resolver.resolve(name, target);
-			
-			if (pending) {
+
+			if (pending /* TODO:*/ && (this.resolver == null || this instanceof Fun) /*?*/) { //TODO: if it is resolving at parent, no need to pend at our place? (unless this is a fun def)
 				if (!this.pendingResolvers)
 					this.pendingResolvers = {};
 				if (!(name in this.pendingResolvers))
@@ -117,7 +117,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList, IReso
 						ar.splice(i, 1);
 			}
 		}
-	
+
 
 		free() {
 			//TODO: for all destructors, first free, then fire events and such.

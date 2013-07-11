@@ -1,5 +1,24 @@
 (function(exports, NOA) {
 
+/**
+MWE results on acer aspire one netbook (ubuntu / nodejs):
+
+original:
+2-7-13
+
+~5000
+~2000
+
+10-7-13 (scope refactoring):
+added items in 6519
+updated items in 1527
+
+11-7-13 (scope optimizations in Fun)
+added items in 4553
+updated items in 1647
+
+*/
+
 exports.test1 = function(test) {
 
     var x = new NOA.List();

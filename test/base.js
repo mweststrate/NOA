@@ -103,6 +103,7 @@ exports.funcall = function (test) {
 	test.done();
 }
 
+
 exports.outerscope1 = function (test) {
     var d =
     NOA.Lang.let(

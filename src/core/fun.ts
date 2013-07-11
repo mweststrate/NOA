@@ -71,7 +71,7 @@ module NOA {
 					})
 				*/
 					if (wrap instanceof Variable) { //TODO: many unchecked casts!
-						(<Variable>wrap).setResolver(<Variable>this.statement);
+						(<Variable>wrap).setResolver(this);
 						//avoid resolver being set another time. TODO: should not be needed but asserted in setResolver?
 						(<Variable>wrap).setResolver = Util.noop;
 					}
@@ -103,6 +103,24 @@ module NOA {
 				return res;
 			}
 		}
+
+		/*
+		resolve(name: string, target: Variable): bool {
+
+			var pending = true;
+			if (this.resolver)
+				pending = this.resolver.resolve(name, target);
+
+			if (pending) {
+				if (!this.pendingResolvers)
+					this.pendingResolvers = {};
+				if (!(name in this.pendingResolvers))
+					this.pendingResolvers[name] = [target];
+				else
+					this.pendingResolvers[name].push(target);
+			}
+			return pending;
+		}*/
 
 		public free() {
 			this.debug("Freeing fun")
