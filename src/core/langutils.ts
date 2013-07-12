@@ -189,6 +189,7 @@ module NOA {
 
 				}
 				else {
+					//TODO: is try catch really needed? how expencive is this? might reduce performance. Maybe explicit catch case?
 					try {
 						cbcalled = false;
 

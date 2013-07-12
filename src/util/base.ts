@@ -129,6 +129,7 @@ module NOA {
 			var event = a.shift();
 			var f = a.shift();
 			var scope = this;
+			//TODO: make scope required?
 
 			if (!Util.isFunction(f)) //Nope, its the scope...
 				scope = f;

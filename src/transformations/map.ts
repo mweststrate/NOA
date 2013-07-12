@@ -7,6 +7,7 @@ NOA.LangUtils.define({
 	implementation: function(list: NOA.IValue, fun: NOA.IValue) {
 		return new NOA.MappedList(<NOA.IList>list, <NOA.Fun>fun);
 	}
+	//TODO: can be memoized íf function has no unresolved scope dependencies
 });
 /*
 var rlist = <IList> LangUtils.toValue(list);
