@@ -745,7 +745,8 @@ exports.test6a2 = function(test) {
         NOA.Lang.let("y", y,
             NOA.Lang.map(NOA.Lang.get("x"), NOA.Lang.fun("a",
                 NOA.Lang.map(NOA.Lang.get("y"), NOA.Lang.fun("b",
-                    NOA.Lang.mul(NOA.Lang.get("a"), NOA.Lang.get("b"))
+                    //NOA.Lang.mul(NOA.Lang.get("a"), NOA.Lang.get("b"))
+                    NOA.Lang.get("a")
                 ))
             ))
         ));

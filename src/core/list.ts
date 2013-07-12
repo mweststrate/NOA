@@ -34,6 +34,7 @@ module NOA {
 			Lets keep it simple for now
 			*/
 			var cell = new Variable(LangUtils.toValue(value));
+			cell.setResolver(this);
 			cell.live();
 
 			this.debug("INSERT AT " + index + ": " + cell.value() + " (" + value + ")");
@@ -351,6 +352,14 @@ module NOA {
 			return new ListIndex(this, index);
 		}
 
-		getScopeDependencies() : IScopeDependency[] { return []; }
+		getScopeDependencies(): IScopeDependency[]{ return []; }
+
+		setResolver(resolver: IResolver) { Util.notImplemented(); }
+
+		resolve(name: string, target: Variable): bool { return Util.notImplemented(); };
 	}
 }
+
+/* Mixin resolve functions from variable */
+NOA.List.prototype.setResolver = NOA.Variable.prototype.setResolver;
+NOA.List.prototype.resolve = NOA.Variable.prototype.resolve;

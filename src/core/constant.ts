@@ -60,6 +60,8 @@ module NOA {
 			return this.toString();
 		}
 
+		setResolver(resolver: IResolver) { /* noop */ }
+
 		getScopeDependencies() : IScopeDependency[] { return []; }
 
 		toString(): string {

@@ -22,14 +22,14 @@ module NOA {
 				arg.live();
 			});
 
-			if (stat instanceof Variable)
+			//if (stat instanceof Variable)
 				(<Variable>stat).setResolver(this);
 			this.set(stat);
 		}
 
 		resolve (name: string, target: Variable): bool {
 			if (name == this.realvarname) {
-					console.info("LET UPDATE" + this.realvarname + ": " + target.value());
+					console.info("LET UPDATE " + target.toString() + " => " + this.expr.value());
 					target.set(this.expr);
 					return true;
 			}
@@ -39,7 +39,7 @@ module NOA {
 
 		setResolver(resolver: IResolver) {
 			//resolver should become the resolver of expression (instead of ourselves)
-			if (this.expr instanceof Variable)
+			//if (this.expr instanceof Variable)
 				(<Variable>this.expr).setResolver(resolver);
 			//.. and we should do a 'super'call, set our own resolver...
 			super.setResolver(resolver);

@@ -46,7 +46,7 @@ dereference -> converts to first class
 
 		getScopeDependencies(): IScopeDependency[];
 
-		//setResolver(resolver: IResolver);
+		setResolver(resolver: IResolver);
 	}
 
 	export interface IResolver {
@@ -58,7 +58,7 @@ dereference -> converts to first class
 		get(caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any;
 	}
 
-	export interface IList extends IValue {
+	export interface IList extends IValue, IResolver {
 		onInsert(caller: Base, cb: (index: number, value) => void , fireInitialEvents?: bool);
 		onMove(caller: Base, cb: (from: number, to: number) => void );
 		onRemove(caller: Base, cb: (from: number, value) => void );
@@ -75,7 +75,7 @@ dereference -> converts to first class
 		insert(index: number, value: IValue);
 	}
 
-	export interface IRecord extends IValue {
+	export interface IRecord extends IValue, IResolver {
 		onPut(caller: Base, callback: (key: string, newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool);
 	}
 
