@@ -50,7 +50,8 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList, IReso
 				}
 				else*/
 
-				if (newvalue instanceof Variable)
+				//if (newvalue instanceof Variable)
+				if (!(newvalue instanceof Fun))
 					(<Variable>newvalue).setResolver(this);
 				this.setup(newvalue, withEvents);
 
@@ -87,6 +88,9 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList, IReso
 		}
 
 		resolve(name: string, target: Variable): bool {
+			console.log("resolve " + name + " on " + this.toString())
+			if (this.resolver == this)
+				throw new Error("EFSEF")
 			var pending = true;
 			if (this.resolver)
 				pending = this.resolver.resolve(name, target);
@@ -103,6 +107,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList, IReso
 		}
 
 		setResolver(resolver: IResolver) {
+			console.log("set resolver of " + this.toString() + " to " + resolver.toString());
 			//TODO: enable?
 			//Util.assert(!this.resolver || this.resolver == resolver, "Illegal state: Resolver has already been assigned");
 

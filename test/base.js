@@ -158,7 +158,25 @@ exports.outerscope3 = function (test) {
     test.done();
 }
 
+
 exports.outerscope4 = function (test) {
+    var $ = NOA.Lang;
+    var d =
+    $.let("x", 4,
+        $.let("fun", $.fun($.get("x")),
+            $.let("x", 5,
+                $.call($.get("fun")))));
+
+    d.live();
+    test.equal(d.value(), 4);
+    d.die();
+
+    test.equal(NOA.Base.count, 0);
+
+    test.done();
+}
+
+exports.outerscope5 = function (test) {
     var $ = NOA.Lang;
     var d =
     $.let("x", 4,
@@ -745,8 +763,8 @@ exports.test6a2 = function(test) {
         NOA.Lang.let("y", y,
             NOA.Lang.map(NOA.Lang.get("x"), NOA.Lang.fun("a",
                 NOA.Lang.map(NOA.Lang.get("y"), NOA.Lang.fun("b",
-                    //NOA.Lang.mul(NOA.Lang.get("a"), NOA.Lang.get("b"))
-                    NOA.Lang.get("a")
+                    NOA.Lang.mul(NOA.Lang.get("a"), NOA.Lang.get("b"))
+                    //NOA.Lang.get("a")
                 ))
             ))
         ));
