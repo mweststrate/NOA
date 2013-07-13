@@ -7,49 +7,50 @@ module NOA {
 
 		constructor(varname: IValue, private expr: IValue, private stat: IValue) {
 			super([]);
+			this.initArg(varname, true);
+			this.initArg(expr, true);
+			this.initArg(stat, false);
 			this.setName("let");
 
-
+			Util.assert(varname instanceof Constant);
 			Util.assert(LangUtils.is(varname, ValueType.String));
 
-			//TODO: protect from changing
 			this.realvarname = varname.value();
 			console.info("LET " + this.realvarname + ": " + expr.value());
 
-			this.args.push(varname, expr, stat);
-
-			this.args.forEach(arg => {
-				arg.live();
+			stat.setResolver({
+				resolve: (name: string, target: Variable): bool => {
+					if (name == this.realvarname) {
+						console.info("LET UPDATE " + target.toString() + " => " + this.expr.value());
+						target.set(this.expr);
+						return true;
+					}
+					else
+						return this.resolve(name, target);
+				}
 			});
-
-			//if (stat instanceof Variable)
-				(<Variable>stat).setResolver(this);
 			this.set(stat);
 		}
+	}
 
-		resolve (name: string, target: Variable): bool {
-			if (name == this.realvarname) {
-					console.info("LET UPDATE " + target.toString() + " => " + this.expr.value());
-					target.set(this.expr);
-					return true;
-			}
+	export class Call extends Expression {
+
+		constructor(private funvar: Variable, private params: IValue[]) {
+			super((<IValue[]>[funvar]).concat(params));
+			this.setName("call");
+
+			Util.assert(funvar instanceof Variable && LangUtils.canBe(funvar, ValueType.Function));
+
+			funvar.get(this, this.applyFun, true);
+		}
+
+		applyFun(fun) {
+			if (fun && fun instanceof Base && fun.is(ValueType.Error))
+				this.set(fun);
+			else if (fun instanceof Fun)
+				this.set(fun.call.apply(fun, this.params));
 			else
-				return super.resolve(name, target);
-		}
-
-		setResolver(resolver: IResolver) {
-			//resolver should become the resolver of expression (instead of ourselves)
-			//if (this.expr instanceof Variable)
-				(<Variable>this.expr).setResolver(resolver);
-			//.. and we should do a 'super'call, set our own resolver...
-			super.setResolver(resolver);
-		}
-
-		free() {
-			super.free();
-			this.args.forEach(arg => {
-				arg.die();
-			});
+				this.set(new ErrorValue("Call expected function found " + (fun && fun.value ? fun.value() : fun)));
 		}
 	}
 
@@ -80,70 +81,28 @@ module NOA {
 		}
 
 		static get (varname): IValue {
-			Util.assert(Util.isString(varname) || LangUtils.is(varname, ValueType.String));
+			Util.assert(Util.isString(varname) || (LangUtils.is(varname, ValueType.String) && varname instanceof Constant));
 
-			//TODO: prevent varname from changing, or, act accordingly!
-			var realname =  Util.isString(varname) ? varname : (<any>varname).value();
+			var realname =  Util.isString(varname) ? varname : (<IValue>varname).value();
 			var res = new Expression([LangUtils.toValue(varname)]);
 			res.setName("get");
 
 			res.set(new ErrorValue("Undefined variable '" + realname + "'"));
-
-			/*
-			var dep = {
-				name : realname,
-				value: res,
-				claimed: false
-			};
-
-			res.addScopeDependency(dep);
-			res.toGraph = function () {
-				return {
-					get: realname,
-					value: this.fvalue.toGraph()
-				}
-			}*/
-
-			res.pendingResolvers = {}; //will be picked up as soon as there is a resolver :)
-			res.pendingResolvers[realname] = [res];
+			res.resolve(realname, res);
 
 			return res;
 		}
 
 		static call(...args: IValue[]) : IValue {
-			if (args.length < 1)
-				res.set(new ErrorValue("Call expects at least one argument, the function"));
+			Util.assert(args.length > 0, "Call expects at least one argument, the function");
 
-			//Optimize: if the function itself will never change, there is no need to wrap an additional call expression.
 			var realargs = args.map(LangUtils.toValue);
 
+			//Optimization: if the function itself will never change, there is no need to wrap an additional call expression.
 			if (realargs[0] instanceof Fun)
 				return (<Fun>realargs[0]).call.apply(realargs[0], realargs.slice(1));
 
-			var res = new Expression(realargs);
-			res.setName("call");
-
-			var first = realargs[0];
-			if (!LangUtils.canBe(first,ValueType.Function))
-				res.set(new ErrorValue("First argument of call should be a function, found: " + first.value()));
-
-			function applyFun(fun) {
-				if (fun && fun instanceof Base && fun.is(ValueType.Error))
-					res.set(fun);
-				else if (fun && fun instanceof Base && fun.is(ValueType.Function))
-					res.set(fun.call.apply(fun, realargs.slice(1)));
-				else
-					res.set(new ErrorValue("Call expected function found " + (fun && fun.value ? fun.value() : fun)));
-			}
-
-			if (first instanceof Fun)
-				applyFun(first);
-			else if (first instanceof Variable)
-				(<Variable>first).get(res, applyFun, true);
-			else
-				throw new Error("IllegalState");
-
-			return res;
+			return new Call(realargs[0], realargs.slice(1));
 		}
 
 		//TODO: make reusable binop

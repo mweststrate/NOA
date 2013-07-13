@@ -10,13 +10,15 @@ module NOA {
 
 		constructor(args : IValue[]) { //TODO: first argument should be name: string
 			super(Lang.None());
-			this.args = args;
-			this.args.forEach(arg => {
-				if (arg instanceof Variable) //TODO: expression i presume?
-					(<Variable>arg).setResolver(this);
-				arg.live();
-				this.scopeDependencies = this.scopeDependencies.concat((<Expression>arg).getScopeDependencies())
-			});
+			this.args = [];
+			args.forEach(arg => this.initArg(arg, true));
+		}
+
+		initArg(arg: IValue, assingResolver = true) {
+			if (assingResolver && (!arg.is(ValueType.Function) || arg instanceof Fun))
+				arg.setResolver(this);
+			this.args.push(arg);
+			arg.live();
 		}
 
 		setName(name: string) {

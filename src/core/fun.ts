@@ -47,7 +47,7 @@ module NOA {
 				return new AutoTriggeredExpression("call", this.jsFun, args.map(LangUtils.toValue)); //TODO: unecessary toValue?
 			else {
 				var res = new Expression(<IValue[]>[this].concat(args));
-				res.setName("call"); //MWE: mweh? introduce in lang??
+				res.setName("call"); //MWE: mweh? introduce in lang?? //TODO: whole res seems unecessary if the clone wasn't async...
 
 				//MWE: TODO: async is weird here, AST should be (de)serialied synchronouszly. Or, just use stats.clone?! That would be nice since it could avoid cloning of constants
 				LangUtils.clone(this.statement, (clone) => {
@@ -98,17 +98,6 @@ module NOA {
 				body : this.isJSFun ? this.jsFun.toString() : this.statement.toGraph(),
 				deps: this.getScopeDependencies().map(dep => dep.name)
 			}
-		}
-
-		/*resolve(name: string, target: Variable): bool {
-			if (!this.resolver || Util.find(name, this.argnames) == -1)
-				return false;
-			return super.resolve(name, target);
-		}*/
-
-		setResolver(resolver: IResolver) {
-			if (!this.resolver)
-				super.setResolver(resolver);
 		}
 
 		getScopeDependencies() : IScopeDependency[] {

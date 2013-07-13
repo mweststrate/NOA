@@ -162,10 +162,11 @@ exports.outerscope3 = function (test) {
 exports.outerscope4 = function (test) {
     var $ = NOA.Lang;
     var d =
+    $.let("poep", 7,
     $.let("x", 4,
         $.let("fun", $.fun($.get("x")),
             $.let("x", 5,
-                $.call($.get("fun")))));
+                $.call($.get("fun"))))));
 
     d.live();
     test.equal(d.value(), 4);
