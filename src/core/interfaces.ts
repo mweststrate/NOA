@@ -44,21 +44,19 @@ dereference -> converts to first class
 
 		value() : any; //TODO: rename to evaulaate
 
-		getScopeDependencies(): IScopeDependency[];
-
-		setResolver(resolver: IResolver);
+		//start(resolver: IResolver);
 	}
-
+	/*
 	export interface IResolver {
 		resolve(name: string, target: Variable): bool; //returns true if resolved
 	}
-
+	*/
 	export interface IPlainValue extends IValue { //TODO: cell and expression implement IPlainValue
 		get(): any;
 		get(caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any;
 	}
 
-	export interface IList extends IValue, IResolver {
+	export interface IList extends IValue {
 		onInsert(caller: Base, cb: (index: number, value) => void , fireInitialEvents?: bool);
 		onMove(caller: Base, cb: (from: number, to: number) => void );
 		onRemove(caller: Base, cb: (from: number, value) => void );
@@ -75,7 +73,7 @@ dereference -> converts to first class
 		insert(index: number, value: IValue);
 	}
 
-	export interface IRecord extends IValue, IResolver {
+	export interface IRecord extends IValue {
 		onPut(caller: Base, callback: (key: string, newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool);
 	}
 

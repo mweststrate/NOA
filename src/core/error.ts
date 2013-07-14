@@ -82,8 +82,6 @@ module NOA {
 
 		getScopeDependencies(): IScopeDependency[]{ return []; }
 
-		setResolver(resolver: IResolver) { /* Noop */ }
-
 		toString(): string {
 			return /*"[Error#" + this.noaid + "] " +*/ this.error + (this.cause? "\n\t" + this.cause.toString() : "");
 		}

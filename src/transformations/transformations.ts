@@ -48,13 +48,7 @@ module NOA {
 			Util.notImplemented();
 			return null;
 		}
-
-		getScopeDependencies() : IScopeDependency[] {
-			return this.source.getScopeDependencies();
-			//Util.notImplemented();
-			//return null;
-		}
-
+		
 		toASTHelper(name : string, ...args: any[]) : Object {
 			return Serializer.serializeFunction(name, args);
 		}

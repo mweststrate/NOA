@@ -15,8 +15,6 @@ module NOA {
 		}
 
 		initArg(arg: IValue, assingResolver = true) {
-			if (assingResolver && (!arg.is(ValueType.Function) || arg instanceof Fun))
-				arg.setResolver(this);
 			this.args.push(arg);
 			arg.live();
 		}

@@ -19,7 +19,6 @@ module NOA{
 				//TODO: support function insertion a la list.map
 
 				var cell = this.data[key] = new Variable(LangUtils.toValue(value));
-				cell.setResolver(this);
 				cell.live();
 				cell.setIndex(key);
 				this.keys.add(key);
@@ -123,13 +122,5 @@ module NOA{
 
 			this.keys.die();
 		}
-
-		setResolver(resolver: IResolver) { Util.notImplemented(); }
-
-		resolve(name: string, target: Variable): bool { return Util.notImplemented(); };
 	}
 }
-
-/* Mixin resolve functions from variable */
-NOA.Record.prototype.setResolver = NOA.Variable.prototype.setResolver;
-NOA.Record.prototype.resolve = NOA.Variable.prototype.resolve;

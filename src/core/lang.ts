@@ -18,18 +18,8 @@ module NOA {
 			this.realvarname = varname.value();
 			console.info("LET " + this.realvarname + ": " + expr.value());
 
-			stat.setResolver({
-				resolve: (name: string, target: Variable): bool => {
-					if (name == this.realvarname) {
-						console.info("LET UPDATE " + target.toString() + " => " + this.expr.value());
-						target.set(this.expr);
-						return true;
-					}
-					else
-						return this.resolve(name, target);
-				}
-			});
-			this.set(stat);
+			/*stat.setResolver({
+		*/	this.set(stat);
 		}
 	}
 
@@ -42,8 +32,8 @@ module NOA {
 			Util.assert(LangUtils.canBe(funvar, ValueType.Function));
 
 			if (funvar instanceof Fun) {
-				if (!(<Fun>funvar).resolver)
-					funvar.setResolver(this);
+				//if (!(<Fun>funvar).resolver)
+				//	funvar.setResolver(this);
 				this.applyFun(funvar);
 			}
 			else
@@ -94,7 +84,7 @@ module NOA {
 			res.setName("get");
 
 			res.set(new ErrorValue("Undefined variable '" + realname + "'"));
-			res.resolve(realname, res);
+			//res.resolve(realname, res);
 
 			return res;
 		}

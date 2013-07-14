@@ -34,7 +34,6 @@ module NOA {
 			Lets keep it simple for now
 			*/
 			var cell = new Variable(LangUtils.toValue(value));
-			cell.setResolver(this);
 			cell.live();
 
 			this.debug("INSERT AT " + index + ": " + cell.value() + " (" + value + ")");
@@ -204,8 +203,7 @@ module NOA {
 		toGraph(): any {
 			return {
 				name: (<any>this).constructor.name,
-				items: this.cells.map(arg => arg.toGraph()),
-				deps: this.getScopeDependencies().map(dep => dep.name)
+				items: this.cells.map(arg => arg.toGraph())
 			}
 		}
 
@@ -352,14 +350,5 @@ module NOA {
 			return new ListIndex(this, index);
 		}
 
-		getScopeDependencies(): IScopeDependency[]{ return []; }
-
-		setResolver(resolver: IResolver) { Util.notImplemented(); }
-
-		resolve(name: string, target: Variable): bool { return Util.notImplemented(); };
 	}
 }
-
-/* Mixin resolve functions from variable */
-NOA.List.prototype.setResolver = NOA.Variable.prototype.setResolver;
-NOA.List.prototype.resolve = NOA.Variable.prototype.resolve;

@@ -2,13 +2,12 @@
 
 
 module NOA {
-export class Variable/*<T extends IValue>*/ extends Base implements IList, IResolver /*TODO: IRecord...*/ {
+export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO: IRecord...*/ {
 
 	//TODO: rename fvalue to source
 	fvalue: IValue;
 	hasPrimitive: bool;
 	index: any = undefined;
-	resolver: IResolver = null;
 	pendingResolvers: any;
 
 		constructor(value: IValue = Lang.None()) {
@@ -51,8 +50,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList, IReso
 				else*/
 
 				//if (newvalue instanceof Variable)
-				if (!(newvalue instanceof Fun))
-					(<Variable>newvalue).setResolver(this);
+				
 				this.setup(newvalue, withEvents);
 
 				if (withEvents) {
@@ -78,58 +76,15 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList, IReso
 			return {
 				name: 'Variable',
 				value : val && val.toGraph ? val.toGraph() : val,
-				source: this.fvalue.toGraph(),
-				deps: this.getScopeDependencies().map(dep => dep.name)
+				source: this.fvalue.toGraph()
 			}
 		}
-
-		getScopeDependencies() : IScopeDependency[] {
-			return this.fvalue ? this.fvalue.getScopeDependencies() : [];
-		}
-
-		resolve(name: string, target: Variable): bool {
-			console.log("resolve " + name + " on " + this.toString())
-			if (this.resolver == this)
-				throw new Error("EFSEF")
-			var pending = true;
-			if (this.resolver)
-				pending = this.resolver.resolve(name, target);
-
-			if (pending /* TODO:*/ && (this.resolver == null || this instanceof Fun) /*?*/) { //TODO: if it is resolving at parent, no need to pend at our place? (unless this is a fun def)
-				if (!this.pendingResolvers)
-					this.pendingResolvers = {};
-				if (!(name in this.pendingResolvers))
-					this.pendingResolvers[name] = [target];
-				else
-					this.pendingResolvers[name].push(target);
-			}
-			return pending;
-		}
-
-		setResolver(resolver: IResolver) {
-			console.log("set resolver of " + this.toString() + " to " + resolver.toString());
-			//TODO: enable?
-			//Util.assert(!this.resolver || this.resolver == resolver, "Illegal state: Resolver has already been assigned");
-
-			if (this.resolver == resolver)
-				return;
-
-			this.resolver = resolver;
-			for (var key in this.pendingResolvers) {
-				var ar: Variable[] = this.pendingResolvers[key];
-				for (var i = ar.length - 1; i >= 0; i--)
-					if (resolver.resolve(key, ar[i]))
-						ar.splice(i, 1);
-			}
-		}
-
+	
 
 		free() {
 			//TODO: for all destructors, first free, then fire events and such.
 			//That saves unnecessary firing and processing of free events of other objects
 			this.teardown(this.fvalue, false);
-			this.resolver = null; //help GC
-
 			super.free();
 		}
 
@@ -157,18 +112,6 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList, IReso
 		setup(value: IValue, withEvents: bool) {
 			if (!value)
 				return;
-
-			//If new values has unresolved scope dependencies, we might be able to solve them
-			//TOOD: BWEGH inefficient implementation, some general langutils function for this kind of stuff?
-			value.getScopeDependencies().forEach(dep => {
-				if (!dep.claimed) {
-					this.getScopeDependencies().forEach(mydep => {
-						if (mydep.claimed && mydep.name == dep.name)
-							dep.value.set(mydep.value);
-							dep.claimed = true;
-					})
-				}
-			})
 
 			LangUtils.follow(this, value);
 

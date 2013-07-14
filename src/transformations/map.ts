@@ -75,10 +75,6 @@ module NOA {
 			return res;
 		}
 
-		getScopeDependencies() : IScopeDependency[] {
-			return this.source.getScopeDependencies().concat(this.func.getScopeDependencies());
-		}
-
 		free() {
 			super.free();
 

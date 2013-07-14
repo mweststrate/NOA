@@ -43,7 +43,6 @@ module NOA {
 
 		public call(...args: IValue[]) : IValue {
 			this.debug("CALL with arguments: (" + args.map(x => x.value()).join(",") + ")");
-			Util.assert(this.resolver);// || !LangUtils.hasUnboundArguments(this));
 
 			if (this.isJSFun)
 				return new AutoTriggeredExpression("call", this.jsFun, args.map(LangUtils.toValue)); //TODO: unecessary toValue?
@@ -63,11 +62,11 @@ module NOA {
 						wrap = Lang.let(this.argnames[i], args[i], wrap);
 					}
 
-					if (wrap instanceof Variable) { //TODO: many unchecked casts!
+					/*if (wrap instanceof Variable) { //TODO: many unchecked casts!
 						(<Variable>wrap).setResolver(this);
 						//avoid resolver being set another time. TODO: should not be needed but asserted in setResolver?
 						(<Variable>wrap).setResolver = Util.noop;
-					}
+					}*/
 					res.set(wrap);
 
 				});
