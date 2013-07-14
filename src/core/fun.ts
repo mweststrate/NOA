@@ -15,7 +15,7 @@ module NOA {
 		//constructor(argname: string, statement : IValue); //statement should be expression? neuh, a constant value is a valid function as well for example..
 		constructor(...args: IValue[]);
 		constructor(...args: any[]) {
-			super(Util.isFunction(args[0]) ? [] : args);
+			super(Util.isFunction(args[0]) ? [] : args.slice(0, -1));
 			this.setName("fun");
 			Util.assert(args.length > 0);
 			var fun = args[args.length-1];
@@ -26,6 +26,7 @@ module NOA {
 				this.jsFun = fun;
 			}
 			else {
+				this.initArg(fun, false);
 				this.argnames = args.slice(0, -1).map(arg => arg.value());
 				this.statement = fun;
 
@@ -42,18 +43,22 @@ module NOA {
 
 		public call(...args: IValue[]) : IValue {
 			this.debug("CALL with arguments: (" + args.map(x => x.value()).join(",") + ")");
+			Util.assert(this.resolver);// || !LangUtils.hasUnboundArguments(this));
 
 			if (this.isJSFun)
 				return new AutoTriggeredExpression("call", this.jsFun, args.map(LangUtils.toValue)); //TODO: unecessary toValue?
 			else {
-				var res = new Expression(<IValue[]>[this].concat(args));
+				var res = new Expression([]);//<IValue[]>[this].concat(args));
 				res.setName("call"); //MWE: mweh? introduce in lang?? //TODO: whole res seems unecessary if the clone wasn't async...
+				res.initArg(this, false);
+				args.forEach(arg => res.initArg(arg, true));
 
 				//MWE: TODO: async is weird here, AST should be (de)serialied synchronouszly. Or, just use stats.clone?! That would be nice since it could avoid cloning of constants
 				LangUtils.clone(this.statement, (clone) => {
 					var wrap = clone;
 
 					//create a let for each argument, and wrap
+					//TODO: fix, use declared arguments instead of provided arguments
 					for (var i = args.length - 1; i >= 0; i--) {
 						wrap = Lang.let(this.argnames[i], args[i], wrap);
 					}

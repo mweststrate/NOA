@@ -35,13 +35,19 @@ module NOA {
 
 	export class Call extends Expression {
 
-		constructor(private funvar: Variable, private params: IValue[]) {
+		constructor(private funvar: IValue, private params: IValue[]) {
 			super((<IValue[]>[funvar]).concat(params));
 			this.setName("call");
 
-			Util.assert(funvar instanceof Variable && LangUtils.canBe(funvar, ValueType.Function));
+			Util.assert(LangUtils.canBe(funvar, ValueType.Function));
 
-			funvar.get(this, this.applyFun, true);
+			if (funvar instanceof Fun) {
+				if (!(<Fun>funvar).resolver)
+					funvar.setResolver(this);
+				this.applyFun(funvar);
+			}
+			else
+				(<Variable>funvar).get(this, this.applyFun, true);
 		}
 
 		applyFun(fun) {
@@ -98,9 +104,9 @@ module NOA {
 
 			var realargs = args.map(LangUtils.toValue);
 
-			//Optimization: if the function itself will never change, there is no need to wrap an additional call expression.
-			if (realargs[0] instanceof Fun)
-				return (<Fun>realargs[0]).call.apply(realargs[0], realargs.slice(1));
+			//TODO: Optimization: if the function itself will never change, there is no need to wrap an additional call expression.
+			//if (realargs[0] instanceof Fun)
+			//	return (<Fun>realargs[0]).call.apply(realargs[0], realargs.slice(1));
 
 			return new Call(realargs[0], realargs.slice(1));
 		}
