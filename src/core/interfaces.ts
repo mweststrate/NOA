@@ -37,20 +37,14 @@ dereference -> converts to first class
 		toGraph(): any;
 
 		is(expected: ValueType): bool;
-		//TODO:
-		//mightbe(expected): bool
-
-		//isError() : bool;
 
 		value() : any; //TODO: rename to evaulaate
+	}
 
-		//start(resolver: IResolver);
+	export interface IResolver { //TODO: rename to IClosure
+		resolve(name: string): IValue; 
 	}
-	/*
-	export interface IResolver {
-		resolve(name: string, target: Variable): bool; //returns true if resolved
-	}
-	*/
+	
 	export interface IPlainValue extends IValue { //TODO: cell and expression implement IPlainValue
 		get(): any;
 		get(caller: Base, onChange: (newvalue: any, oldvalue: any) => void , fireInitialEvent?: bool): any;

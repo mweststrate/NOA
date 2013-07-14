@@ -6,12 +6,23 @@ module NOA {
 
 		funcName: string = undefined;
 		args: IValue[];
-		scopeDependencies : IScopeDependency[] = [];
+		scopeDependencies: IScopeDependency[] = [];
+		started: bool = false;
 
 		constructor(args : IValue[]) { //TODO: first argument should be name: string
 			super(Lang.None());
 			this.args = [];
 			args.forEach(arg => this.initArg(arg, true));
+		}
+
+		start(resolver: IResolver) : IValue { //todo rename resolver to closure
+			Util.assert(!this.started);
+			this.args.forEach(arg => {
+				if (arg instanceof Expression)
+					(<Expression>arg).start(resolver);
+			});
+			this.started = true;
+			return this;
 		}
 
 		initArg(arg: IValue, assingResolver = true) {

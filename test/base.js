@@ -69,16 +69,16 @@ exports.test1 = function(test) {
 };
 
 exports.letget = function (test) {
-	var a = NOA.Lang.let("x", 3, NOA.Lang.get("x")).live();
+	var a = NOA.Lang.let("x", 3, NOA.Lang.get("x")).live().start();
 
 	test.equal(a.value(), 3)
 	a.die();
 
-	var b = NOA.Lang.let("y", 4, NOA.Lang.let("x", 3, NOA.Lang.mul(NOA.Lang.get("x"), NOA.Lang.get("y")))).live();
+	var b = NOA.Lang.let("y", 4, NOA.Lang.let("x", 3, NOA.Lang.mul(NOA.Lang.get("x"), NOA.Lang.get("y")))).live().start();
 	test.equal(b.value(), 12)
 	b.die();
 
-	var c = NOA.Lang.let("x", 4, NOA.Lang.mul(NOA.Lang.let("x", 3, NOA.Lang.get("x")), NOA.Lang.get("x"))).live();
+	var c = NOA.Lang.let("x", 4, NOA.Lang.mul(NOA.Lang.let("x", 3, NOA.Lang.get("x")), NOA.Lang.get("x"))).live().start();
 	test.equal(b.value(), 12)
 	c.die();
 
@@ -88,7 +88,7 @@ exports.letget = function (test) {
 }
 
 exports.funcall = function (test) {
-	var d = NOA.Lang.call(NOA.Lang.fun("x", NOA.Lang.get("x")), 3).live();
+	var d = NOA.Lang.call(NOA.Lang.fun("x", NOA.Lang.get("x")), 3).live().start();
 	test.equal(d.value(), 3);
 	d.die();
 

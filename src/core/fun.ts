@@ -8,7 +8,8 @@ module NOA {
 
 		private argnames: string[];
 		private statement: IValue;
-		private scopeDependencies: IScopeDependency[] = [];
+		private closure: IResolver;
+		private started: bool = false;
 
 		constructor(f: Function);
 		//constructor(argnames: string[], statement : IValue); //statement should be expression? neuh, a constant value is a valid function as well for example..
@@ -37,11 +38,19 @@ module NOA {
 			}
 		}
 
+		start(resolver: IResolver) : IValue {
+			Util.assert(!this.started);
+			this.started = true;
+			this.closure = resolver;
+			return this;
+		}
+
 		public set() {
 			throw new Error("Value of an expression should not be set!");
 		}
 
-		public call(...args: IValue[]) : IValue {
+		public call(...args: IValue[]): IValue {
+			Util.assert(this.started);
 			this.debug("CALL with arguments: (" + args.map(x => x.value()).join(",") + ")");
 
 			if (this.isJSFun)
@@ -67,6 +76,9 @@ module NOA {
 						//avoid resolver being set another time. TODO: should not be needed but asserted in setResolver?
 						(<Variable>wrap).setResolver = Util.noop;
 					}*/
+					if (wrap instanceof Expression)
+						(<Expression>wrap).start(this.closure);
+
 					res.set(wrap);
 
 				});

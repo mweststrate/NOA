@@ -1,9 +1,10 @@
 ///<reference path='../noa.ts'/>
 module NOA {
 
-	export class Let  extends Expression {
+	export class Let extends Expression implements IResolver {
 
 		realvarname: string;
+		closure: IResolver;
 
 		constructor(varname: IValue, private expr: IValue, private stat: IValue) {
 			super([]);
@@ -18,8 +19,56 @@ module NOA {
 			this.realvarname = varname.value();
 			console.info("LET " + this.realvarname + ": " + expr.value());
 
-			/*stat.setResolver({
-		*/	this.set(stat);
+			this.set(stat);
+		}
+
+		start(resolver: IResolver) : IValue {
+			Util.assert(!this.started);
+			this.started = true;
+			this.closure = resolver;
+
+			if (this.expr instanceof Expression)
+				(<Expression> this.expr).start(resolver);
+			if (this.stat instanceof Expression)
+				(<Expression> this.stat).start(this);
+			return this;
+		}
+
+		resolve(varname: string): IValue {
+			Util.assert(this.started);
+			if (varname == this.realvarname)
+				return this.expr;
+			else if (this.closure)
+				return this.closure.resolve(varname);
+			else
+				return null;
+		}
+	}
+
+	export class Get extends Expression {
+
+		realvarname: string;
+
+		constructor(varname: IValue) {
+			super([varname]);
+			
+			this.setName("get");
+
+			Util.assert(varname instanceof Constant);
+			Util.assert(LangUtils.is(varname, ValueType.String));
+
+			this.realvarname = varname.value();
+
+			this.set(new ErrorValue("Uninitialized variable '" + this.realvarname + "'"));
+		}
+
+		start(resolver: IResolver) : IValue{
+			var val = resolver ? resolver.resolve(this.realvarname) : null;
+			if (!val)
+				this.set(new ErrorValue("Uninitialized variable '" + this.realvarname + "'"));
+			else
+				this.set(val);
+			return this;
 		}
 	}
 
@@ -30,14 +79,17 @@ module NOA {
 			this.setName("call");
 
 			Util.assert(LangUtils.canBe(funvar, ValueType.Function));
+		}
 
-			if (funvar instanceof Fun) {
-				//if (!(<Fun>funvar).resolver)
-				//	funvar.setResolver(this);
-				this.applyFun(funvar);
-			}
+		start(resolver: IResolver) {
+			super.start(resolver);
+			if (this.funvar instanceof Fun)
+				this.applyFun(this.funvar);
+			else if (this.funvar instanceof Variable)
+				(<Variable>this.funvar).get(this, this.applyFun, true);
 			else
-				(<Variable>funvar).get(this, this.applyFun, true);
+				throw new Error("Illlegal state: expected variable or fun");
+			return this;
 		}
 
 		applyFun(fun) {
@@ -62,7 +114,8 @@ module NOA {
 
 		static fun(fun: Function) : Fun;
 		static fun(...args: IValue[]) : Fun;
-		static fun(...args: any[]) : Fun {
+		static fun(...args: any[]): Fun {
+			//TODO: Lang.functions should be passable as first class functions as well!
 			if (args.length == 1 && Util.isFunction(args[0]))
 				return new Fun(<Function> args[0]);
 			return Util.applyConstructor(Fun, args.map(LangUtils.toValue));
@@ -77,16 +130,7 @@ module NOA {
 		}
 
 		static get (varname): IValue {
-			Util.assert(Util.isString(varname) || (LangUtils.is(varname, ValueType.String) && varname instanceof Constant));
-
-			var realname =  Util.isString(varname) ? varname : (<IValue>varname).value();
-			var res = new Expression([LangUtils.toValue(varname)]);
-			res.setName("get");
-
-			res.set(new ErrorValue("Undefined variable '" + realname + "'"));
-			//res.resolve(realname, res);
-
-			return res;
+			return new Get(LangUtils.toValue(varname));
 		}
 
 		static call(...args: IValue[]) : IValue {
