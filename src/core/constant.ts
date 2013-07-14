@@ -3,6 +3,7 @@
 module NOA {
 	export class Constant extends Base implements IPlainValue {
 		fvalue: any;
+
 		constructor(value: any) {
 			super();
 			Util.assert(Util.isPrimitive(value));
@@ -59,8 +60,6 @@ module NOA {
 		toGraph(): any {
 			return this.toString();
 		}
-
-		getScopeDependencies() : IScopeDependency[] { return []; }
 
 		toString(): string {
 			//return ["[Constant#", this.noaid, "=", this.fvalue, "]"].join("");
