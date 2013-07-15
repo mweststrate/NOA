@@ -51,7 +51,7 @@ module NOA {
 
 		constructor(varname: IValue) {
 			super([varname]);
-			
+
 			this.setName("get");
 
 			Util.assert(varname instanceof Constant);
@@ -93,6 +93,7 @@ module NOA {
 		}
 
 		applyFun(fun) {
+
 			if (fun && fun instanceof Base && fun.is(ValueType.Error))
 				this.set(fun);
 			else if (fun instanceof Fun)

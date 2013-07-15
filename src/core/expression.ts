@@ -18,7 +18,7 @@ module NOA {
 		start(resolver: IResolver) : IValue { //todo rename resolver to closure
 			Util.assert(!this.started);
 			this.args.forEach(arg => {
-				if (arg instanceof Expression)
+				if (arg instanceof Expression && !(<Expression>arg).started)
 					(<Expression>arg).start(resolver);
 			});
 			this.started = true;

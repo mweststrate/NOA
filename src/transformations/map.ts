@@ -54,7 +54,7 @@ module NOA {
 
 //			console.log("inserting new item for " + source);
 
-			this.insert(index, Lang.call(this.func, source)); //Lang.call, allows func to chaneg in the future :)
+			this.insert(index, (<Call>Lang.call(this.func, source)).start(null)); //Lang.call, allows func to chaneg in the future :)
 		}
 
 		onSourceRemove(index: number, value) {
