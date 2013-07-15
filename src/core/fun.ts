@@ -1,15 +1,52 @@
 ///<reference path='../noa.ts'/>
 module NOA {
+	export class FunctionApplication extends Variable implements IResolver {
+
+		constructor(private fun: Fun, private args: IValue[]) {
+			super();
+			Util.assert(fun.started);
+			this.args.forEach(arg => arg.live());
+
+			//MWE: TODO: async is weird here, AST should be (de)serialied synchronouszly. Or, just use stats.clone?! That would be nice since it could avoid cloning of constants
+			LangUtils.clone(this.fun.statement, (clone) => {
+				if (clone instanceof Expression)
+					(<Expression>clone).start(this);
+
+				this.set(clone);
+
+			});
+
+		}
+
+		resolve(name: string): IValue {
+			var argpos = Util.find(name, this.fun.argnames);
+			if (argpos >= 0)
+				return this.args[argpos];
+			else if (this.fun.closure)
+				return this.fun.closure.resolve(name);
+			return null;
+		}
+
+		free() {
+			super.free();
+			this.args.forEach(arg => arg.die());
+		}
+
+		toString() {
+			return "Apply" + this.noaid + "(" + this.args.map(a => a.value).join(",") + ")";
+		}
+	}
+
 	export class Fun extends Expression implements IValue {
 
 		private isJSFun: bool;
 
 		private jsFun: Function;
 
-		private argnames: string[];
-		private statement: IValue;
-		private closure: IResolver;
-		private started: bool = false;
+		argnames: string[];
+		statement: IValue;
+		closure: IResolver;
+		started: bool = false;
 
 		constructor(f: Function);
 		//constructor(argnames: string[], statement : IValue); //statement should be expression? neuh, a constant value is a valid function as well for example..
@@ -56,33 +93,7 @@ module NOA {
 			if (this.isJSFun)
 				return new AutoTriggeredExpression("call", this.jsFun, args.map(LangUtils.toValue)); //TODO: unecessary toValue?
 			else {
-				var res = new Expression([]);//<IValue[]>[this].concat(args));
-				res.setName("call"); //MWE: mweh? introduce in lang?? //TODO: whole res seems unecessary if the clone wasn't async...
-				res.initArg(this, false);
-				args.forEach(arg => res.initArg(arg, true));
-
-				//MWE: TODO: async is weird here, AST should be (de)serialied synchronouszly. Or, just use stats.clone?! That would be nice since it could avoid cloning of constants
-				LangUtils.clone(this.statement, (clone) => {
-					var wrap = clone;
-
-					//create a let for each argument, and wrap
-					//TODO: fix, use declared arguments instead of provided arguments
-					for (var i = args.length - 1; i >= 0; i--) {
-						wrap = Lang.let(this.argnames[i], args[i], wrap);
-					}
-
-					/*if (wrap instanceof Variable) { //TODO: many unchecked casts!
-						(<Variable>wrap).setResolver(this);
-						//avoid resolver being set another time. TODO: should not be needed but asserted in setResolver?
-						(<Variable>wrap).setResolver = Util.noop;
-					}*/
-					if (wrap instanceof Expression)
-						(<Expression>wrap).start(this.closure);
-
-					res.set(wrap);
-
-				});
-				return res;
+				return new FunctionApplication(this, args);
 			}
 		}
 
