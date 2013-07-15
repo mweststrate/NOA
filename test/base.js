@@ -200,7 +200,7 @@ exports.smallmap1 = function(test) {
     x.add(3);
     var y = x.map(NOA.Lang.fun(function(v) {
         return v*2
-    })).live();
+    })).live().start();
 
     x.add(4);
 

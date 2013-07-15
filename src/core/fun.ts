@@ -91,7 +91,7 @@ module NOA {
 			this.debug("CALL with arguments: (" + args.map(x => x.value()).join(",") + ")");
 
 			if (this.isJSFun)
-				return new AutoTriggeredExpression("call", this.jsFun, args.map(LangUtils.toValue)); //TODO: unecessary toValue?
+				return new JavascriptExpression("call", this.jsFun, args.map(LangUtils.toValue), true);
 			else {
 				return new FunctionApplication(this, args);
 			}
