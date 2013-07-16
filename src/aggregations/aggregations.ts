@@ -8,7 +8,7 @@ module NOA {
 
 		source: IList; //TODO: remove parent?
 
-		constructor(source: IList) {
+		constructor(source: IList) { //TODO: add name
 			super([source]);
 			//TODO: register at parent so the aggregate can be freed
 			this.source = source;
@@ -58,7 +58,12 @@ module NOA {
 			super(source);
 			this.unlisten(source, ListEvent.MOVE.toString())
 			this.unlisten(source, ListEvent.SET.toString())
+		}
+
+		start(resolver: IResolver): IValue {
+			super.start(resolver);
 			this.startup();
+			return this;
 		}
 
 		onSourceInsert(index: number, value) {
@@ -80,7 +85,12 @@ module NOA {
 		constructor(source: IList) {
 			super(source);
 			this.unlisten(source, ListEvent.MOVE.toString())
+		}
+
+		start(resolver: IResolver): IValue {
+			super.start(resolver);
 			this.startup();
+			return this;
 		}
 
 		onSourceInsert(index: number, value) {
@@ -112,7 +122,12 @@ module NOA {
 		constructor(source: IList) {
 			super(source);
 			this.unlisten(source, ListEvent.MOVE.toString())
+		}
+
+		start(resolver: IResolver): IValue {
+			super.start(resolver);
 			this.startup();
+			return this;
 		}
 
 		onSourceInsert(index: number, value) {
@@ -194,8 +209,13 @@ module NOA {
 		constructor(source: List) {
 			super(source);
 			this.unlisten(source, ListEvent.MOVE.toString())
+		}
 
+
+		start(resolver: IResolver): IValue {
+			super.start(resolver);
 			this.findNewMax();
+			return this;
 		}
 
 		findNewMax () {
@@ -236,7 +256,12 @@ module NOA {
 			super(source);
 			this.unlisten(source, ListEvent.MOVE.toString())
 
+		}
+
+		start(resolver: IResolver): IValue {
+			super.start(resolver);
 			this.findNewMin();
+			return this;
 		}
 
 		findNewMin () {
@@ -277,12 +302,16 @@ module NOA {
 		index: number;
 		realindex : number;
 
-		constructor(source: IList, index: number) {
+		constructor(source: IList, private index: number) {
 			super(source);
 			this.unlisten(source, ListEvent.SET.toString())
-			this.index = index;
+		}
+
+		start(resolver: IResolver): IValue {
+			super.start(resolver);
 			this.updateRealIndex();
 			this.update();
+			return this;
 		}
 
 		updateRealIndex() {

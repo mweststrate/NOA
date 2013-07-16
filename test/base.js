@@ -364,13 +364,13 @@ exports.test2 = function(test) {
 
    	var y = x.map(function(x) {
         return x*2;
-    }).live().debugName("y");
+    }).live().debugName("y").start();
 
    	var z = x.map(function (v) {
    		this(v * 2);
-   	}).live().debugName("z");
+   	}).live().debugName("z").start();
 
-   	var a = x.map(NOA.Lang.fun("x", NOA.Lang.mul(NOA.Lang.get("x"), 2))).live().debugName("a");
+   	var a = x.map(NOA.Lang.fun("x", NOA.Lang.mul(NOA.Lang.get("x"), 2))).live().debugName("a").start();
 
 	//base set
 	x.add(3);
@@ -410,7 +410,7 @@ exports.filterlive = function(test) {
 
     var z = x.filter(function(x) {
         return x < 4;
-    }).live();
+    }).live().start();
     z.debugName("z");
     test.equal(NOA.List.count, 3);
 
@@ -424,7 +424,7 @@ exports.filterlive = function(test) {
 
     var z = x.filter(function(x) {
         return x < 4;
-    }).live();
+    }).live().start();
     x.add(3);
 
     test.deepEqual(z.toJSON(), [3])
@@ -448,7 +448,7 @@ exports.test3filter = function(test) {
 
     var z = x.filter(function(x) {
         return x < 4;
-    }).live();
+    }).live().start();
     z.debugName("z");
 
     x.add(3);
@@ -507,7 +507,7 @@ exports.test3 = function(test) {
 	//TODO: at filter to IList
     var z = y.filter(function(x) {
         return x < 10;
-    }).live();
+    }).live().start();
     z.debugName("z");
 
     x.add(3);
@@ -550,7 +550,7 @@ exports.test4 = function(test) {
     var z = new NOA.List();
     z.add(x).add(y);
 
-    var a = z.join().live();
+    var a = z.join().live().start();
 
     test.deepEqual(a.toJSON(), [1,2,3,4]);
 
@@ -580,12 +580,12 @@ exports.test5 = function(test) {
     console.info(x.toString());
 
 
-    var y = x.map(NOA.Lang.fun("x", NOA.Lang.mul(2, NOA.Lang.get("x")))).live();
+    var y = x.map(NOA.Lang.fun("x", NOA.Lang.mul(2, NOA.Lang.get("x")))).live().start();
     y.debugName("y")
 
     var z = y.filter(function(x) {
         return x < 10;
-    }).live();
+    }).live().start();
     z.debugName("z");
 
     var a = x.subset(1,3).debugName("a").live();
@@ -613,7 +613,7 @@ exports.test5 = function(test) {
     e.insert(1,a) //x a y z
         .move(2,0) //y x a z
     e= e.join()
-        .live();//-> z x y
+        .live().start();//-> z x y
 
     x.remove(1); //super fails if ONLY this is disabled
     test.deepEqual( x.toJSON(), [3,7,6]);
@@ -657,7 +657,7 @@ exports.testjoin = function(test) {
     x.add(1)
     y.add(3)
 
-    var j = xy.join().live();
+    var j = xy.join().live().start();
     testIndexes(j, test);
     test.deepEqual(j.toJSON(), [1,3]);
 
@@ -732,7 +732,7 @@ exports.test6a0 = function(test) {
         }).debugName("xy-for-x-" + x);
     }).debugName("xy");
 
-    var xyj = xy.join().debugName("xyjoin").live();
+    var xyj = xy.join().debugName("xyjoin").live().start();
 
     test.deepEqual(xyj.toJSON(),[]);
     x.add(3);
@@ -762,6 +762,7 @@ exports.test6a1 = function(test) {
     NOA.Lang.let("a", 3,
         NOA.Lang.map(x, NOA.Lang.fun("z", NOA.Lang.get("a"))));
 
+    xy.live().start();
     test.deepEqual(xy.toJSON(),[]);
 
     x.add(6);
@@ -793,7 +794,7 @@ exports.test6a2 = function(test) {
             ))
         ));
 
-    var xyj = NOA.Lang.join(xy).debugName("xyjoin").live();
+    var xyj = NOA.Lang.join(xy).debugName("xyjoin").live().start();
 
 //    console.dir(xyj.toGraph());
 
@@ -833,9 +834,9 @@ exports.test6b1 = function(test) {
                     NOA.Lang.mul(NOA.Lang.get("a"), NOA.Lang.get("b"))
                 ))
             ))
-        ));
+        )).start();
 
-    var xyj = NOA.Lang.join(xy).debugName("xyjoin").live();
+    var xyj = NOA.Lang.join(xy).debugName("xyjoin").live().start();
 
     x.add(1);
     x.add(2);

@@ -9,7 +9,7 @@ exports.citizenfunction1 = function(test) {
     var res = L.let(
         "fun", L.fun("x", L.mul(L.get("x"), L.get("x"))),
         L.call(L.get("fun"), 2)
-    ).live();
+    ).live().start();
 
     test.equal(res.value(), 4);
 
@@ -29,7 +29,7 @@ exports.citizenfunction2 = function(test) {
     var res = L.let(
         "fun", c,
         L.call(L.get("fun"), f)
-    ).live();
+    ).live().start();
 
     test.equal(res.value().is(NOA.ValueType.Error), true);
 
@@ -59,7 +59,7 @@ exports.citizenfunctionmap = function(test) {
 
     x.add(3);
 
-    var y = x.map(c).live();
+    var y = x.map(c).live().start();
 
     test.equal(y.get(0).is(NOA.ValueType.Error), true);
 
@@ -102,20 +102,22 @@ exports.recurse = function(test) {
             //L.if_(1,2,3)
             L.if_(
 		//MWE: TODO: dies on start, because initial value of X is NaN, for which reason the else branch is always taken...Need support for None arguments to not start calculating anything...!
-                true,//L.eq(L.get("x"), 0),
+                //true,
+                L.eq(L.get("x"), 0),
                 0,
                 L.mul(
                     L.get("x"),
                     L.call(
                         L.get("product"),
-                        0//L.substract(L.get("x"), 1)
+                        //0
+                        L.substract(L.get("x"), 1)
                     )
                 )
             )
         ),
         L.call(L.get("product"), v));
 
-    res.live();
+    res.live().start();
     test.equal(res.value(), 24);
 
     v.set(5);
