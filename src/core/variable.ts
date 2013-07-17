@@ -25,6 +25,8 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		value(): any {
+			this.assertReady();
+
 			return this.fvalue.value();
 		}
 
@@ -50,7 +52,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 				else*/
 
 				//if (newvalue instanceof Variable)
-				
+
 				this.setup(newvalue, withEvents);
 
 				if (withEvents) {
@@ -79,7 +81,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 				source: this.fvalue.toGraph()
 			}
 		}
-	
+
 
 		free() {
 			//TODO: for all destructors, first free, then fire events and such.
@@ -149,10 +151,14 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		size(): number {
+			this.assertReady();
+
 			return this.fvalue ? (<IList>this.fvalue).size() : 0;
 		}
 
 		each(...args: any[]) {
+			this.assertReady();
+
 			if (this.fvalue && this.fvalue.is(ValueType.List))
 				(<IList>this.fvalue).each.apply(this.fvalue, args);
 		}
@@ -160,6 +166,8 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		cell(index: string): Variable;
 		cell(index: number): Variable;
 		cell(index: any): Variable {
+			this.assertReady();
+
 			if (this.fvalue && (this.fvalue.is(ValueType.List) || this.fvalue.is(ValueType.Record)))
 				return (<any>this.fvalue).cell(index);
 			else
@@ -170,6 +178,8 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		get (index: string): IValue;
 		get (scope?: any, cb?: (newvalue: any, oldvalue: any) => void , triggerEvents?: bool): IValue;
 		get (...args: any[]) {
+			//this.assertReady(); //TODO:?
+
 			//record or list?
 			if (Util.isNumber(args[0]) || Util.isString(args[0])) {
 				Util.assert(this.is(ValueType.List) || this.is(ValueType.Record) || this.is(ValueType.Error))
@@ -204,6 +214,10 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		getIndex(): any {
 			Util.assert(this.index != undefined);
 			return this.index;
+		}
+
+		assertReady() {
+			//TODO: Util.assert(!(this instanceof Expression) || (<Expression>this).started, "Expression should be started before it can be evaluated")
 		}
 	}
 

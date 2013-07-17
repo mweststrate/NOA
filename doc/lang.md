@@ -5,3 +5,4 @@ list(value...)
 
 error(msg)
 
+range(nr, nr?) -> List

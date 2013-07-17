@@ -721,6 +721,19 @@ exports.testjoin = function(test) {
     test.done();
 }
 
+exports.unstartedmap = function(test) {
+    var x = new NOA.List();
+    var y = x.map(function(x){return x}).live();
+    x.add(2);
+
+    test.deepEqual(y.toJSON(), ["wut"])
+    y.die();
+
+    test.equal(NOA.Base.count, 0)
+    test.done();
+
+}
+
 exports.test6a0 = function(test) {
     var x = new NOA.List().debugName("x");
     var y = new NOA.List().debugName("y");

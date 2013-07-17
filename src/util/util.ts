@@ -382,6 +382,7 @@ module NOA {
 		static noop () {}
 		public static notImplemented(): any { throw new Error("Not implemented. This function is TODO or supposed to be abstract"); }
 
+		//TODO: factor out, should not be needed!
 		public static applyConstructor(ctor: new (...args: any[]) => any, params: any[]) : any {
 			//Source: http://stackoverflow.com/questions/3871731/dynamic-object-construction-in-javascript
 			var obj, newobj;

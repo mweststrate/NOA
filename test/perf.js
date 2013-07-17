@@ -17,6 +17,10 @@ updated items in 1527
 added items in 4553
 updated items in 1647
 
+16-7-13 (new scope system, without function call optimization inlining)
+added items in 3974
+updated items in 1611
+
 */
 
 exports.test1 = function(test) {
@@ -24,7 +28,7 @@ exports.test1 = function(test) {
     var x = new NOA.List();
 
     var y = x.map(NOA.Lang.fun("a", NOA.Lang.mul(NOA.Lang.get("a"), 2)));
-    y.live();
+    y.live().start();
 
     var start = +(new Date());
 

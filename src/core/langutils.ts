@@ -141,7 +141,10 @@ module NOA {
 			new NOA.Unserializer(Util.notImplemented).unserialize(ast, cb);
 		}
 
-
+		static startExpression(value: IValue, resolver: IResolver) {
+			if (value instanceof Expression && !(<Expression>value).started)
+				(<Expression>value).start(resolver);
+		}
 
 		/**
 		Function watcher watches a function and follows the result. A new function is returned. This function has the following properties:

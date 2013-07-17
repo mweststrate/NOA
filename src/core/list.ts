@@ -41,6 +41,8 @@ module NOA {
 			cell.setIndex(index); //TODO: just assing index property?
 			this.cells.splice(index, 0, cell);
 
+			LangUtils.startExpression(cell.fvalue, null);
+			
 			this._updateIndexes(index +1);
 			this.fire(ListEvent.INSERT.toString(), index, cell.get());
 
@@ -57,8 +59,13 @@ module NOA {
 			if (index < 0 || index >= this.cells.length)
 				throw new Error("Set out of bounds: " + index + " not in 0.." + this.cells.length)
 
-			this.cells[index].set(value);
-			this.debug("SET AT " + index + ": " + this.cells[index].value() + " (" + value + ")");
+			//TODO: apply to value?
+			var cell = this.cells[index];
+			cell.set(value);
+
+			LangUtils.startExpression(cell.fvalue, null);
+
+			this.debug("SET AT " + index + ": " + cell.value() + " (" + value + ")");
 
 			return this;
 		}
