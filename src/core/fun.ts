@@ -83,7 +83,7 @@ module NOA {
 		}
 
 		public set() {
-			throw new Error("Value of an expression should not be set!");
+			throw new Error("Value of a function should not be set!");
 		}
 
 		public call(...args: IValue[]): IValue {
@@ -123,7 +123,8 @@ module NOA {
 				name: 'Fun',
 				args: this.argnames,
 				body : this.isJSFun ? this.jsFun.toString() : this.statement.toGraph(),
-				deps: this.getScopeDependencies().map(dep => dep.name)
+				started: this.started,
+				closure: this.closure ? (<any>this.closure).toGraph() :null //TODO: mweh cast
 			}
 		}
 

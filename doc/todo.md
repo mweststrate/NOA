@@ -4,8 +4,10 @@
 
 * scope
 * recursion
+* currentValue / actualValue / event arguments
 * parse
 * CLI
+* logging
 * other transformations
 * basic functions
 * cli demo / order demo
