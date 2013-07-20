@@ -97,8 +97,8 @@ module NOA {
 			if (fun && fun instanceof Base && fun.is(ValueType.Error))
 				this.set(fun);
 			else if (fun instanceof Fun) {
-				Util.assert((<Fun>fun).started)
-				this.set(fun.call.apply(fun, this.params));
+				LangUtils.startExpression(fun, null);
+				this.set((fun.call.apply(fun, this.params)));
 			}
 			else
 				this.set(new ErrorValue("Call expected function found " + (fun && fun.value ? fun.value() : fun)));

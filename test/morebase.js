@@ -90,26 +90,46 @@ exports.citizenfunctionmap = function(test) {
     test.done();
 }
 
-exports.recurse = function(test) {
+exports.recurse1 = function(test) {
 
     var L = NOA.Lang;
     var v = new NOA.Variable();
-    v.set(4);
+    v.set(0);
+    var f = new NOA.Variable();
+    f.set(new NOA.Fun(NOA.LangUtils.toValue("x"), L.if_(
+        L.eq(L.get("x"), 0),
+        3,
+        L.call(f,0)// L.substract(L.get("x"), 1))
+    )));
+
+    f.fvalue.start();
+    test.equal(f.fvalue.call(NOA.LangUtils.toValue(0)), 3);
+
+    test.equal(f.fvalue.call(NOA.LangUtils.toValue(5)), 3);
+
+    f.die();
+
+    test.equal(NOA.Base.count, 0);
+    test.done();
+}
+
+exports.recurse2 = function(test) {
+
+    var L = NOA.Lang;
+    var v = new NOA.Variable();
+    v.set(0);
 
     var res = L.let(
         "product",
         L.fun("x",
             //L.if_(1,2,3)
             L.if_(
-		//MWE: TODO: dies on start, because initial value of X is NaN, for which reason the else branch is always taken...Need support for None arguments to not start calculating anything...!
-                //true,
                 L.eq(L.get("x"), 0),
                 0,
                 L.mul(
                     L.get("x"),
                     L.call(
                         L.get("product"),
-                        //0
                         L.substract(L.get("x"), 1)
                     )
                 )
@@ -118,7 +138,7 @@ exports.recurse = function(test) {
         L.call(L.get("product"), v));
 
     res.live().start();
-    test.equal(res.value(), 24);
+    test.equal(res.value(), 0);
 
     v.set(5);
     test.equal(res.value(), 120);

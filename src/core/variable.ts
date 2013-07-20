@@ -25,8 +25,6 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		value(): any {
-			this.assertReady();
-
 			return this.fvalue.value();
 		}
 
@@ -52,7 +50,8 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 				else*/
 
 				//if (newvalue instanceof Variable)
-
+				//if (withEvents)
+				//	LangUtils.startExpression(newvalue, null); //If the new value is not yet started, it just waiting for lazy evaluation, scope should already be bound..
 				this.setup(newvalue, withEvents);
 
 				if (withEvents) {
@@ -66,6 +65,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		toJSON() {
+			this.assertReady();
 			return this.fvalue === undefined ? undefined : this.fvalue.toJSON.apply(this.fvalue, arguments);
 		}
 
@@ -157,7 +157,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		each(...args: any[]) {
-			this.assertReady();
+			//this.assertReady();
 
 			if (this.fvalue && this.fvalue.is(ValueType.List))
 				(<IList>this.fvalue).each.apply(this.fvalue, args);
@@ -166,8 +166,6 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		cell(index: string): Variable;
 		cell(index: number): Variable;
 		cell(index: any): Variable {
-			this.assertReady();
-
 			if (this.fvalue && (this.fvalue.is(ValueType.List) || this.fvalue.is(ValueType.Record)))
 				return (<any>this.fvalue).cell(index);
 			else
@@ -217,7 +215,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		assertReady() {
-			//TODO: Util.assert(!(this instanceof Expression) || (<Expression>this).started, "Expression should be started before it can be evaluated")
+			Util.assert(!(this instanceof Expression) || (<Expression>this).started, "Expression should be started before it can be evaluated")
 		}
 	}
 
