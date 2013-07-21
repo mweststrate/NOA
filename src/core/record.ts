@@ -78,6 +78,13 @@ module NOA{
 			//TOOD: implements fireInitialEvent
 		}
 
+		clone(): IValue {
+			var res = new Record();
+			for (var key in this.data)
+				res.put(key, this.data[key].fvalue);
+			return res;
+		}
+
 		toJSON (): Object {
 			var res = {};
 			for(var key in this.data)

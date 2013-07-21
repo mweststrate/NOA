@@ -54,12 +54,12 @@ module NOA {
 			return res;
 		}
 
-		getScopeDependencies() : IScopeDependency[] {
-			return this.scopeDependencies;
-		}
-
-		addScopeDependency(dep: IScopeDependency) {
-			this.scopeDependencies.push(dep);
+		clone(): IValue {
+			Util.assert(this.getName());
+			var f = NOA.Lang[this.getName()];
+			Util.assert(f);
+			var args = this.args.map(arg => arg.clone());
+			return f.apply(NOA.Lang, args);
 		}
 
 		free() {

@@ -38,7 +38,8 @@ dereference -> converts to first class
 
 		is(expected: ValueType): bool;
 
-		value() : any; //TODO: rename to evaulaate
+		value(): any; //TODO: rename to evaulaate
+		clone(): IValue;
 	}
 
 	export interface IResolver { //TODO: rename to IClosure

@@ -73,6 +73,10 @@ module NOA {
 			return new ErrorValue(args);
 		}
 
+		clone(): IValue {
+			return this;
+		}
+
 		free() {
 			super.free();
 

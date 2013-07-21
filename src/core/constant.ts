@@ -49,6 +49,10 @@ module NOA {
 			return this.fvalue;
 		}
 
+		clone(): IValue {
+			return this;
+		}
+
 		toJSON(): any {
 			return this.fvalue;
 		}

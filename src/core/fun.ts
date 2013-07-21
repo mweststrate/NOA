@@ -7,15 +7,9 @@ module NOA {
 			Util.assert(fun.started);
 			this.args.forEach(arg => arg.live());
 
-			//MWE: TODO: async is weird here, AST should be (de)serialied synchronouszly. Or, just use stats.clone?! That would be nice since it could avoid cloning of constants
-			LangUtils.clone(this.fun.statement, (clone) => {
-				if (clone instanceof Expression)
-					(<Expression>clone).start(this);
-
-				this.set(clone);
-
-			});
-
+			var clone = this.fun.statement.clone();
+			LangUtils.startExpression(clone, this);
+			this.set(clone);
 		}
 
 		resolve(name: string): IValue {
@@ -53,7 +47,7 @@ module NOA {
 		//constructor(argname: string, statement : IValue); //statement should be expression? neuh, a constant value is a valid function as well for example..
 		constructor(...args: IValue[]);
 		constructor(...args: any[]) {
-			super(Util.isFunction(args[0]) ? [] : args.slice(0, -1));
+			super(Util.isFunction(args[0]) ? [] : args.slice(0, -1)); //why the slice?!
 			this.setName("fun");
 			Util.assert(args.length > 0);
 			var fun = args[args.length-1];
@@ -97,6 +91,13 @@ module NOA {
 			}
 		}
 
+		clone(): IValue {
+			if (this.isJSFun)
+				return new Fun(this.jsFun)
+			else
+				NOA.Lang.fun.apply(NOA.Lang, this.args.concat(this.statement).map(arg => arg.clone())); //TODO: optimize, first map, then concat, statement needs no clone..
+		}
+
 		public free() {
 			this.debug("Freeing fun")
 			super.free();
@@ -126,10 +127,6 @@ module NOA {
 				started: this.started,
 				closure: this.closure ? (<any>this.closure).toGraph() :null //TODO: mweh cast
 			}
-		}
-
-		getScopeDependencies() : IScopeDependency[] {
-			return this.scopeDependencies;
 		}
 
 	}

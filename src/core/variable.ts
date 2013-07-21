@@ -64,6 +64,10 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			}
 		}
 
+		clone(): IValue {
+			return new Variable(this.fvalue ? this.fvalue.clone() : this.fvalue);
+		}
+
 		toJSON() {
 			this.assertReady();
 			return this.fvalue === undefined ? undefined : this.fvalue.toJSON.apply(this.fvalue, arguments);

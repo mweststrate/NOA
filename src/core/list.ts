@@ -199,6 +199,13 @@ module NOA {
 			return this.cells[index].get(caller, onchange, fireInitialEvent);
 		}
 
+		clone(): IValue {
+			var res = new List();
+			for (var i = 0; i < this.size(); i++)
+				res.add(this.cells[i].fvalue);
+			return res;
+		}
+
 		toJSON() {
 			var res = [];
 			var l = this.cells.length;
