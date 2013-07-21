@@ -83,7 +83,7 @@ module NOA {
 		public call(...args: IValue[]): IValue {
 			Util.assert(this.started);
 
-			this.debugIn("CALL with ('" + args.map(arg => arg.value()).join("', '") + "')");
+			this.debugIn("CALL WITH ('" + args.map(arg => "" + arg.toString()).join("', '") + "')");
 			try {
 				if (this.isJSFun)
 					return new JavascriptExpression("call", this.jsFun, args.map(LangUtils.toValue), true).start(null); //js funcs cannot have closure

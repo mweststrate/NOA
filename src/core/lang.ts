@@ -1,6 +1,6 @@
 ///<reference path='../noa.ts'/>
 module NOA {
-
+	//TODO: move classes to own files
 	export class Let extends Expression implements IResolver {
 
 		realvarname: string;
@@ -29,7 +29,7 @@ module NOA {
 			if (this.expr instanceof Expression)
 				(<Expression> this.expr).start(resolver);
 
-			this.debugIn("LET '" + this.realvarname + "' BE '" + this.expr.value() + "' IN " + this.stat);
+			this.debugIn("LET '" + this.realvarname + "' BE '" + this.expr + "' IN " + this.stat);
 			if (this.stat instanceof Expression)
 				(<Expression> this.stat).start(this);
 			this.debugOut();
@@ -72,7 +72,7 @@ module NOA {
 			else
 				this.set(val);
 
-			this.debug("GET '" + this.realvarname + "' FOLLOWS " + this.fvalue);
+			this.debug("GET '" + this.realvarname + "' FOLLOWS " + this.fvalue.toString());
 			return this;
 		}
 	}

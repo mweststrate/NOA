@@ -252,11 +252,11 @@ module NOA {
 		}
 
 		debug (...args : any[]) {
-			Util.debug.apply(Util, [this.toString() + ":"].concat(Util.makeArray(arguments)));
+			Util.debug.apply(Util, [this.toString() + ":"].concat(Util.makeArray(arguments).map(Util.toString)));
 		}
 
 		debugIn(...args: any[]) {
-			Util.debugIn.apply(Util, [this.toString() + ":"].concat(Util.makeArray(arguments)));
+			Util.debugIn.apply(Util, [this.toString() + ":"].concat(Util.makeArray(arguments).map(Util.toString)));
 		}
 
 		debugOut(...args: any[]) {

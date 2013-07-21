@@ -29,14 +29,13 @@ module NOA {
 			if (!Util.isNumber(index) || index < 0 || index > this.cells.length)
 				throw new Error("Insert out of bounds: " + index + " not in 0.." + this.cells.length)
 
-			var rval = LangUtils.toValue(value);
-			this.debugIn("INSERT AT " + index + ": '" + rval.value() + "'");
+			this.debugIn("INSERT AT " + index + ": '" + value.toString() + "'");
 
 			/* Question, if value is an variable, we could insert it directly, instead of wrapping it in a variable?
 			Yes, that is true, and maybe faster. But a lot more complicated as well. We need to update callbacks, use live/die etc.
 			Lets keep it simple for now
 			*/
-			var cell = new Variable(rval);
+			var cell = new Variable(LangUtils.toValue(value));
 			cell.live();
 
 			cell.setIndex(index); //TODO: just assing index property?
@@ -60,11 +59,10 @@ module NOA {
 			if (index < 0 || index >= this.cells.length)
 				throw new Error("Set out of bounds: " + index + " not in 0.." + this.cells.length)
 
-			var rval = LangUtils.toValue(value);
-			this.debugIn("SET AT " + index + ":'" + rval.value() + "'");
+			this.debugIn("SET AT " + index + ":'" + value.toString() + "'");
 
 			var cell = this.cells[index];
-			cell.set(rval);
+			cell.set(LangUtils.toValue(value));
 
 			LangUtils.startExpression(cell.fvalue, null);
 
@@ -73,14 +71,12 @@ module NOA {
 		}
 
 		remove(index : number) : any {
-			this.debugIn("Remove at " + index);
+			this.debugIn("REMOVE AT " + index);
 			if (index < 0 || index >= this.cells.length)
 				throw new Error("Remove out of bounds: " + index + " not in 0.." + this.cells.length)
 
 			var origcell = this.cells[index];
 			var origvalue = origcell.get();
-
-			this.debugIn("REMOVE AT " + index + ":'" + origcell.value() +"'");
 
 			this.cells.splice(index, 1);
 			this._updateIndexes(index);

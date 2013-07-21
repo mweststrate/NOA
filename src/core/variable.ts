@@ -35,7 +35,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 
 			//Q: should use Lang.equal? -> No, because we should setup the new events
 			if (newvalue != this.fvalue) {
-				this.debugIn("SET " + newvalue);
+				this.debugIn("SET " + newvalue.toString());
 
 				var oldvalue = this.fvalue;
 				var ov = oldvalue.value();
@@ -204,7 +204,8 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 		}
 
 		toString(): string {
-			return ["[Variable#", this.noaid, "=", <any>this.fvalue, "]"].join("");
+			//return ["[Variable#", this.noaid, "=", <any>this.fvalue, "]"].join("");
+			return Util.toString(this.fvalue);
 		}
 
 

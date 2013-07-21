@@ -12,6 +12,9 @@ module NOA {
 		static testnr = 0;
 		static GLOBALSCOPE = (function() { return this; })(); //MWE: TODO: proper?
 
+		static toString(arg: any): string {
+			return "" + (arg === undefined ? "undefined" : arg === null ? "null": arg.toString ? arg.toString() : arg);
+		}
 		/**
 		 if debugbreakon is set, the debugger will pause when entering the provided debug line
 		 */

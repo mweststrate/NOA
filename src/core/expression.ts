@@ -69,7 +69,7 @@ module NOA {
 
 		toString(): string {
 			//return ["[Expression#", this.noaid, "=", <any>this.funcName,"(", this.args.join(","), ")]"].join("");
-			return this.funcName + "#" + this.noaid + "(" + (this.args ? this.args.join(", ") : "") + ")";
+			return this.funcName + "#" + this.noaid + "(" + (this.args ? this.args.map(a => "" + a.toString()).join(", ") : "") + ")";
 		}
 
 	}
