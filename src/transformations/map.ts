@@ -40,6 +40,7 @@ module NOA {
 			super(source);
 
 			this.func = Util.isFunction(func) ? NOA.Lang.fun(func) : func;
+			Util.assert(LangUtils.canBe(this.func, ValueType.Function));
 			this.func.live(); //TODO: maybe live is not needed here at all?
 
 			this.unlisten(source, ListEvent.SET.toString()); //TODO: if func is just a js func, onSet should also reeavaluate the func

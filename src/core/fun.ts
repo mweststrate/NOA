@@ -95,7 +95,7 @@ module NOA {
 			if (this.isJSFun)
 				return new Fun(this.jsFun)
 			else
-				NOA.Lang.fun.apply(NOA.Lang, this.args.concat(this.statement).map(arg => arg.clone())); //TODO: optimize, first map, then concat, statement needs no clone..
+				return NOA.Lang.fun.apply(NOA.Lang, this.args.concat(this.statement).map(arg => arg.clone())); //TODO: optimize, first map, then concat, statement needs no clone..
 		}
 
 		public free() {
