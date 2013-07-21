@@ -29,14 +29,15 @@ module NOA {
 			if (!Util.isNumber(index) || index < 0 || index > this.cells.length)
 				throw new Error("Insert out of bounds: " + index + " not in 0.." + this.cells.length)
 
+			var rval = LangUtils.toValue(value);
+			this.debugIn("INSERT AT " + index + ": '" + rval.value() + "'");
+
 			/* Question, if value is an variable, we could insert it directly, instead of wrapping it in a variable?
 			Yes, that is true, and maybe faster. But a lot more complicated as well. We need to update callbacks, use live/die etc.
 			Lets keep it simple for now
 			*/
-			var cell = new Variable(LangUtils.toValue(value));
+			var cell = new Variable(rval);
 			cell.live();
-
-			this.debug("INSERT AT " + index + ": " + cell.value() + " (" + value + ")");
 
 			cell.setIndex(index); //TODO: just assing index property?
 			this.cells.splice(index, 0, cell);
@@ -50,23 +51,24 @@ module NOA {
 				this.fire(ListEvent.SET.toString(), cell.getIndex(), newvalue, oldvalue);
 			}, false);
 
+			this.debugOut();
 			return this;
 		}
 
 		set (index: number, value: any, origin?: CellContainer): List;
 		set (index: number, value: any, origin?: CellContainer): List {
-			this.debugIn("Set at " + index + ": " + value);
 			if (index < 0 || index >= this.cells.length)
 				throw new Error("Set out of bounds: " + index + " not in 0.." + this.cells.length)
 
-			//TODO: apply to value?
+			var rval = LangUtils.toValue(value);
+			this.debugIn("SET AT " + index + ":'" + rval.value() + "'");
+
 			var cell = this.cells[index];
-			cell.set(value);
+			cell.set(rval);
 
 			LangUtils.startExpression(cell.fvalue, null);
 
-			this.debug("SET AT " + index + ": " + cell.value() + " (" + value + ")");
-
+			this.debugOut();
 			return this;
 		}
 
@@ -78,8 +80,7 @@ module NOA {
 			var origcell = this.cells[index];
 			var origvalue = origcell.get();
 
-			this.debug("REMOVE AT " + index + ": " + origcell.value() + " (" + origvalue + ")");
-
+			this.debugIn("REMOVE AT " + index + ":'" + origcell.value() +"'");
 
 			this.cells.splice(index, 1);
 			this._updateIndexes(index);
@@ -97,10 +98,10 @@ module NOA {
 			if (from == to)
 				return this;
 
-			this.debugIn("Move from " + from + " to " + to);
 			if (from < 0 || to < 0 || from >= this.cells.length || to >= this.cells.length)
 				throw new Error("Move out of bounds: " + from + to + " not in 0.." + this.cells.length);
 
+			this.debugIn("MOVE FROM " + from + " TO " + to);
 
 			var c = this.cells[from];
 			this.cells.splice(from, 1);
@@ -246,22 +247,11 @@ module NOA {
 		}
 
 		free() {
-			console.log("freeing " + this.cells.length)
 			for (var i = this.cells.length - 1; i >= 0; i--)
 				this.cells[i].die();
 
-			//TODO: free aggregates
 			super.free();
 		}
-
-		/* toString : function() {
-		 var res = [];
-		 var l = this.cells.length;
-		 for(var i = 0; i < l; i++)
-		 res.push(this.get(i));
-		 return "[" + res.join(",") + "]";
-		 }
-		 */
 
 		/** transform functions */
 		map(func: Fun): IValue {

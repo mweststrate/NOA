@@ -17,7 +17,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 			this.setup(value, false); //Nobody is listening yet
 
 			//for debugging purposes only
-			//this.on(PlainValueEvent.CHANGE, this, (newvalue) => this.debug("CHANGE: " + newvalue));
+			this.on(PlainValueEvent.CHANGE, this, (newvalue) => this.debug("CHANGED TO: '" + newvalue+ "'"));
 		}
 
 		is(expected: ValueType) : bool {
@@ -35,6 +35,8 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 
 			//Q: should use Lang.equal? -> No, because we should setup the new events
 			if (newvalue != this.fvalue) {
+				this.debugIn("SET " + newvalue);
+
 				var oldvalue = this.fvalue;
 				var ov = oldvalue.value();
 
@@ -59,8 +61,7 @@ export class Variable/*<T extends IValue>*/ extends Base implements IList /*TODO
 					if (nv != ov)
 						this.fire(PlainValueEvent.CHANGE, nv, ov); //TODO: do not use changed but some constant!
 				}
-
-				this.debug("SET " + this.value() + " (" + this.fvalue + ")");
+				this.debugOut();
 			}
 		}
 

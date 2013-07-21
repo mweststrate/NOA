@@ -459,7 +459,6 @@ module NOA {
 
 			console.log(report.join("\n"))
 			console.log("\nCompleted test run: " + success + " out of " + count + " tests succeeded")
-			//console.log(process.argv);
 			assert.done = origdone;
 		}
 	}

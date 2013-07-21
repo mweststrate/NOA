@@ -27,7 +27,7 @@ module NOA {
 		}
 
 		toString() {
-			return "Apply" + this.noaid + "(" + this.args.map(a => a.value).join(",") + ")";
+			return "Apply" + this.noaid + "(" + this.args.map(a => a.value()).join(",") + ")";
 		}
 	}
 
@@ -47,7 +47,7 @@ module NOA {
 		//constructor(argname: string, statement : IValue); //statement should be expression? neuh, a constant value is a valid function as well for example..
 		constructor(...args: IValue[]);
 		constructor(...args: any[]) {
-			super(Util.isFunction(args[0]) ? [] : args.slice(0, -1)); //why the slice?!
+			super(Util.isFunction(args[0]) ? [] : args); //why the slice?!
 			this.setName("fun");
 			Util.assert(args.length > 0);
 			var fun = args[args.length-1];
@@ -82,13 +82,19 @@ module NOA {
 
 		public call(...args: IValue[]): IValue {
 			Util.assert(this.started);
-			this.debug("CALL with arguments: (" + args.map(x => x.value()).join(",") + ")");
 
-			if (this.isJSFun)
-				return new JavascriptExpression("call", this.jsFun, args.map(LangUtils.toValue), true).start(null); //js funcs cannot have closure
-			else {
-				return new FunctionApplication(this, args);
+			this.debugIn("CALL with ('" + args.map(arg => arg.value()).join("', '") + "')");
+			try {
+				if (this.isJSFun)
+					return new JavascriptExpression("call", this.jsFun, args.map(LangUtils.toValue), true).start(null); //js funcs cannot have closure
+				else {
+					return new FunctionApplication(this, args);
+				}
 			}
+			finally {
+				this.debugOut();
+			}
+
 		}
 
 		clone(): IValue {
@@ -96,13 +102,6 @@ module NOA {
 				return new Fun(this.jsFun)
 			else
 				return NOA.Lang.fun.apply(NOA.Lang, this.args.concat(this.statement).map(arg => arg.clone())); //TODO: optimize, first map, then concat, statement needs no clone..
-		}
-
-		public free() {
-			this.debug("Freeing fun")
-			super.free();
-			//if (!this.isJSFun)
-			//	this.statement.die();
 		}
 
 		is(type: ValueType): bool {
@@ -127,6 +126,10 @@ module NOA {
 				started: this.started,
 				closure: this.closure ? (<any>this.closure).toGraph() :null //TODO: mweh cast
 			}
+		}
+
+		toString() {
+			return "fun#" + this.noaid + "(" + (this.argnames ? this.argnames.join(",") : "") + ")" + (this.isJSFun ? "[native]" : "");
 		}
 
 	}

@@ -49,11 +49,7 @@ module NOA {
 		}
 
 		onSourceInsert (index : number, _) {
-			//var scope = Scope.newScope(this.basescope);
 			var source = this.source.cell(index);
-			//scope.set(this.varname, source);
-
-//			console.log("inserting new item for " + source);
 
 			this.insert(index, (<Call>Lang.call(this.func, source)).start(null)); //Lang.call, allows func to chaneg in the future :)
 		}

@@ -17,7 +17,6 @@ module NOA {
 			Util.assert(LangUtils.is(varname, ValueType.String));
 
 			this.realvarname = varname.value();
-			console.info("LET " + this.realvarname + ": " + expr.value());
 
 			this.set(stat);
 		}
@@ -29,8 +28,12 @@ module NOA {
 
 			if (this.expr instanceof Expression)
 				(<Expression> this.expr).start(resolver);
+
+			this.debugIn("LET '" + this.realvarname + "' BE '" + this.expr.value() + "' IN " + this.stat);
 			if (this.stat instanceof Expression)
 				(<Expression> this.stat).start(this);
+			this.debugOut();
+
 			return this;
 		}
 
@@ -68,6 +71,8 @@ module NOA {
 				this.set(new ErrorValue("Uninitialized variable '" + this.realvarname + "'"));
 			else
 				this.set(val);
+
+			this.debug("GET '" + this.realvarname + "' FOLLOWS " + this.fvalue);
 			return this;
 		}
 	}

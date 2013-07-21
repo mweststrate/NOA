@@ -145,7 +145,6 @@ module NOA {
 			if (from < to) {
 				var pl = this.getLength(to-1); //length of prevous item. -2, since lmap is already updated
 				startt = startt + pl - 1;
-				//console.log("move right " + startf + " -> " + startt)
 				for (var i = 0; i < length; i++)
 					this.move(startf, startt);
 			}
