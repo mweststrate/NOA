@@ -25,7 +25,7 @@ module NOA {
 			return this;
 		}
 
-		initArg(arg: IValue, assingResolver = true) {
+		initArg(arg: IValue, assingResolver = true) { //TODO: remove second argument
 			this.args.push(arg);
 			arg.live();
 		}

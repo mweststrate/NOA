@@ -49,7 +49,7 @@ module NOA {
 		//constructor(argname: string, statement : IValue); //statement should be expression? neuh, a constant value is a valid function as well for example..
 		constructor(...args: IValue[]);
 		constructor(...args: any[]) {
-			super(Util.isFunction(args[0]) ? [] : args); //why the slice?!
+			super(Util.isFunction(args[0]) ? [] : args);
 			this.setName("fun");
 			Util.assert(args.length > 0);
 			var fun = args[args.length-1];
@@ -60,14 +60,8 @@ module NOA {
 				this.jsFun = fun;
 			}
 			else {
-				//this.initArg(fun, false);
 				this.argnames = args.slice(0, -1).map(arg => arg.value());
 				this.statement = fun;
-
-				/*this.statement.getScopeDependencies().forEach(dep => {
-					if (Util.find(dep.name, this.argnames) == -1) //Not declared by us
-						this.scopeDependencies.push(dep);
-				});*/
 			}
 		}
 
