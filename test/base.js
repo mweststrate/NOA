@@ -743,16 +743,23 @@ exports.test6a0 = function(test) {
     var x = new NOA.List().debugName("x");
     var y = new NOA.List().debugName("y");
 
-    var xy = NOA.Lang.let("b", x, NOA.Lang.let("a", y, NOA.Lang.map(NOA.Lang.get("b"), NOA.Lang.fun("x",
-        NOA.Lang.map(NOA.Lang.get("a"), NOA.Lang.fun("y",
-              NOA.Lang.mul(NOA.Lang.get("x", NOA.Lang.get("y")))))))))
+    var xy =
+        NOA.Lang.let("x", x,
+            NOA.Lang.let("y", y,
+                NOA.Lang.map(
+                    NOA.Lang.get("x"),
+                    NOA.Lang.fun("a",
+                        NOA.Lang.map(
+                            NOA.Lang.get("y"),
+                            NOA.Lang.fun("b",
+                                NOA.Lang.mul(NOA.Lang.get("a"), NOA.Lang.get("b"))))))))
         .debugName("xy");
 
     var xyj = xy.join().debugName("xyjoin").live().start();
 
     test.deepEqual(xyj.toJSON(),[]);
-    x.add(3);
-    //test.deepEqual(xyj.toJSON(),[]);
+    x.add(3); //TODO: test with reversed assignments as well
+    test.deepEqual(xyj.toJSON(),[]);
     y.add(2)
     test.deepEqual(x.toJSON(),[3]);
     test.deepEqual(y.toJSON(),[2]);
@@ -771,6 +778,45 @@ exports.test6a0 = function(test) {
 }
 
 exports.test6a1 = function(test) {
+    var x = new NOA.List().debugName("x");
+    var y = new NOA.List().debugName("y");
+
+    var xy =
+        NOA.Lang.let("x", x,
+            NOA.Lang.let("y", y,
+                NOA.Lang.map(
+                    NOA.Lang.get("x"),
+                    NOA.Lang.fun("a",
+                        NOA.Lang.map(
+                            NOA.Lang.get("y"),
+                            NOA.Lang.fun("b",
+                                NOA.Lang.mul(NOA.Lang.get("a"), NOA.Lang.get("b"))))))))
+        .debugName("xy");
+
+    var xyj = xy.join().debugName("xyjoin").live().start();
+
+    test.deepEqual(xyj.toJSON(),[]);
+    y.add(3); //TODO: test with reversed assignments as well
+    test.deepEqual(xyj.toJSON(),[]);
+    x.add(2)
+    test.deepEqual(y.toJSON(),[3]);
+    test.deepEqual(x.toJSON(),[2]);
+    test.deepEqual(xyj.toJSON(),[6]);
+    y.add(4);
+    y.add(8);
+    test.deepEqual(xyj.toJSON(),[6,8,16]);
+    x.add(30);
+    x.add(300)
+    test.deepEqual(xyj.toJSON(),[6,8,16,90,120,240,900,1200,2400]);
+
+    xyj.die()
+    test.equal(NOA.List.count, 0)
+    test.equal(NOA.Base.count, 0)
+    test.done();
+}
+
+
+exports.test6a2 = function(test) {
     var x = new NOA.List().debugName("x");
 
     var xy =
@@ -794,7 +840,7 @@ exports.test6a1 = function(test) {
 }
 
 
-exports.test6a2 = function(test) {
+exports.test6a3 = function(test) {
     var x = new NOA.List().debugName("x");
     var y = new NOA.List().debugName("y");
 

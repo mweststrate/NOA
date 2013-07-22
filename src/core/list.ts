@@ -35,14 +35,15 @@ module NOA {
 			Yes, that is true, and maybe faster. But a lot more complicated as well. We need to update callbacks, use live/die etc.
 			Lets keep it simple for now
 			*/
-			var cell = new Variable(LangUtils.toValue(value));
+			var rval = LangUtils.toValue(value)
+			LangUtils.startExpression(rval, null);
+			var cell = new Variable(rval);
 			cell.live();
 
 			cell.setIndex(index); //TODO: just assing index property?
 			this.cells.splice(index, 0, cell);
 
-			LangUtils.startExpression(cell.fvalue, null);
-			
+
 			this._updateIndexes(index +1);
 			this.fire(ListEvent.INSERT.toString(), index, cell.get());
 

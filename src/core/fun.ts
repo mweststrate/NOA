@@ -5,6 +5,8 @@ module NOA {
 		constructor(private fun: Fun, private args: IValue[]) {
 			super();
 			Util.assert(fun.started);
+			//TODO: improved checking based on function definition
+			Util.assert(fun.isJSFun || fun.argnames.length == args.length, this.fun.toString() + " called with invalid number of arguments: " + args.length);
 			this.args.forEach(arg => arg.live());
 
 			var clone = this.fun.statement.clone();
@@ -33,9 +35,9 @@ module NOA {
 
 	export class Fun extends Expression implements IValue {
 
-		private isJSFun: bool;
+		isJSFun: bool;
 
-		private jsFun: Function;
+		jsFun: Function;
 
 		argnames: string[];
 		statement: IValue;
@@ -58,7 +60,7 @@ module NOA {
 				this.jsFun = fun;
 			}
 			else {
-				this.initArg(fun, false);
+				//this.initArg(fun, false);
 				this.argnames = args.slice(0, -1).map(arg => arg.value());
 				this.statement = fun;
 
@@ -101,7 +103,7 @@ module NOA {
 			if (this.isJSFun)
 				return new Fun(this.jsFun)
 			else
-				return NOA.Lang.fun.apply(NOA.Lang, this.args.concat(this.statement).map(arg => arg.clone())); //TODO: optimize, first map, then concat, statement needs no clone..
+				return NOA.Lang.fun.apply(NOA.Lang, [].concat(this.args.slice(0, -1).map(arg => arg.clone()), this.statement));
 		}
 
 		is(type: ValueType): bool {
@@ -111,7 +113,7 @@ module NOA {
 		value(): any { return this; }
 
 		toAST(): Object {
-			return Serializer.serializeFunction("fun", (<any[]>this.argnames).concat([this.statement]));
+			return Serializer.serializeFunction("fun", [].concat(<any[]>this.argnames, [this.statement]));
 		}
 
 		toJSON(): any {
