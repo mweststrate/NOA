@@ -90,6 +90,29 @@ exports.citizenfunctionmap = function(test) {
     test.done();
 }
 
+exports.recurse0 = function(test) {
+
+    var L = NOA.Lang;
+    var v = new NOA.Variable();
+    v.set(0);
+    var f = new NOA.Variable();
+    f.set(new NOA.Fun(NOA.LangUtils.toValue("x"), L.if_(
+        L.not(L.eq(L.get("x"), 0)),
+        L.call(f,0),// L.substract(L.get("x"), 1))
+        3
+    )));
+
+    f.fvalue.start();
+    test.equal(f.fvalue.call(NOA.LangUtils.toValue(0)), 3);
+
+    test.equal(f.fvalue.call(NOA.LangUtils.toValue(5)), 3);
+
+    f.die();
+
+    test.equal(NOA.Base.count, 0);
+    test.done();
+}
+
 exports.recurse1 = function(test) {
 
     var L = NOA.Lang;

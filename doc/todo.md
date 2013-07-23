@@ -12,12 +12,19 @@
 * basic functions
 * cli demo / order demo
 * clean up code & todo items
+* formatted errors (+ replace asserts by errors?)
 * typescript 0.9 when ready: http://typescript.codeplex.com/releases/view/108802#ReviewsAnchor
 
 ## 0.2 release
 
 * friendly syntax
 * template language?
+* DB support (mongodb)
+
+## 0.3 release
+
+* search queries
+* memoization ? + simple function structural equality check?
 
 ## Performance ideas
 

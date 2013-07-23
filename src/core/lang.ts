@@ -199,18 +199,30 @@ module NOA {
 			return res;
 		}
 
-		static eq(left: any, right: any):IValue { //TODO: variable //TODO can cb be declared as type?
-			/*		return LangUtils.define(
-						(l: IValue, r: IValue) => {
-							//TODO:
-						},
-						"eq",
-						[],
-		//				[null, null], //Null means any?
-						ValueType.Bool,
-						false
-					)(left, right);*/
-			return null;
+		static eq(left, right): IValue {
+			return LangUtils.define({
+				name: "eq",
+				autoTrigger: true,
+				implementation : function (l, r) {
+					if (l instanceof Constant && r instanceof Constant)
+						return l.value() == r.value();
+					else if (l instanceof Base && r instanceof Base)
+						return (<Base>l).noaid == (<Base>r).noaid;
+					return false;
+				},
+				initialArgs : [left, right]
+			});
+		}
+
+		static not(expr): IValue {
+			return LangUtils.define({
+				name: "not",
+				autoTrigger: true,
+				implementation : function (e) {
+					return !e;
+				},
+				initialArgs : [expr]
+			});
 		}
 
 		static list(...vals: IValue[]): List {
@@ -250,7 +262,6 @@ module NOA {
 		}
 
 		static sum(list: IList) : IValue {
-			//TODO: memoize
 			return LangUtils.define({
 				constr: ListSum,
 				name: "sum",
@@ -262,26 +273,14 @@ module NOA {
 		static map(list: IList, fun: Fun) {
 			return Util.notImplemented();
 		}
+
 		static filter(list: IList, fun: Fun): IValue {
-			//return new MappedList(list, fun);
-			var rlist = <IList> LangUtils.toValue(list);
-			var rfun = <Fun> LangUtils.toValue(fun);
-
-			var res = new Expression([rlist, rfun]);
-
-
-			res.setName("filter");
-			res.set(new FilteredList(rlist, rfun));
-
-			//rlist.die(); rfun.die(); //will receive a 'live' from map as well! //MWE askward, TODO: improve
-
-			return res;
-			//return LangUtils.define(MappedList, "map");//([list, fun]);
+			return Util.notImplemented();
 		}
 
 
 		static join(list: IList): IValue {
-			return new JoinedList(list);
+			return Util.notImplemented();
 		}
 
 		static numbercount(list: IList): IValue {
