@@ -57,6 +57,8 @@ module NOA {
 			return thing instanceof Variable || LangUtils.is(thing, type);
 		}
 
+		//TODO: rename to "toNOA" or "fromJSON"
+		//make synonym function "NOA" at toplevel (so that new List() == NOA([]))
 		static toValue(value: any): IValue {
 			if (Util.isPrimitive(value))
 				return new Constant(value);

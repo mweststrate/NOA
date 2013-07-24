@@ -1,13 +1,55 @@
 ///<reference path='../noa.ts'/>
 module NOA {
 	//TODO: move classes to own files
+
+	export class IfThenElse extends Expression {
+		private closure: IResolver;
+
+		constructor(private condition: IValue, private truthy: IValue, private falsy: IValue) {
+			super([condition, truthy, falsy]);
+			this.setName("if_");
+		}
+
+		start(resolver: IResolver) : IValue {
+			Util.assert(!this.started);
+			this.started = true;
+			this.closure = resolver;
+
+			LangUtils.startExpression(this.condition, this.closure);
+
+			if (this.condition instanceof Variable)
+				(<Variable>this.condition).get(this, this.applyCondition, true);
+			else
+				this.applyCondition(this.condition.value());
+
+			return this;
+		}
+
+
+		applyCondition (newvalue) {
+			if (newvalue instanceof Base && newvalue.is(ValueType.Error))
+				this.set(newvalue);
+			else {
+				//evaluate lazy in if, this makes recursion possible.
+				if (!!newvalue) {
+					LangUtils.startExpression(this.truthy, this.closure);
+					this.set(this.truthy);
+				}
+				else {
+					LangUtils.startExpression(this.falsy, this.closure);
+					this.set(this.falsy);
+				}
+			}
+		}
+	}
+
 	export class Let extends Expression implements IResolver {
 
 		realvarname: string;
 		closure: IResolver;
 
 		constructor(varname: IValue, private expr: IValue, private stat: IValue) {
-			super([]);
+			super([]); //TODO: just pass varname, expr and stat?
 			this.initArg(varname, true);
 			this.initArg(expr, true);
 			this.initArg(stat, false);
@@ -177,26 +219,13 @@ module NOA {
 		}
 
 		static if_(condition: any, truthy: any, falsy: any): IValue {
-			var cond = LangUtils.toValue(condition);
-			var iftrue = LangUtils.toValue(truthy);
-			var iffalse = LangUtils.toValue(falsy);
+			return LangUtils.define({
+				name: "if_",
+				autoTrigger: false,
+				constr: IfThenElse,
+				initialArgs: [condition, truthy, falsy]
+			});
 
-			var res = new Expression([cond, iftrue, iffalse]);
-			res.setName("if_");
-
-			var applyCond = function(value) {
-				if (value instanceof Base && value.is(ValueType.Error))
-					res.set(value);
-				else
-					res.set(!!value ? iftrue : iffalse);
-			}
-
-			if (cond instanceof Variable)
-				(<Variable>cond).get(res, applyCond, true);
-			else
-				applyCond(!!cond.value());
-
-			return res;
 		}
 
 		static eq(left, right): IValue {
@@ -204,11 +233,9 @@ module NOA {
 				name: "eq",
 				autoTrigger: true,
 				implementation : function (l, r) {
-					if (l instanceof Constant && r instanceof Constant)
-						return l.value() == r.value();
-					else if (l instanceof Base && r instanceof Base)
+					if (l instanceof Base && r instanceof Base)
 						return (<Base>l).noaid == (<Base>r).noaid;
-					return false;
+					return l == r;
 				},
 				initialArgs : [left, right]
 			});

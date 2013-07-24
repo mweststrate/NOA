@@ -29,7 +29,7 @@ module NOA {
 		}
 
 		toString() {
-			return "Apply" + this.noaid + "(" + this.args.map(a => a.value()).join(",") + ")";
+			return "apply" + this.noaid + " of " + this.fun.toString() + " with(" + this.args.map(a => a.value()).join(",") + ")";
 		}
 	}
 

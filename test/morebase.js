@@ -96,16 +96,17 @@ exports.recurse0 = function(test) {
     var v = new NOA.Variable();
     v.set(0);
     var f = new NOA.Variable();
-    f.set(new NOA.Fun(NOA.LangUtils.toValue("x"), L.if_(
+    var func = new NOA.Fun(NOA.LangUtils.toValue("x"), L.if_(
         L.not(L.eq(L.get("x"), 0)),
         L.call(f,0),// L.substract(L.get("x"), 1))
         3
-    )));
+    ));
+    f.set(func);
+    func.start(); //start fun with empty closure
 
-    f.fvalue.start();
-    test.equal(f.fvalue.call(NOA.LangUtils.toValue(0)), 3);
+    test.equal(func.call(NOA.LangUtils.toValue(0)).value(), 3);
 
-    test.equal(f.fvalue.call(NOA.LangUtils.toValue(5)), 3);
+    test.equal(func.call(NOA.LangUtils.toValue(5)).value(), 3);
 
     f.die();
 
@@ -116,9 +117,9 @@ exports.recurse0 = function(test) {
 exports.recurse1 = function(test) {
 
     var L = NOA.Lang;
-    var v = new NOA.Variable();
-    v.set(0);
-    var f = new NOA.Variable();
+
+    var f = new NOA.Variable().live();
+
     f.set(new NOA.Fun(NOA.LangUtils.toValue("x"), L.if_(
         L.eq(L.get("x"), 0),
         3,
@@ -126,9 +127,16 @@ exports.recurse1 = function(test) {
     )));
 
     f.fvalue.start();
-    test.equal(f.fvalue.call(NOA.LangUtils.toValue(0)), 3);
 
-    test.equal(f.fvalue.call(NOA.LangUtils.toValue(5)), 3);
+    var call = f.fvalue.call(NOA.LangUtils.toValue(0));
+    call.live();
+    test.equal(call.value(), 3);
+    call.die();
+
+    call = f.fvalue.call(NOA.LangUtils.toValue(5));
+    call.live();
+    test.equal(call.value(), 3);
+    call.die();
 
     f.die();
 
@@ -140,7 +148,7 @@ exports.recurse2 = function(test) {
 
     var L = NOA.Lang;
     var v = new NOA.Variable();
-    v.set(0);
+    v.set(2);
 
     var res = L.let(
         "product",
@@ -163,12 +171,12 @@ exports.recurse2 = function(test) {
     res.live().start();
     test.equal(res.value(), 0);
 
-    v.set(5);
+ /*   v.set(5);
     test.equal(res.value(), 120);
 
     v.set(1);
     test.equal(res.value(), 1);
-
+*/
     res.die();
 
     test.equal(NOA.Base.count, 0);
