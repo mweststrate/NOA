@@ -1,4 +1,4 @@
-///<reference path='../noa.ts'/>
+///<reference path='../../noa.ts'/>
 module NOA {
 
 	//TODO: aggregations should listen to input arguments if applicable

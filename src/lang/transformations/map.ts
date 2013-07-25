@@ -1,4 +1,4 @@
-///<reference path='../noa.ts'/>
+///<reference path='../../noa.ts'/>
 
 //return new MappedList(list, fun);
 NOA.LangUtils.define({

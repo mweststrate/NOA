@@ -11,3 +11,7 @@ src/aggregations/*.js*
 src/core/*.js*
 src/util/*.js*
 src/transformations/*.js*
+src/types/*.js*
+src/lang/*.js*
+src/lang/transformations/*.js*
+src/lang/aggregations/*.js*

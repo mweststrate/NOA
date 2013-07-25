@@ -1,6 +1,7 @@
 ///<reference path='../noa.ts'/>
 
 module NOA {
+	//TODO: rename to primitive?
 	export class Constant extends Base implements IPlainValue {
 		fvalue: any;
 

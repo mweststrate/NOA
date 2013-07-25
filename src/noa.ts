@@ -4,32 +4,32 @@
 
 ///<reference path='core/interfaces.ts'/>
 
-///<reference path='core/constant.ts'/>
+///<reference path='types/constant.ts'/>
 ///<reference path='core/variable.ts'/>
 ///<reference path='core/expression.ts'/>
 ///<reference path='core/varcontainer.ts'/>
-///<reference path='core/fun.ts'/>
+///<reference path='types/fun.ts'/>
 
-///<reference path='core/list.ts'/>
-///<reference path='core/record.ts'/>
+///<reference path='types/list.ts'/>
+///<reference path='types/record.ts'/>
 
-///<reference path='core/error.ts'/>
+///<reference path='types/error.ts'/>
 
 ///<reference path='util/serializer.ts'/>
 ///<reference path='core/langutils.ts'/>
-///<reference path='core/lang.ts'/>
+///<reference path='lang/lang.ts'/>
 
-///<reference path='aggregations/aggregations.ts'/>
+///<reference path='lang/aggregations/aggregations.ts'/>
 
-///<reference path='transformations/transformations.ts'/>
-///<reference path='transformations/distinct.ts'/>
-///<reference path='transformations/filter.ts'/>
-///<reference path='transformations/join.ts'/>
-///<reference path='transformations/map.ts'/>
-///<reference path='transformations/reverse.ts'/>
-///<reference path='transformations/sort.ts'/>
-///<reference path='transformations/subset.ts'/>
-///<reference path='transformations/tail.ts'/>
+///<reference path='lang/transformations/transformations.ts'/>
+///<reference path='lang/transformations/distinct.ts'/>
+///<reference path='lang/transformations/filter.ts'/>
+///<reference path='lang/transformations/join.ts'/>
+///<reference path='lang/transformations/map.ts'/>
+///<reference path='lang/transformations/reverse.ts'/>
+///<reference path='lang/transformations/sort.ts'/>
+///<reference path='lang/transformations/subset.ts'/>
+///<reference path='lang/transformations/tail.ts'/>
 
 module NOA {
 	//Empty module, this is here just for the imports

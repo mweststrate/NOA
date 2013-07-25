@@ -7,7 +7,6 @@ module NOA {
 			Util.assert(fun.started);
 			//TODO: improved checking based on function definition
 			Util.assert(fun.isJSFun || fun.argnames.length == args.length, this.fun.toString() + " called with invalid number of arguments: " + args.length);
-			this.fun.live();
 			this.args.forEach(arg => arg.live());
 
 			var clone = this.fun.statement.clone();
@@ -24,7 +23,6 @@ module NOA {
 
 		free() {
 			super.free();
-			this.fun.die();
 			this.args.forEach(arg => arg.die());
 		}
 
@@ -66,10 +64,9 @@ module NOA {
 			}
 		}
 
-		setFunctionName(name: string) : Fun {
+		setFunctionName(name: string) {
 			Util.assert(!this.started);
 			this.functionName = name;
-			return this;
 		}
 
 		start(resolver: IResolver) : IValue {
