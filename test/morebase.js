@@ -93,23 +93,32 @@ exports.citizenfunctionmap = function(test) {
 exports.recurse0 = function(test) {
 
     var L = NOA.Lang;
-    var v = new NOA.Variable();
-    v.set(0);
-    var f = new NOA.Variable();
+
     var func = new NOA.Fun(NOA.LangUtils.toValue("x"), L.if_(
         L.not(L.eq(L.get("x"), 0)),
-        L.call(f,0),// L.substract(L.get("x"), 1))
+        L.call(L.get("fun"),0),// L.substract(L.get("x"), 1))
         3
     ));
-    f.set(func);
+    func.setFunctionName("fun");
+    func.live();
+
     func.start(); //start fun with empty closure
 
-    test.equal(func.call(NOA.LangUtils.toValue(0)).value(), 3);
+    var call = func.call(NOA.LangUtils.toValue(0)).live();
+    test.equal(call.value(), 3);
+    call.die();
 
-    test.equal(func.call(NOA.LangUtils.toValue(5)).value(), 3);
+    call = func.call(NOA.LangUtils.toValue(5)).live();
+    test.equal(call.value(), 3);
+    call.die();
 
-    f.die();
+    func.die();
 
+    test.equal(NOA.FunctionApplication.count, 0);
+    test.equal(NOA.Fun.count, 0);
+    test.equal(NOA.Call.count, 0);
+    test.equal(NOA.Variable.count, 0);
+    test.equal(NOA.Expression.count, 0);
     test.equal(NOA.Base.count, 0);
     test.done();
 }
@@ -123,8 +132,9 @@ exports.recurse1 = function(test) {
     f.set(new NOA.Fun(NOA.LangUtils.toValue("x"), L.if_(
         L.eq(L.get("x"), 0),
         3,
-        L.call(f,0)// L.substract(L.get("x"), 1))
-    )));
+        L.call(L.get("fun"),0)// L.substract(L.get("x"), 1))
+    )).setFunctionName("fun"));
+
 
     f.fvalue.start();
 

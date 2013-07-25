@@ -199,7 +199,7 @@ module NOA {
 
 		live () {
 			this.noabase.refcount += 1;
-			//this.debug("live", this.noabase.refcount);
+			this.debug("live", this.noabase.refcount);
 
 			if (this.destroyed)
 				throw new Error(this + " Attempt to resurrect!");
@@ -212,7 +212,7 @@ module NOA {
 				return this;
 
 			this.noabase.refcount -= 1;
-			//this.debug("die", this.noabase.refcount);
+			this.debug("die", this.noabase.refcount);
 			if (this.noabase.refcount == 0)
 				this.free();
 			else if (this.noabase.refcount < 0)
