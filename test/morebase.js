@@ -148,15 +148,12 @@ exports.recurse2 = function(test) {
 
     var L = NOA.Lang;
     var v = new NOA.Variable();
-    v.set(2);
+    v.set(1);
 
-    var res = L.let(
-        "product",
-        L.fun("x",
-            //L.if_(1,2,3)
+    var product = L.fun("x",
             L.if_(
-                L.eq(L.get("x"), 0),
-                0,
+                L.eq(L.get("x"), 1),
+                1,
                 L.mul(
                     L.get("x"),
                     L.call(
@@ -165,21 +162,29 @@ exports.recurse2 = function(test) {
                     )
                 )
             )
-        ),
+        );
+    product.setFunctionName("product");
+
+    var res = L.let(
+        "product",
+        product,
         L.call(L.get("product"), v));
 
     res.live().start();
-    test.equal(res.value(), 0);
+    test.equal(res.value(), 1);
 
- /*   v.set(5);
+    v.set(5);
     test.equal(res.value(), 120);
 
+    //If IfThenElse does not clean up the unused branch properly, this will result in unending recursion
     v.set(1);
     test.equal(res.value(), 1);
-*/
+
+
     res.die();
 
     test.equal(NOA.Base.count, 0);
+
     test.done();
 }
 

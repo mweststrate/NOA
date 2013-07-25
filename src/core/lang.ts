@@ -31,14 +31,10 @@ module NOA {
 				this.set(newvalue);
 			else {
 				//evaluate lazy in if, this makes recursion possible.
-				if (!!newvalue) {
-					LangUtils.startExpression(this.truthy, this.closure);
-					this.set(this.truthy);
-				}
-				else {
-					LangUtils.startExpression(this.falsy, this.closure);
-					this.set(this.falsy);
-				}
+				//clone, so that the current value is freed up as soon as the value of the expressions alters
+				var clone = (!!newvalue ? this.truthy : this.falsy).clone();
+				LangUtils.startExpression(clone, this.closure);
+				this.set(clone);
 			}
 		}
 	}
