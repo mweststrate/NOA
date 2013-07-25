@@ -15,6 +15,7 @@ module NOA {
 
 	export class LangUtils {
 
+		//TODO: rename to declare
 		static define(d: IFunctionDefinition) {
 
 			Util.assert(!!d.implementation ^ !!d.constr);
@@ -25,6 +26,7 @@ module NOA {
 				var result: Expression;
 				var realArgs: IValue[] = args.map(LangUtils.toValue);
 
+				//TODO: support Fun instances as well
 				if (d.constr) {
 					result = Util.applyConstructor(d.constr, realArgs);
 					result.setName(d.name);

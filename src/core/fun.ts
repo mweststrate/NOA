@@ -18,9 +18,7 @@ module NOA {
 			var argpos = Util.find(name, this.fun.argnames);
 			if (argpos >= 0)
 				return this.args[argpos];
-			else if (this.fun.closure)
-				return this.fun.closure.resolve(name);
-			return null;
+			return this.fun.resolve(name);
 		}
 
 		free() {
@@ -33,7 +31,7 @@ module NOA {
 		}
 	}
 
-	export class Fun extends Expression implements IValue {
+	export class Fun extends Expression implements IValue implements IResolver {
 
 		isJSFun: bool;
 
@@ -43,6 +41,7 @@ module NOA {
 		statement: IValue;
 		closure: IResolver;
 		started: bool = false;
+		functionName: string;
 
 		constructor(f: Function);
 		//constructor(argnames: string[], statement : IValue); //statement should be expression? neuh, a constant value is a valid function as well for example..
@@ -65,11 +64,25 @@ module NOA {
 			}
 		}
 
+		setFunctionName(name: string) {
+			Util.assert(!this.started);
+			this.functionName = name;
+		}
+
 		start(resolver: IResolver) : IValue {
 			Util.assert(!this.started);
 			this.started = true;
 			this.closure = resolver;
 			return this;
+		}
+
+		resolve(name: string) : IValue {
+			//function is available under its own name its own body to allow for recursion
+			if (this.functionName && name === this.functionName)
+				return this;
+			if (this.closure)
+				return this.closure.resolve(name);
+			return null;
 		}
 
 		public set() {
@@ -94,10 +107,15 @@ module NOA {
 		}
 
 		clone(): IValue {
+			//TODO: should be just return 'this' or am I missing something?
+			var res : Fun;
 			if (this.isJSFun)
-				return new Fun(this.jsFun)
+				res = new Fun(this.jsFun)
 			else
-				return NOA.Lang.fun.apply(NOA.Lang, [].concat(this.args.slice(0, -1).map(arg => arg.clone()), this.statement));
+				res = NOA.Lang.fun.apply(NOA.Lang, [].concat(this.args.slice(0, -1).map(arg => arg.clone()), this.statement));
+
+			res.setFunctionName(this.functionName);
+			return res;
 		}
 
 		is(type: ValueType): bool {
@@ -107,16 +125,19 @@ module NOA {
 		value(): any { return this; }
 
 		toAST(): Object {
-			return Serializer.serializeFunction("fun", [].concat(<any[]>this.argnames, [this.statement]));
+			var res = Serializer.serializeFunction("fun", [].concat(<any[]>this.argnames, [this.statement]));
+			res.name = this.functionName;
+			return res;
 		}
 
 		toJSON(): any {
-			return this.isJSFun ? <any>this.jsFun : "fun(" + this.argnames.join(",") + ")";
+			return this.isJSFun ? <any>this.jsFun : "fun"+(this.functionName ? " " + this.functionName:"")+"(" + this.argnames.join(",") + ")";
 		}
 
 		toGraph() {
 			return {
 				name: 'Fun',
+				functionName : this.functionName,
 				args: this.argnames,
 				body : this.isJSFun ? this.jsFun.toString() : this.statement.toGraph(),
 				started: this.started,
@@ -125,7 +146,7 @@ module NOA {
 		}
 
 		toString() {
-			return "fun#" + this.noaid + "(" + (this.argnames ? this.argnames.join(",") : "") + ")" + (this.isJSFun ? "[native]" : "");
+			return "fun#" + this.noaid + (this.functionName ? " " + this.functionName:"") + "(" + (this.argnames ? this.argnames.join(",") : "") + ")" + (this.isJSFun ? "[native]" : "");
 		}
 
 	}
