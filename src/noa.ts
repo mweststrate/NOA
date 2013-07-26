@@ -24,7 +24,7 @@
 
 ///<reference path='lang/aggregations/aggregations.ts'/>
 
-///<reference path='lang/transformations/transformations.ts'/>
+///<reference path='lang/transformations/transformation.ts'/>
 ///<reference path='lang/transformations/distinct.ts'/>
 ///<reference path='lang/transformations/filter.ts'/>
 ///<reference path='lang/transformations/join.ts'/>

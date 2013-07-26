@@ -1,5 +1,4 @@
-///<reference path='../core/expression.ts'/>
-
+///<reference path='../noa.ts'/>
 module NOA {
 
 	export class JavascriptExpression extends Expression {

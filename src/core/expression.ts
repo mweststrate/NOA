@@ -1,4 +1,4 @@
-///<reference path='../core/variable.ts'/>
+///<reference path='../noa.ts'/>
 
 module NOA {
 	export class Expression/*<T extends IValue>*/ extends Variable {

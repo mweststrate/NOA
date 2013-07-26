@@ -55,7 +55,14 @@
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="src\core\javascriptexpression.ts" />
+    <Content Include="src\core\serializer.ts" />
     <Content Include="src\lang\aggregations\aggregations.ts" />
+    <Content Include="src\lang\call.ts" />
+    <Content Include="src\lang\get.ts" />
+    <Content Include="src\lang\ifthenelse.ts" />
+    <Content Include="src\lang\let.ts" />
+    <Content Include="src\lang\transformations\transformation.ts" />
     <Content Include="src\types\constant.ts" />
     <Content Include="src\core\expression.ts" />
     <Content Include="src\types\fun.ts" />
@@ -81,7 +88,6 @@
     <Content Include="src\types\list.ts" />
     <Content Include="src\noa.ts" />
     <Content Include="src\types\record.ts" />
-    <Content Include="src\util\serializer.ts" />
     <Content Include="src\lang\transformations\distinct.ts" />
     <Content Include="src\lang\transformations\filter.ts" />
     <Content Include="src\lang\transformations\join.ts" />
@@ -90,7 +96,6 @@
     <Content Include="src\lang\transformations\sort.ts" />
     <Content Include="src\lang\transformations\subset.ts" />
     <Content Include="src\lang\transformations\tail.ts" />
-    <Content Include="src\lang\transformations\transformations.ts" />
     <Content Include="src\util\util.ts" />
   </ItemGroup>
   <ItemGroup>
