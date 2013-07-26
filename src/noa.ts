@@ -3,21 +3,24 @@
 ///<reference path='util/binding.ts'/>
 
 ///<reference path='core/interfaces.ts'/>
-
-///<reference path='types/constant.ts'/>
 ///<reference path='core/variable.ts'/>
 ///<reference path='core/expression.ts'/>
+///<reference path='core/javascriptexpression.ts'/>
 ///<reference path='core/varcontainer.ts'/>
-///<reference path='types/fun.ts'/>
+///<reference path='core/langutils.ts'/>
+///<reference path='core/serializer.ts'/>
 
+///<reference path='types/constant.ts'/>
+///<reference path='types/error.ts'/>
+///<reference path='types/fun.ts'/>
 ///<reference path='types/list.ts'/>
 ///<reference path='types/record.ts'/>
 
-///<reference path='types/error.ts'/>
-
-///<reference path='util/serializer.ts'/>
-///<reference path='core/langutils.ts'/>
 ///<reference path='lang/lang.ts'/>
+///<reference path='lang/let.ts'/>
+///<reference path='lang/get.ts'/>
+///<reference path='lang/call.ts'/>
+///<reference path='lang/ifthenelse.ts'/>
 
 ///<reference path='lang/aggregations/aggregations.ts'/>
 

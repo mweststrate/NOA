@@ -1,5 +1,6 @@
 ///<reference path='../noa.ts'/>
 
+//TODO: move to core
 
 module NOA{
 

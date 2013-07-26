@@ -55,46 +55,42 @@
     <TypeScriptModuleKind>AMD</TypeScriptModuleKind>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="src\aggregations\aggregations.ts" />
-    <Content Include="src\core\constant.ts" />
+    <Content Include="src\lang\aggregations\aggregations.ts" />
+    <Content Include="src\types\constant.ts" />
     <Content Include="src\core\expression.ts" />
-    <Content Include="src\core\fun.ts" />
+    <Content Include="src\types\fun.ts" />
     <Content Include="src\core\langutils.ts" />
     <Content Include="test\base.js" />
     <Content Include="test\lang.js" />
     <Content Include="test\morebase.js" />
     <Content Include="test\perf.js" />
     <Content Include="test\test.html" />
-    <TypeScriptCompile Include="src\core\sleepable.ts" />
-    <Content Include="src\core\sleepable.js">
-      <DependentUpon>sleepable.ts</DependentUpon>
-    </Content>
     <Content Include="src\core\varcontainer.ts" />
     <Content Include="src\util\base.ts" />
     <Content Include="src\util\binding.ts" />
     <Content Include="src\core\variable.ts" />
-    <TypeScriptCompile Include="src\core\error.ts" />
-    <Content Include="src\core\error.js">
+    <TypeScriptCompile Include="src\types\error.ts" />
+    <Content Include="src\types\error.js">
       <DependentUpon>error.ts</DependentUpon>
     </Content>
-    <TypeScriptCompile Include="src\core\lang.ts" />
+    <TypeScriptCompile Include="src\lang\lang.ts" />
     <Content Include="src\core\interfaces.ts" />
-    <Content Include="src\core\lang.js">
+    <Content Include="src\lang\lang.js">
       <DependentUpon>lang.ts</DependentUpon>
     </Content>
-    <Content Include="src\core\list.ts" />
+    <Content Include="src\types\list.ts" />
     <Content Include="src\noa.ts" />
-    <Content Include="src\core\record.ts" />
+    <Content Include="src\types\record.ts" />
     <Content Include="src\util\serializer.ts" />
-    <Content Include="src\transformations\distinct.ts" />
-    <Content Include="src\transformations\filter.ts" />
-    <Content Include="src\transformations\join.ts" />
-    <Content Include="src\transformations\map.ts" />
-    <Content Include="src\transformations\reverse.ts" />
-    <Content Include="src\transformations\sort.ts" />
-    <Content Include="src\transformations\subset.ts" />
-    <Content Include="src\transformations\tail.ts" />
-    <Content Include="src\transformations\transformations.ts" />
+    <Content Include="src\lang\transformations\distinct.ts" />
+    <Content Include="src\lang\transformations\filter.ts" />
+    <Content Include="src\lang\transformations\join.ts" />
+    <Content Include="src\lang\transformations\map.ts" />
+    <Content Include="src\lang\transformations\reverse.ts" />
+    <Content Include="src\lang\transformations\sort.ts" />
+    <Content Include="src\lang\transformations\subset.ts" />
+    <Content Include="src\lang\transformations\tail.ts" />
+    <Content Include="src\lang\transformations\transformations.ts" />
     <Content Include="src\util\util.ts" />
   </ItemGroup>
   <ItemGroup>

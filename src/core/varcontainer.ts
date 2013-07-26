@@ -1,5 +1,4 @@
 ///<reference path='../noa.ts'/>
-///<reference path='interfaces.ts'/>
 module NOA {
 
 	//TODO: rename to var container

@@ -1,4 +1,5 @@
 ///<reference path='../noa.ts'/>
+
 module NOA {
 	export class FunctionApplication extends Variable implements IResolver {
 
