@@ -210,7 +210,7 @@ module NOA {
 			var stringmap: Object  = extracted[1];
 			var expression: string = extracted[0];
 
-			var tokens = expression.split(/\b/).filter(x => x.trim() != ""); //bwegh filter for whitespace
+			var tokens = expression.split(/\b|(?=\W)/).filter(x => x.trim() != ""); //bwegh filter for whitespace
 			var pos = 0;
 
 			function parseTerm(term: String) {
@@ -223,7 +223,7 @@ module NOA {
 
 			function parseIdentifier(): string {
 				var id = null;
-				if (id = tokens[pos].match(/^\w+$/)) 
+				if (id = tokens[pos].match(/^[a-z_]\w*$/i)) 
 					pos++;
 				return id ? id[0] : null;
 			}
@@ -237,7 +237,7 @@ module NOA {
 					res = new Constant(stringmap[token]);
 				else if (token.match(/^(true|false)$/))
 					res = new Constant(Util.toBool(token));
-				else if (Util.toNumber(token) != NaN)
+				else if (!isNaN(<any>token))
 					res = new Constant(Util.toNumber(token));
 
 				if (res)
@@ -250,7 +250,7 @@ module NOA {
 					return null;
 				var res = parse();
 				if (!parseTerm(")"))
-					throw "Expected ')'";
+					throw "Expression expected ')'";
 				return res;
 			}
 
@@ -269,7 +269,7 @@ module NOA {
 						args.push(parse());
 					} while (parseTerm(","))
 					if (!parseTerm(")"))
-						throw "Expected ')'";
+						throw "Function call expected ')'";
 				}
 
 				if (!Lang[name])
@@ -285,10 +285,15 @@ module NOA {
 			}
 
 			function parse(): IValue {
+				console.log(tokens, pos);
 				if (pos >= tokens.length)
 					throw "Expected expression";
 
-				return parseParen() || parsePrimitive() || parseFuncall() || parseGet();
+				var res = parseParen() || parsePrimitive() || parseFuncall() || parseGet();
+				console.log("-> ", res.toString());
+				if (res)
+					return res;
+				throw ("Failed to parse: " + tokens.slice(pos).join(""));
 			}
 
 			var res = parse();
