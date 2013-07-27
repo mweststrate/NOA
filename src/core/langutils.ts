@@ -205,6 +205,99 @@ module NOA {
 			return f;
 		}
 
+		public static parseExpression(expression: string): IValue {
+			var extracted = Util.extractStringMap(expression, '__string__');
+			var stringmap: Object  = extracted[1];
+			var expression: string = extracted[0];
+
+			var tokens = expression.split(/\b/).filter(x => x.trim() != ""); //bwegh filter for whitespace
+			var pos = 0;
+
+			function parseTerm(term: String) {
+				if (tokens[pos] == term) {
+					pos++;
+					return true;
+				}
+				return false;
+			}
+
+			function parseIdentifier(): string {
+				var id = null;
+				if (id = tokens[pos].match(/^\w+$/)) 
+					pos++;
+				return id ? id[0] : null;
+			}
+
+			function parsePrimitive() : Constant {
+				if (pos > tokens.length)
+					return null;
+				var res, token = tokens[pos];
+
+				if (token.indexOf("__string__") == 0)
+					res = new Constant(stringmap[token]);
+				else if (token.match(/^(true|false)$/))
+					res = new Constant(Util.toBool(token));
+				else if (Util.toNumber(token) != NaN)
+					res = new Constant(Util.toNumber(token));
+
+				if (res)
+					pos++;
+				return res;
+			}
+
+			function parseParen(): IValue {
+				if (!parseTerm("("))
+					return null;
+				var res = parse();
+				if (!parseTerm(")"))
+					throw "Expected ')'";
+				return res;
+			}
+
+			function parseFuncall(): IValue {
+				var name = parseIdentifier();
+				if (!name)
+					return null;
+				if (!parseTerm("(")) {
+					pos -= 1; //unparse identifier
+					return null;
+				}
+
+				var args:IValue[] = [];
+				if (!parseTerm(")")) {
+					do {
+						args.push(parse());
+					} while (parseTerm(","))
+					if (!parseTerm(")"))
+						throw "Expected ')'";
+				}
+
+				if (!Lang[name])
+					throw "Unknown function: 'name'";
+				return NOA.Lang[name].apply(NOA.Lang, args);
+			}
+
+			function parseGet(): IValue {
+				var name;
+				if (name = parseIdentifier()) 
+					return Lang.get(name);
+				return null;
+			}
+
+			function parse(): IValue {
+				if (pos >= tokens.length)
+					throw "Expected expression";
+
+				return parseParen() || parsePrimitive() || parseFuncall() || parseGet();
+			}
+
+			var res = parse();
+			if (!res)
+				throw "Failed to parse: " + tokens.join(" ");
+			if (pos < tokens.length)
+				throw "Found superfluous input: " + tokens.slice(pos).join(" ");
+			return res;
+		}
 
 	}
 }

@@ -64,14 +64,16 @@ module NOA {
 
 			//expression
 			else {
-				value = this.parseExpression(expr);
+				value = this.parseExpression(line);
+				value.live();
 
 				LangUtils.startExpression(value, null);  //TODO: scope is this.global);
 
 				repl.color(ReplColor.Yellow).text(Util.toString(value.value())).color()
 					.newline()
 					.indent().text(value.toString()).outdent();
-				//TODO: parse and evaluate
+
+				value.die();
 			}
 		}
 
@@ -104,8 +106,7 @@ module NOA {
 		}
 
 		parseExpression(expr: string): IValue {
-			//TODO:
-			return new NOA.Constant(42);
+			return LangUtils.parseExpression(expr);
 		}
 	}
 }

@@ -318,6 +318,14 @@ module NOA {
 			return Object.prototype.toString.call(thing) === '[object Object]'
 		}
 
+		static toNumber(num: string): number {
+			return 1 * <any>num;
+		}
+
+		static toBool(val: string): bool {
+			return val == "true";
+		}
+
 		static find(thing : any, array : any[]) : number {
 			if (!Util.isArray(array))
 				throw "Second argument should be array";
@@ -419,6 +427,23 @@ module NOA {
 
 		static randomUUID () {
 			return "todo";
+		}
+
+		static extractStringMap(input: string, prefix: string): any[]{
+			//From miniup langauge definition
+			var StringSingle = /'([^']|(\\[btnfr"'\\]))*'/g;
+			var StringDouble = /"([^"]|(\\[btnfr"'\\]))*"/g;
+
+			var map = {};
+			var cnt = 0;
+			var matcher = (match) => {
+				var key = "" + prefix + (++cnt);
+				map[key] = match;
+				return key;
+			}
+
+			var output = input.replace(StringSingle, matcher).replace(StringDouble, matcher);				
+			return [output, map];
 		}
 
 		static runtests(tests : Object) {
