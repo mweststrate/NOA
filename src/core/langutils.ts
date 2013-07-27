@@ -213,25 +213,25 @@ module NOA {
 			var tokens = expression.split(/\b|(?=\W)/).filter(x => x.trim() != ""); //bwegh filter for whitespace
 			var pos = 0;
 
-			function parseTerm(term: String) {
-				if (tokens[pos] == term) {
-					pos++;
-					return true;
-				}
-				return false;
+			function consume(): string {
+				return tokens[pos++];
+			}
+
+			function unconsume(): any {
+				pos--;
+				return null;
+			}
+
+			function parseTerm(term: String): bool {
+				return consume() == term ? true : !!unconsume();
 			}
 
 			function parseIdentifier(): string {
-				var id = null;
-				if (id = tokens[pos].match(/^[a-z_]\w*$/i)) 
-					pos++;
-				return id ? id[0] : null;
+				return consume().match(/^[a-z_]\w*$/i)[0] || unconsume();
 			}
 
 			function parsePrimitive() : Constant {
-				if (pos > tokens.length)
-					return null;
-				var res, token = tokens[pos];
+				var res, token = consume();
 
 				if (token.indexOf("__string__") == 0)
 					res = new Constant(stringmap[token]);
@@ -240,9 +240,7 @@ module NOA {
 				else if (!isNaN(<any>token))
 					res = new Constant(Util.toNumber(token));
 
-				if (res)
-					pos++;
-				return res;
+				return res || unconsume();
 			}
 
 			function parseParen(): IValue {
@@ -258,10 +256,8 @@ module NOA {
 				var name = parseIdentifier();
 				if (!name)
 					return null;
-				if (!parseTerm("(")) {
-					pos -= 1; //unparse identifier
-					return null;
-				}
+				if (!parseTerm("("))
+					return unconsume(); //unparse identifier
 
 				var args:IValue[] = [];
 				if (!parseTerm(")")) {
@@ -279,9 +275,7 @@ module NOA {
 
 			function parseGet(): IValue {
 				var name;
-				if (name = parseIdentifier()) 
-					return Lang.get(name);
-				return null;
+				return !!(name = parseIdentifier()) ? Lang.get(name) : null;
 			}
 
 			function parse(): IValue {
@@ -297,8 +291,6 @@ module NOA {
 			}
 
 			var res = parse();
-			if (!res)
-				throw "Failed to parse: " + tokens.join(" ");
 			if (pos < tokens.length)
 				throw "Found superfluous input: " + tokens.slice(pos).join(" ");
 			return res;
