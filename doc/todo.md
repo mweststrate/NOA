@@ -2,8 +2,8 @@
 
 ## 0.1 release
 
-* scope
-* recursion
+* <strike>scope</strike>
+* <strike>recursion</strike>
 * currentValue / actualValue / event arguments
 * parse
 * CLI
@@ -23,6 +23,7 @@
 
 ## 0.3 release
 
+* static checks on calls
 * search queries
 * memoization ? + simple function structural equality check?
 

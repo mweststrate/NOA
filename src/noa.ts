@@ -1,5 +1,6 @@
-///<reference path='util/util.ts'/>
+///<reference path='util/repl.ts'/>
 ///<reference path='util/base.ts'/>
+///<reference path='util/util.ts'/>
 ///<reference path='util/binding.ts'/>
 
 ///<reference path='core/interfaces.ts'/>
@@ -22,6 +23,8 @@
 ///<reference path='lang/call.ts'/>
 ///<reference path='lang/ifthenelse.ts'/>
 
+///<reference path='core/noarepl.ts'/>
+
 ///<reference path='lang/aggregations/aggregations.ts'/>
 
 ///<reference path='lang/transformations/transformation.ts'/>
@@ -36,7 +39,11 @@
 
 module NOA {
 	//Empty module, this is here just for the imports
+	
 }
+
+(<any>NOA).version = ():string => "0.1";
+
 /*
 (function (root) {
 	(function (root, NOA, exports, mod, define) {
@@ -51,6 +58,7 @@ module NOA {
 })(this);
 */
 
+//TODO:
 //MWE this is a poor attempt to fix the export mechanism of typescript which I don't understand.
 //If the module is exported, commonJS / AMD define code is generated. However, this causes that it
 //is no longer to extend the NOA namespace of multiple files. Properly there is a proper way
@@ -63,3 +71,8 @@ declare var exports : any;
 		exports[key] = NOA[key];
 })(this);
 
+//root script?
+declare var module: any;
+if ((typeof(module) !== "undefined" && !module.parent)) {
+	new NOA.NOARepl();
+}
