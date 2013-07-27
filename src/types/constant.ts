@@ -68,7 +68,7 @@ module NOA {
 
 		toString(): string {
 			//return ["[Constant#", this.noaid, "=", this.fvalue, "]"].join("");
-			return this.fvalue === null || this.fvalue === undefined? "None" : this.fvalue;
+			return this.fvalue === null || this.fvalue === undefined ? "None" : this.fvalue;
 		}
 
 		free() {

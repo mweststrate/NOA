@@ -3,8 +3,9 @@
 module NOA {
 	export class NOARepl {
 
+		global = new NOA.Record();
 
-		constructor(private domNode?:Element) {
+		constructor(private domNode?: Element) {
 			new Repl({
 				evaluator : this.evaluate,
 				completer: this.autoComplete,
@@ -38,10 +39,40 @@ module NOA {
 		}
 
 		evaluate(line: string, repl: Repl) {
-			if (line.indexOf("\\") == 0 && this["command" + line.toLowerCase().substring(1)])
-				this["command" + line.toLowerCase().substring(1)].call(this, repl);
-			else
-				repl.color(ReplColor.Red).text("Unknown command. Use '\\help' to list available commands").color();
+			var parts, value : IValue;
+
+			//build in command
+			if (line.indexOf("\\") == 0) {
+				if (this["command" + line.toLowerCase().substring(1)])
+					this["command" + line.toLowerCase().substring(1)].call(this, repl);
+				else
+					repl.color(ReplColor.Red).text("Unknown command. Use '\\help' to list available commands").color();
+			}
+
+			//assignment
+			else if (parts = line.match(/^(\w+)\s*=(.*$)/)) {
+				var name = parts[1];
+				var expr = parts[2];
+
+				value = this.parseExpression(expr);
+				this.global.put(name, value);
+
+				repl.color(ReplColor.Cyan).text(name).color().text(" -> ").color(ReplColor.Yellow).text(Util.toString(value.value())).color()
+					.newline()
+					.indent().text(value.toString()).outdent();
+			}
+
+			//expression
+			else {
+				value = this.parseExpression(expr);
+
+				LangUtils.startExpression(value, null);  //TODO: scope is this.global);
+
+				repl.color(ReplColor.Yellow).text(Util.toString(value.value())).color()
+					.newline()
+					.indent().text(value.toString()).outdent();
+				//TODO: parse and evaluate
+			}
 		}
 
 		commandq(repl: Repl) {
@@ -67,9 +98,14 @@ module NOA {
 		commandlist(repl: Repl) {
 			repl.newline().color(ReplColor.Magenta)
 				.text("Available functions:").color().newline()
-				.text("===================").newline().newline();
+				.text("====================").newline().newline();
 
 			this.getNoaFunctions().sort().forEach(fun => repl.text(fun).newline());
+		}
+
+		parseExpression(expr: string): IValue {
+			//TODO:
+			return new NOA.Constant(42);
 		}
 	}
 }

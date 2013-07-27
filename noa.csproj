@@ -56,6 +56,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="src\core\javascriptexpression.ts" />
+    <Content Include="src\core\noarepl.ts" />
     <Content Include="src\core\serializer.ts" />
     <Content Include="src\lang\aggregations\aggregations.ts" />
     <Content Include="src\lang\call.ts" />
@@ -67,6 +68,10 @@
     <Content Include="src\core\expression.ts" />
     <Content Include="src\types\fun.ts" />
     <Content Include="src\core\langutils.ts" />
+    <TypeScriptCompile Include="src\util\repl.ts" />
+    <Content Include="src\util\cli.js">
+      <DependentUpon>repl.ts</DependentUpon>
+    </Content>
     <Content Include="test\base.js" />
     <Content Include="test\lang.js" />
     <Content Include="test\morebase.js" />

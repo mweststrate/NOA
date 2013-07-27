@@ -41,7 +41,7 @@ module NOA {
 
 		text(text: string): Repl {
 			if (this.isTerminal()) 
-				this.terminal.output.write(text);
+				this.terminal.output.write("" + text);
 
 			return this;
 		}
@@ -57,7 +57,20 @@ module NOA {
 			return this;
 		}
 
+		indent(): Repl {
+			//TODO:
+			//be aware of wrapping lines! How to split?
+			return this;
+		}
+
+		outdent(): Repl {
+			//TODO:
+			return this;
+		}
+
 		exit(text: string = "Bye!") {
+			this.text(text);
+			this.newline();
 			this.terminal.close();
 		}
 
@@ -84,7 +97,12 @@ module NOA {
 
 			this.terminal
 				.on('line', (line: string) => {
-					this.config.evaluator.call(this.config.scope, line.trim(), this);
+					try {
+						this.config.evaluator.call(this.config.scope, line.trim(), this);
+					}
+					catch (e) {
+						console.error(e);
+					}
 					this.newline();
 					this.terminal.prompt();
 				})
