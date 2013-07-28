@@ -298,12 +298,20 @@ module NOA {
 			return Util.type(thing) == "number";
 		}
 
+		static isNumberLike(thing: any): bool {
+			return isNumber(thing) || !isNaN(thing);
+		}
+
 		static isString(thing: any): bool {
 			return Util.type(thing) == "string";
 		}
 
 		static isBool(thing: any): bool {
 			return Util.type(thing) == "boolean";
+		}
+
+		static isBoolLike(thing: any): bool {
+			return isBool(thing) || ("" + thing).match(/^(true|false)$/)
 		}
 
 		static isPrimitive(thing: any): bool {
@@ -318,12 +326,12 @@ module NOA {
 			return Object.prototype.toString.call(thing) === '[object Object]'
 		}
 
-		static toNumber(num: string): number {
-			return 1 * <any>num;
+		static toNumber(num: any): number {
+			return isNumber(num) ? num : 1 * <any>num;
 		}
 
-		static toBool(val: string): bool {
-			return val == "true";
+		static toBool(val: any): bool {
+			return isBool(val) ? val : "" + val === "true";
 		}
 
 		static find(thing : any, array : any[]) : number {

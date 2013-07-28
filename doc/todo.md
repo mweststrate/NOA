@@ -13,6 +13,7 @@
 * cli demo / order demo
 * clean up code & todo items
 * formatted errors (+ replace asserts by errors?)
+* generate markdown from meta info
 * typescript 0.9 when ready: http://typescript.codeplex.com/releases/view/108802#ReviewsAnchor
 
 ## 0.2 release
